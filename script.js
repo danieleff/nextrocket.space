@@ -179,13 +179,13 @@ function recreate_table(checkboxes_exist) {
 
         html += "<colgroup>";
         //html += "<col style=\"width:5%\">";
-        html += "<col style=\"width:12%\">";
-        html += "<col style=\"width:13%\">";
+        html += "<col style=\"width:10em\">";
+        html += "<col style=\"width:11em\">";
         html += "<col style=\"width:17%\">";
         html += "<col style=\"width:14%\">";
         html += "<col style=\"width:24%\">";
-        html += "<col style=\"width:8%\">";
-        html += "<col style=\"width:2%\">";
+        html += "<col style=\"width:*\">";
+        html += "<col style=\"width:22px\">";
         html += "</colgroup>";
 
         //html += "<tr><th colspan=\"7\"><span class=\"title\">Filters</span></th></tr>";
