@@ -5,7 +5,7 @@ include_once("header.php");
 ?>
 
 <center>
-    <img src="/images/logo_large.png">
+    <!--<img src="/images/logo_large.png">-->
 </center>
 
 <ul style="list-style-type: none;">
