@@ -55,7 +55,7 @@ h2 a.selected {
 	border-top:1px solid #ccc;
 }
 
-.launch_table tr:nth-child(even) {
+.launch_table tr.odd {
 	background-color: #eee;
 	box-shadow: 0 0 2px #ccc;
 }

@@ -23,6 +23,43 @@ function get_launchlibrary_data() {
     return json_decode($json, true);
 }
 
+
+function is_match($launch, $rocketID) {
+    global $available_selections;
+    $sel = strtolower($available_selections[$rocketID][0]);
+
+    if ($rocketID[0] == '0') {
+        for($i = 0; $i < count($launch["agency"]); $i++) {
+            if ($available_selections[$rocketID][2] == $launch["agency"][$i]) {
+                return $rocketID;
+            }
+        }
+    }
+
+    if ($rocketID[0] == '1'
+        && $launch["launch_vehicle"]
+        && strpos(strtolower($launch["launch_vehicle"]), $sel) !== false
+        ) {
+        return $rocketID;
+    }
+
+    if ($rocketID[0] == '2'
+        && $launch["payload_type"]
+        && strpos(strtolower($launch["payload_type"]), $sel) !== false
+        ) {
+        return $rocketID;
+    }
+
+    if ($rocketID[0] == '3'
+        && $launch["destination"]
+        && strpos(strtolower($launch["destination"]), $sel) !== false
+        ) {
+        return $rocketID;
+    }
+
+    return false;
+}
+
 function get_launches() {
     $launchlibrary_data = get_launchlibrary_data();
     $launches = $launchlibrary_data["launches"];
@@ -54,6 +91,8 @@ function get_launches() {
         ];
 */
     uasort($launches, function($a, $b) {return strtotime($a["net"]) - strtotime($b["net"]);});
+    
+    $launches = array_values($launches);
 
     $payloads=[
 
@@ -315,8 +354,7 @@ $agency = [
 
 $available_selections = [
 
-    "*0" => "Agencies",
-
+    //Agencies
     "0j" => ["Arianespace", "arianespace.png", "ASA"],
     "0i" => ["Astrium Satellites", "astrium.png", "EADS"],
     "0f" => ["Avio S.p.A", "avio.png", "Avio"],
@@ -331,7 +369,7 @@ $available_selections = [
     "0l" => ["SpaceX", "logo_spacex.png", "SpX"],
     "0c" => ["United Launch Alliance", "ula.png", "ULA"],
 
-    "*1" => "Rockets",
+    //Rockets
     "1g"=>["Antares"],
     "1e"=>["Ariane"],
     "1f"=>["Atlas"],
@@ -348,7 +386,7 @@ $available_selections = [
     "1j"=>["Vega"],
     "1n"=>["SLS"],
 
-    "*2" => "Payloads",
+    //Payloads
     "2a"=>["Test flight"],
     "2b"=>["Communications satellite", "satellite.png"],
     "2c"=>["Earth observing satellite", "earth_satellite.png"],
@@ -358,7 +396,7 @@ $available_selections = [
     "2g"=>["Automated cargo spacecraft", "cargo.png"],
 
 
-    "*3" => "Destinations",
+    //Destinations
     "3a"=>["LEO", "leo.png"],
     "3b"=>["MEO"],
     "3c"=>["GEO", "geo.png"],

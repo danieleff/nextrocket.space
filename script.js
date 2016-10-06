@@ -85,11 +85,8 @@ function on_change() {
     recreate_table(true);
 }
 
-function is_selected(launch, only_1) {
+function is_selected(launch) {
     for (var rocketID in available_selections) {
-        if (only_1 && only_1[rocketID]) {
-            continue;
-        }
         if (selected.indexOf(rocketID) == -1) {
             continue;
         }
@@ -143,14 +140,11 @@ function is_match(launch, rocketID) {
 }
 
 function recreate_table(checkboxes_exist) {
-        var launches2 = launches.slice();
-        var only_1 = {};
-        var index = 0;
         var all = available_selections;//$.extend({}, rockets, missions, events);
 
         var none_found = true;
 
-        if (checkboxes_exist) {
+        if (checkboxes_exist || true) {
             selected = [];
 
             for(rocketID in all) {
@@ -161,102 +155,19 @@ function recreate_table(checkboxes_exist) {
             }
         }
 
-
         for(var i = 0; i < launches.length; i++) {
             var launch = launches[i];
-            rocketIDSelected = is_selected(launch, only_1);
+            rocketIDSelected = is_selected(launch);
             if (rocketIDSelected) {
-                only_1[rocketIDSelected] = true;
-                //launches2.splice(index, 0, launch);
                 none_found = false;
-                index ++;
             }
         }
-
-        launches2.splice(0, 0, {}); //index
-
-        var html = "";
-
-        html += "<colgroup>";
-        //html += "<col style=\"width:5%\">";
-        html += "<col style=\"width:10em\">";
-        html += "<col style=\"width:11em\">";
-        html += "<col style=\"width:17%\">";
-        html += "<col style=\"width:14%\">";
-        html += "<col style=\"width:24%\">";
-        html += "<col style=\"width:*\">";
-        html += "<col style=\"width:22px\">";
-        html += "</colgroup>";
-
-        //html += "<tr><th colspan=\"7\"><span class=\"title\">Filters</span></th></tr>";
-
-        //html += "<tr><td colspan=\"7\" style=\"line-height: 2em; font-family: sans-serif; font-size:small; padding:7px; text-align:left;vertical-align:top;\">";
-
-        var first = true;
-        var filters = ["", "", "", ""];
-
-        for(rocketID in available_selections) {
-            if (rocketID[0]=='*') {
-                //if (!first) html += "<br>";
-                //html += available_selections[rocketID] + ":";
-                continue;
-            }
-
-            var count = 0;
-            for(var i = 0; i < launches2.length; i++) {
-                var launch = launches2[i];
-                if (is_match(launch, rocketID)) count++;
-            }
-
-            var check = "";
-            check += "<label class=\"filter\">";
-            check += " <input style=\"display: none;\" id=\"" + rocketID + "\" onchange=\"on_change()\" style=\"vertical-align: -1px;\" type=\"checkbox\" " + (selected.indexOf(rocketID)!=-1?"checked":"") + ">";
-            if (available_selections[rocketID].length > 1 && available_selections[rocketID][1]) {
-                check += "<img class=\"icon\" src=\"" + url + "images/" + available_selections[rocketID][1] + "\"> ";
-            }
-
-            var name = "(" + count + ") " + available_selections[rocketID][0];
-            check += "<span title=\"" + name + "\">" + name + "</span>";
-            check += "</input>";
-            check += "</label>";
-
-            filters[rocketID[0]] += check;
-
-            first = false;
-        }
-
-        //html += "</td></tr>";
-
-        html += "<tr>";
-        html += "<th></th>";
-        html += "<th></th>";
-        html += "<td valign=\"top\" style=\"white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\">Agencies:<br>"+filters[0]+"</td>";
-        html += "<td valign=\"top\" style=\"white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\">Rockets:<br>"+filters[1]+"</td>";
-        html += "<td valign=\"top\" style=\"white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\">Payload:<br>"+filters[2]+"</td>";
-        html += "<td valign=\"top\" style=\"white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\">Destination:<br>"+filters[3]+"</td>";
-        html += "<th></th>";
-        html += "</tr>";
-
-        var header = "";
-        header += "<tr>";
-        //header += "<th></th>";
-        header += "<th>Countdown</th>";
-        header += "<th id=\"date_header\">Date GMT</th>";
-        header += "<th></th>";
-        header += "<th>Launch vehicle</th>";
-        header += "<th>Payload</th>";
-        header += "<th>Destination</th>";
-        header += "<th></th>";
-        header += "</tr>";
-
-        //html += "<tr><th colspan=\"7\"><span class=\"title\">Next launches</span></th></tr>";
-        //html += header;
 
         var prev_y;
         var prev_m;
 
-        for(var i = 0; i < launches2.length; i++) {
-            var launch = launches2[i];
+        for(var i = 0; i < launches.length; i++) {
+            var launch = launches[i];
 
             var style_color = "";
 
@@ -268,13 +179,22 @@ function recreate_table(checkboxes_exist) {
                 unchecked_visibility = "gray_out";
             }
 
+            var e = $("#launch_" + i);
+            
             if (!none_found && !is_selected(launch)) {
-                if (launch["name"] && unchecked_visibility == "hidden") {
-                    continue;
-                }
-                if (launch["name"] && unchecked_visibility == "gray_out") {
+                if (unchecked_visibility == "hidden") {
+                    if (e.is(":visible")) e.hide();
+                } else if (unchecked_visibility == "gray_out") {
                     style_color = "color: darkgray; ";
+                    e.css("color", "darkgray");
+                    if (!e.is(":visible")) e.show();
+                } else {
+                    e.css("color", "");
+                    if (!e.is(":visible")) e.show();
                 }
+            } else {
+                e.css("color", "");
+                if (!e.is(":visible")) e.show();
             }
 
             var time = new Date(launch["time"] * 1000);
@@ -286,106 +206,16 @@ function recreate_table(checkboxes_exist) {
             prev_y = time.getYear();
             prev_m = time.getMonth();
 
-            if (launch["name"]) {
-                html += "<tr style=\"" + style_color + "\">";
-
-                /*
-                html += "<td class=\"agency\" style=\"text-align: center;\">";
-
-                if (launch["location"]) {
-                    html += launch["location"]["countryCode"]+" ";
-                }
-
-                html += "</td>";
-                */
-
-                if (launch["status"]==4) {
-                    html += "<td>Failed</td>";
-                } else {
-                    html += "<td class=\"countdown\" data-tbdtime=\"" + launch["tbdtime"] + "\" data-tbddate=\"" + launch["tbddate"] + "\" data-time=\"" + launch["time"] + "\"></td>";
-                }
-
-                html += "<td class=\"date\" data-tbdtime=\"" + launch["tbdtime"] + "\" data-tbddate=\"" + launch["tbddate"] + "\" data-time=\"" + launch["time"] + "\"></td>";
-
-
-                html += "<td class=\"agency\" style=\"text-align: center;\">";
-
-                var agency_string = "";
-                for(var j = 0; j < launch["agency"].length; j++) {
-                    var a = launch["agency"][j];
-
-                    for(agencyId in agency) {
-                        if (a == agencyId && agency[a].length > 1) {
-                            a = "<img title=\"" + agency[a][0] + "\" style=\"vertical-align:baseline; height:16px;\" src=\"" + url + "images/" + agency[a][1] + "\">";
-                            break;
-                        }
-                    }
-                    agency_string += a + " ";
-
-                }
-                html += agency_string;
-
-
-                html += "</td>";
-
-
-                html += "<td title=\""+launch["launch_vehicle"]+"\" class=\"rocket\">";
-                html += launch["launch_vehicle"];
-                if (launch["probability"] && launch["probability"]!="-1") html += " (" + launch["probability"] + "%)";
-                html += "</td>";
-
-
-                html += "<td title=\""+launch["payload_type"]+"\" class=\"payload\">";
-
-                /*if (launch["missions"] && launch["missions"][0]) {
-                    html += launch["missions"][0]["typeName"];
-                    html += " ";
-                }*/
-
-                if (launch["payload_icon"] && launch["payload_icon"]!='.') {
-                    html += "<img style=\"vertical-align:top; height:1em;\" src=\"" + url + launch["payload_icon"] + "\"> ";
-                }
-                html += "<span title=\""+launch["payload"]+"\">" + launch["payload"] + "</span>";
-                html += "</td>";
-
-                html += "<td title=\""+launch["destination"]+"\" class=\"destination\">";
-                if (launch["destination_icon"] && launch["destination_icon"]!='.') {
-                    html += "<img style=\"vertical-align:top; height:1em;\" src=\"" + url + launch["destination_icon"] + "\"> ";
-                }
-                html += launch["destination"];
-                html += "</td>";
-
-
-
-                html += "<td>";
-                if (launch["vidURLs"] && launch["vidURLs"].length > 0) {
-                    html += "<a href=\"" + launch["vidURLs"][0] + "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"images/video.png\"></a>";
-                }
-                html += "</td>";
-                html += "</tr>";
-
-            } else {
-
-                html += "<th colspan=\"7\">";
-                //html += "<span class=\"title\">All launches</span><br>"
-                html += "Unselected launches:";
-                html += " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\" " + ((unchecked_visibility=="show")?"checked":"")+ ">show</label>";
-                html += " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" " + ((unchecked_visibility=="gray_out")?"checked":"")+ ">gray out</label>";
-                html += " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\" " + ((unchecked_visibility=="hidden")?"checked":"")+ ">hide </label>";
-                html += "</th>";
-                html += "</tr>";
-
-                html += header;
-            }
-
         }
 
-        document.getElementById("launch_table").innerHTML = html;
-
         update_dates();
-        update_countdowns();
 
+        $("label").removeClass("checked");
         $("label:has(input:checked)").addClass("checked");
+        
+        jQuery('tr:visible:odd').addClass("odd");
+        jQuery('tr:visible:even').removeClass("odd");
+
     }
 
 function update_countdown_timeout() {
@@ -401,7 +231,10 @@ function update_countdowns() {
     var cusid_ele = document.getElementsByClassName('countdown');
     for (var i = 0; i < cusid_ele.length; ++i) {
         var item = cusid_ele[i];
-        item.innerHTML = seconds_to_dhms(item.getAttribute("data-time"), item.getAttribute("data-tbdtime"), item.getAttribute("data-tbddate"));
+        var newHTML = seconds_to_dhms(item.getAttribute("data-time"), item.getAttribute("data-tbdtime"), item.getAttribute("data-tbddate"));
+        if (item.innerHTML != newHTML) {
+            item.innerHTML = newHTML;
+        }
     }
 
 }
@@ -471,6 +304,14 @@ function init() {
     if (cookie) {
         selected = cookie.split(",");
     }
+    for(var sel in selected) {
+        $("#" + selected[sel]).prop("checked", true);
+    }
+    
+    var sel = readCookie('unchecked_visibility');
+    /*if (sel != null) {
+        $("input[name=unchecked_visibility][value=" + sel + "]").prop('checked', true);
+    }*/
 
     recreate_table(false);
     update_countdown_timeout();
