@@ -318,6 +318,11 @@ function init() {
     /*if (sel != null) {
         $("input[name=unchecked_visibility][value=" + sel + "]").prop('checked', true);
     }*/
+    
+    var sel = readCookie("filter_hidden");
+    if (sel == 'true') {
+        $('.filter_row').toggle();$('.filter_icon').toggle();
+    }
 
     recreate_table(false);
     update_countdown_timeout();

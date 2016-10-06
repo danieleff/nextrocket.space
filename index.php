@@ -57,7 +57,7 @@ $url = "http://nextrocket.space/";
         echo "<col style=\"width:22px\">";
         echo "</colgroup>";
 
-        echo "<tr style=\"cursor:pointer;\" onclick=\"$('.filter_row').slideToggle(200);$('.filter_icon').toggle()\">";
+        echo "<tr style=\"cursor:pointer;\" onclick=\"createCookie('filter_hidden', $('.filter_row').is(':visible'));$('.filter_row').slideToggle(200);$('.filter_icon').toggle();\">";
         echo "<th>";
         echo "<span style=\"float:left; padding:0 0 2px 2px; display:none; \" class=\"filter_icon\">&#x25B2;</span>";
         echo "<span style=\"float:left; padding:0 0 2px 2px; text-align: left; \"class=\"filter_icon\">&#x25BC;</span>";
