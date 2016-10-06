@@ -180,9 +180,11 @@ function recreate_table(checkboxes_exist) {
             }
 
             var e = $("#launch_" + i);
+            var show = true;
             
             if (!none_found && !is_selected(launch)) {
                 if (unchecked_visibility == "hidden") {
+                    show = false;
                     if (e.is(":visible")) e.hide();
                 } else if (unchecked_visibility == "gray_out") {
                     style_color = "color: darkgray; ";
@@ -198,13 +200,17 @@ function recreate_table(checkboxes_exist) {
             }
 
             var time = new Date(launch["time"] * 1000);
-            if (prev_y != time.getYear()) {
-                  style_color += "border-top: 2px solid brown;";
-            } else if(prev_m!=time.getMonth() ) {
-                  style_color += "border-top: 1px solid black;";
+            if (show && prev_y != time.getYear()) {
+                e.css('border-top', '2px solid brown');
+                prev_y = time.getYear();
+                prev_m = time.getMonth();
+            } else if(show && prev_m != time.getMonth() ) {
+                e.css('border-top', '1px solid black');
+                prev_y = time.getYear();
+                prev_m = time.getMonth();
+            } else {
+                e.css('border-top', '');
             }
-            prev_y = time.getYear();
-            prev_m = time.getMonth();
 
         }
 
