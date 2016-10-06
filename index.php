@@ -125,7 +125,7 @@ $url = "http://nextrocket.space/";
 
             echo "<td title=\"" . $launch["launch_vehicle"] . "\" class=\"rocket\">";
             echo $launch["launch_vehicle"];
-            if ($launch["probability"] && $launch["probability"]!="-1") echo " (" . launch["probability"] . "%)";
+            if ($launch["probability"] && $launch["probability"]!="-1") echo " (" . $launch["probability"] . "%)";
             echo "</td>";
 
 
