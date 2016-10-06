@@ -36,18 +36,18 @@
         text-transform: uppercase;
     }
     h2 a {
-        color:#ff9900;
+        color:#b40000;
         padding: 6px;
 
     }
-    h2 a:hover {
+    h2 a:hover, h2 a.selected:hover {
         background-color:black;
         color:white;
-
     }
     h2 a.selected {
-	color:#ff9900;
-}
+        color:black;
+    }
+    
 </style>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
