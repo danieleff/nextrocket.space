@@ -35,7 +35,7 @@
     <!--
     <img src="images/logo.png" style="height:1em; vertical-align: middle;" alt="LaunchTime">
     -->
-    <span style="color:red;">nextrocket</span>.space
+    <span style="color:#b40000;">nextrocket</span>.space
 
     <span style="vertical-align: middle; font-size:small; padding-top: 1em; padding-left: 2em;">
         List of upcoming rocket launches to space.

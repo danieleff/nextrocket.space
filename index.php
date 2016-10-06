@@ -71,9 +71,18 @@ $url = "http://nextrocket.space/";
         echo "<th></th>";
         echo "</tr>";
 
+        
         echo "<tr id=\"filter\">";
-        echo "<th style=\"padding: 0px; \"></th>";
-        echo "<th style=\"padding: 0px; \"></th>";
+        
+        echo "<th style=\"text-align: left; padding: 0px;vertical-align: top;\" colspan=\"2\">";
+        echo "<div style=\"margin: 0.5em;\" class=\"filter_row\">";
+        echo "Unselected launches:<br>";
+        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
+        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
+        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
+        echo "</div>";
+        echo "</th>";
+        
         echo "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[0]."</div></td>";
         echo "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[1]."</div></td>";
         echo "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[2]."</div></td>";
@@ -81,6 +90,7 @@ $url = "http://nextrocket.space/";
         echo "<th style=\"padding: 0px; \"></th>";
         echo "</tr>";
 
+        /*
         echo "<th colspan=\"7\">";
         echo "Unselected launches:";
         echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label>";
@@ -88,6 +98,8 @@ $url = "http://nextrocket.space/";
         echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label>";
         echo "</th>";
         echo "</tr>";
+        */
+        
 
         foreach($launches as $key => $launch) {
             $style_color = "";

@@ -42,7 +42,7 @@ h2 a.selected {
 }
 
 .launch_table th {
-	color:green;
+	color:#b40000;
 	font-weight:normal;
 }
 .launch_table .title {
