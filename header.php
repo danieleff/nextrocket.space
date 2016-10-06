@@ -18,7 +18,37 @@
 </head>
 
 <body>
+<style>
+    h1 {
+        color:black;
 
+
+        margin:0;
+        padding:0 6px;
+    }
+    h2 {
+        padding:0 6px;
+
+
+        margin-top:0;
+        font-family: 'Open Sans', sans-serif;
+
+        text-transform: uppercase;
+    }
+    h2 a {
+        color:#ff9900;
+        padding: 6px;
+
+    }
+    h2 a:hover {
+        background-color:black;
+        color:white;
+
+    }
+    h2 a.selected {
+	color:#ff9900;
+}
+</style>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

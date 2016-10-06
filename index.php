@@ -14,7 +14,11 @@ if (isset($_REQUEST["get_json"])) {
      exit;
 }
 
-include_once("header.php");
+if ($_REQUEST["old_header"]) {
+    include_once("header_old.php");
+} else {
+    include_once("header.php");
+}
 
 $url = "http://nextrocket.space/";
 

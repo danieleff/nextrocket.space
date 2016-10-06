@@ -7,29 +7,6 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	margin:0;
 }
-h1 {
-	color:black;
-	margin:0;
-	padding:0 6px;
-}
-h2 {
-	padding:0 6px;
-	margin-top:0;
-	font-family: 'Open Sans', sans-serif;
-	text-transform: uppercase;
-}
-h2 a {
-	color:#ff9900;
-	padding: 6px;
-}
-h2 a:hover {
-	background-color:black;
-	color:white;
-}
-h2 a.selected {
-	color:#ff9900;
-}
-
 .launch_table {
 	font-family: 'Roboto', sans-serif;
 	width:100%;
