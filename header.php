@@ -30,24 +30,24 @@
 
 </script>
 
-<h1>
+<h2 style="float:right; padding-top:0.5em;">
+  <!--<a <?=_menu_select_class("index")?> href="index.php">Home</a>-->
+  <!--<a <?=_menu_select_class("hardware")?> href="hardware.php">Get the countdown rocket</a>-->
+  <a <?=_menu_select_class("about")?> href="about.php">About</a>
+  <a href="http://launchlibrary.net">Launchlibrary</a>
+</h2>
+
+<h1 style="line-height:1em;">
 
     <!--
     <img src="images/logo.png" style="height:1em; vertical-align: middle;" alt="LaunchTime">
     -->
     <span style="color:#b40000;">nextrocket</span>.space
-
-    <span style="vertical-align: middle; font-size:small; padding-top: 1em; padding-left: 2em;">
+    <br>
+    
+    <span style="width:100%; vertical-align: middle; font-size:small;maring:0; padding:0;">
         List of upcoming rocket launches to space.
-        Launch data from <a style="color: #aabab6;" href="http://launchlibrary.net">launchlibrary.net</a>
-
     </span>
-</h1>
 
-<div style="border-top:1px solid black; border-bottom:1px solid black;">
-<h2 style="box-shadow: 0 0 15px #444; border-top:1px solid gray; border-bottom:1px solid gray;">
-  <a <?=_menu_select_class("index")?> href="index.php">Home</a>
-  <!--<a <?=_menu_select_class("hardware")?> href="hardware.php">Get the countdown rocket</a>-->
-  <a <?=_menu_select_class("about")?> href="about.php">About</a>
-</h2>
-</div>
+
+</h1>

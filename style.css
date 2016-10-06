@@ -8,27 +8,23 @@ body {
 	margin:0;
 }
 h1 {
-	background-color: #333333;
-	color:#aabab6;
+	color:black;
 	margin:0;
 	padding:0 6px;
 }
 h2 {
-	background-color: #232323;
-	padding:6px 12px;
-	margin:0;
+	padding:0 6px;
+	margin-top:0;
 	font-family: 'Open Sans', sans-serif;
-	font-size: smaller;
 	text-transform: uppercase;
 }
 h2 a {
-	color:#bdbab6;
+	color:#ff9900;
 	padding: 6px;
-	xmargin-right: 2em;
 }
 h2 a:hover {
-	background-color:white;
-	color:black;
+	background-color:black;
+	color:white;
 }
 h2 a.selected {
 	color:#ff9900;
