@@ -54,10 +54,10 @@ $url = "http://nextrocket.space/";
         echo "<colgroup>";
         echo "<col style=\"width:10em\">";
         echo "<col style=\"width:11em\">";
-        echo "<col style=\"width:17%\">";
-        echo "<col style=\"width:14%\">";
-        echo "<col style=\"width:24%\">";
-        echo "<col style=\"width:10%\">";
+        echo "<col style=\"width:25%\">";
+        echo "<col style=\"width:15%\">";
+        echo "<col style=\"width:35%\">";
+        echo "<col style=\"width:15%\">";
         echo "<col style=\"width:22px\">";
         echo "</colgroup>";
 
