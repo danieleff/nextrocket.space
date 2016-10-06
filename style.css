@@ -57,7 +57,6 @@ h2 a.selected {
 
 .launch_table tr.odd {
 	background-color: #eee;
-	box-shadow: 0 0 2px #ccc;
 }
 
 .launch_table td {
