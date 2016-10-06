@@ -82,7 +82,6 @@ td.agency, td.rocket, td.payload, td.destination {
 
 label.filter {
     cursor: pointer;
-    width:100%;
     display:block;
     border:1px solid transparent;
     font-family: sans-serif;
