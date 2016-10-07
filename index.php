@@ -20,7 +20,7 @@ if ($_REQUEST["old_header"]) {
     include_once("header.php");
 }
 
-$url = "http://nextrocket.space/";
+$url = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
 
 ?>
 
