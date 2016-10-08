@@ -4,9 +4,10 @@ require_once("functions.php");
 
 $launches = get_launches();
 
+$url = "http://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpos($_SERVER["REQUEST_URI"], "/") + 1);
 
 function get_table() {
-    global $available_selections, $launches, $agency;
+    global $available_selections, $launches, $agency, $url;
     
     $filters = array("", "", "", "");
 
@@ -175,8 +176,6 @@ if ($_REQUEST["old_header"]) {
     include_once("header.php");
 }
 
-
-$url = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
 
 ?>
 

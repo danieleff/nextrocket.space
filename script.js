@@ -332,7 +332,7 @@ function init_embedded() {
     is_embedded = true;
 
     $.get(url + "index.php?get_table=true", function(data) {
-        $("#launch_table").innerHTML(data);
+        $("#launch_table").html(data);
         
         $.getJSON(url + "index.php?get_json=true", function(data) {
             launches = data["launches"];
