@@ -20,11 +20,8 @@ if ($_REQUEST["f"]=="t") {
 
 $all = $available_selections;
 
-foreach($selected_rockets as $selected_rocket) {
-    $found = false;
-
+    
     foreach($launches as $launch) {
-        if (true || stripos($launch["name"], $all[$selected_rocket][0]) !== false) {
             $t = strtotime($launch["net"]) - $time;
             $name = strtoupper(str_pad(substr(str_replace("IV", "4", $launch["name"]), 0, $len), $len, " "));
 
