@@ -4,6 +4,155 @@ require_once("functions.php");
 
 $launches = get_launches();
 
+
+function get_table() {
+    global $available_selections, $launches, $agency;
+    
+    $filters = array("", "", "", "");
+
+    foreach($available_selections as $rocketId => $selection) {
+        $count = 0;
+        
+        for($i = 0; $i < count($launches); $i++) {
+            $launch = $launches[$i];
+            if (is_match($launch, $rocketId)) $count++;
+        }
+        
+        $check = "";
+        $check .= "<label class=\"filter\">";
+        $check .= " <input style=\"display: none;\" id=\"" . $rocketId . "\" onchange=\"on_change()\" style=\"vertical-align: -1px;\" type=\"checkbox\" >";
+        if (count($selection) > 1 && $selection[1]) {
+            $check .= "<img class=\"icon\" src=\"" . $url . "images/" . $selection[1] . "\"> ";
+        }
+
+        $name = "(" . $count . ") " . $selection[0];
+        $check .= "<span title=\"" . $name . "\">" . $name . "</span>";
+        $check .= "</input>";
+        $check .= "</label>";
+
+        $filters[$rocketId[0]] .= $check;
+    }
+    $ret .= "<colgroup>";
+    $ret .= "<col style=\"width:10em\">";
+    $ret .= "<col style=\"width:11em\">";
+    $ret .= "<col style=\"width:25%\">";
+    $ret .= "<col style=\"width:15%\">";
+    $ret .= "<col style=\"width:35%\">";
+    $ret .= "<col style=\"width:15%\">";
+    $ret .= "<col style=\"width:22px\">";
+    $ret .= "</colgroup>";
+
+    $ret .= "<tr style=\"cursor:pointer;\" onclick=\"createCookie('filter_hidden', $('.filter_row').is(':visible'));$('.filter_row').slideToggle(200);$('.filter_icon').toggle();\">";
+    $ret .= "<th>";
+    $ret .= "<span style=\"float:left; padding:0 0 2px 2px; display:none; \" class=\"filter_icon\">&#x25B2;</span>";
+    $ret .= "<span style=\"float:left; padding:0 0 2px 2px; text-align: left; \"class=\"filter_icon\">&#x25BC;</span>";
+    $ret .= " Countdown";
+    $ret .= "</th>";
+    $ret .= "<th id=\"date_header\">Date GMT</th>";
+    $ret .= "<th>Agency</th>";
+    $ret .= "<th>Launch vehicle</th>";
+    $ret .= "<th>Payload</th>";
+    $ret .= "<th>Destination</th>";
+    $ret .= "<th></th>";
+    $ret .= "</tr>";
+
+    
+    $ret .= "<tr id=\"filter\">";
+    
+    $ret .= "<th style=\"text-align: left; padding: 0px;vertical-align: top;\" colspan=\"2\">";
+    $ret .= "<div style=\"margin: 0.5em;\" class=\"filter_row\">";
+    $ret .= "Unselected launches:<br>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
+    $ret .= "</div>";
+    $ret .= "</th>";
+    
+    $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[0]."</div></td>";
+    $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[1]."</div></td>";
+    $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[2]."</div></td>";
+    $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[3]."</div></td>";
+    $ret .= "<th style=\"padding: 0px; \"></th>";
+    $ret .= "</tr>";
+
+    /*
+    $ret .= "<th colspan=\"7\">";
+    $ret .= "Unselected launches:";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label>";
+    $ret .= "</th>";
+    $ret .= "</tr>";
+    */
+    
+
+    foreach($launches as $key => $launch) {
+        $style_color = "";
+        $ret .= "<tr id=\"launch_" . $key . "\">";
+
+        if ($launch["status"]==4) {
+            $ret .= "<td>Failed</td>";
+        } else {
+            $ret .= "<td class=\"countdown\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
+        }
+
+        $ret .= "<td class=\"date\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
+
+
+        $ret .= "<td class=\"agency\" style=\"text-align: center;\">";
+
+        $agency_string = "";
+        for($j = 0; $j < count($launch["agency"]); $j++) {
+            $a = $launch["agency"][$j];
+
+            foreach($agency as $agencyId => $agen) {
+                if ($a == $agencyId && count($agen) > 1) {
+                    $a = "<img title=\"" . $agen[0] . "\" style=\"vertical-align:baseline; height:16px;\" src=\"" . $url . "images/" . $agen[1] . "\">";
+                    break;
+                }
+            }
+            $agency_string .= $a . " ";
+
+        }
+        $ret .= $agency_string;
+
+
+        $ret .= "</td>";
+
+
+        $ret .= "<td title=\"" . $launch["launch_vehicle"] . "\" class=\"rocket\">";
+        $ret .= $launch["launch_vehicle"];
+        if ($launch["probability"] && $launch["probability"]!="-1") $ret .= " (" . $launch["probability"] . "%)";
+        $ret .= "</td>";
+
+
+        $ret .= "<td title=\"" . $launch["payload_type"] . "\" class=\"payload\">";
+
+        if ($launch["payload_icon"] && $launch["payload_icon"] != '.') {
+            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . $launch["payload_icon"] . "\"> ";
+        }
+        $ret .= "<span title=\"" . $launch["payload"] . "\">" . $launch["payload"] . "</span>";
+        $ret .= "</td>";
+
+        $ret .= "<td title=\"" . $launch["destination"] . "\" class=\"destination\">";
+        if ($launch["destination_icon"] && $launch["destination_icon"] != '.') {
+            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . $launch["destination_icon"] . "\"> ";
+        }
+        $ret .= $launch["destination"];
+        $ret .= "</td>";
+
+
+
+        $ret .= "<td>";
+        if ($launch["vidURLs"] && count($launch["vidURLs"]) > 0) {
+            $ret .= "<a href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"images/video.png\"></a>";
+        }
+        $ret .= "</td>";
+        $ret .= "</tr>";
+    }
+    return $ret;
+}
+
 if (isset($_REQUEST["get_json"])) {
      header('Access-Control-Allow-Origin: *');
      $ret = array("launches" => array_values($launches),
@@ -14,11 +163,17 @@ if (isset($_REQUEST["get_json"])) {
      exit;
 }
 
+if (isset($_REQUEST["get_table"])) {
+    echo get_table();
+    exit;
+}
+
 if ($_REQUEST["old_header"]) {
     include_once("header_old.php");
 } else {
     include_once("header.php");
 }
+
 
 $url = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
 
@@ -26,150 +181,7 @@ $url = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
 
 <table id="launch_table" class="launch_table">
     <?php
-        
-        $filters = array("", "", "", "");
-
-        foreach($available_selections as $rocketId => $selection) {
-            $count = 0;
-            
-            for($i = 0; $i < count($launches); $i++) {
-                $launch = $launches[$i];
-                if (is_match($launch, $rocketId)) $count++;
-            }
-            
-            $check = "";
-            $check .= "<label class=\"filter\">";
-            $check .= " <input style=\"display: none;\" id=\"" . $rocketId . "\" onchange=\"on_change()\" style=\"vertical-align: -1px;\" type=\"checkbox\" >";
-            if (count($selection) > 1 && $selection[1]) {
-                $check .= "<img class=\"icon\" src=\"" . $url . "images/" . $selection[1] . "\"> ";
-            }
-
-            $name = "(" . $count . ") " . $selection[0];
-            $check .= "<span title=\"" . $name . "\">" . $name . "</span>";
-            $check .= "</input>";
-            $check .= "</label>";
-
-            $filters[$rocketId[0]] .= $check;
-        }
-        echo "<colgroup>";
-        echo "<col style=\"width:10em\">";
-        echo "<col style=\"width:11em\">";
-        echo "<col style=\"width:25%\">";
-        echo "<col style=\"width:15%\">";
-        echo "<col style=\"width:35%\">";
-        echo "<col style=\"width:15%\">";
-        echo "<col style=\"width:22px\">";
-        echo "</colgroup>";
-
-        echo "<tr style=\"cursor:pointer;\" onclick=\"createCookie('filter_hidden', $('.filter_row').is(':visible'));$('.filter_row').slideToggle(200);$('.filter_icon').toggle();\">";
-        echo "<th>";
-        echo "<span style=\"float:left; padding:0 0 2px 2px; display:none; \" class=\"filter_icon\">&#x25B2;</span>";
-        echo "<span style=\"float:left; padding:0 0 2px 2px; text-align: left; \"class=\"filter_icon\">&#x25BC;</span>";
-        echo " Countdown";
-        echo "</th>";
-        echo "<th id=\"date_header\">Date GMT</th>";
-        echo "<th>Agency</th>";
-        echo "<th>Launch vehicle</th>";
-        echo "<th>Payload</th>";
-        echo "<th>Destination</th>";
-        echo "<th></th>";
-        echo "</tr>";
-
-        
-        echo "<tr id=\"filter\">";
-        
-        echo "<th style=\"text-align: left; padding: 0px;vertical-align: top;\" colspan=\"2\">";
-        echo "<div style=\"margin: 0.5em;\" class=\"filter_row\">";
-        echo "Unselected launches:<br>";
-        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
-        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
-        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
-        echo "</div>";
-        echo "</th>";
-        
-        echo "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[0]."</div></td>";
-        echo "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[1]."</div></td>";
-        echo "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[2]."</div></td>";
-        echo "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[3]."</div></td>";
-        echo "<th style=\"padding: 0px; \"></th>";
-        echo "</tr>";
-
-        /*
-        echo "<th colspan=\"7\">";
-        echo "Unselected launches:";
-        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label>";
-        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label>";
-        echo " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label>";
-        echo "</th>";
-        echo "</tr>";
-        */
-        
-
-        foreach($launches as $key => $launch) {
-            $style_color = "";
-            echo "<tr id=\"launch_" . $key . "\">";
-
-            if ($launch["status"]==4) {
-                echo "<td>Failed</td>";
-            } else {
-                echo "<td class=\"countdown\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
-            }
-
-            echo "<td class=\"date\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
-
-
-            echo "<td class=\"agency\" style=\"text-align: center;\">";
-
-            $agency_string = "";
-            for($j = 0; $j < count($launch["agency"]); $j++) {
-                $a = $launch["agency"][$j];
-
-                foreach($agency as $agencyId => $agen) {
-                    if ($a == $agencyId && count($agen) > 1) {
-                        $a = "<img title=\"" . $agen[0] . "\" style=\"vertical-align:baseline; height:16px;\" src=\"" . $url . "images/" . $agen[1] . "\">";
-                        break;
-                    }
-                }
-                $agency_string .= $a . " ";
-
-            }
-            echo $agency_string;
-
-
-            echo "</td>";
-
-
-            echo "<td title=\"" . $launch["launch_vehicle"] . "\" class=\"rocket\">";
-            echo $launch["launch_vehicle"];
-            if ($launch["probability"] && $launch["probability"]!="-1") echo " (" . $launch["probability"] . "%)";
-            echo "</td>";
-
-
-            echo "<td title=\"" . $launch["payload_type"] . "\" class=\"payload\">";
-
-            if ($launch["payload_icon"] && $launch["payload_icon"] != '.') {
-                echo "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . $launch["payload_icon"] . "\"> ";
-            }
-            echo "<span title=\"" . $launch["payload"] . "\">" . $launch["payload"] . "</span>";
-            echo "</td>";
-
-            echo "<td title=\"" . $launch["destination"] . "\" class=\"destination\">";
-            if ($launch["destination_icon"] && $launch["destination_icon"] != '.') {
-                echo "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . $launch["destination_icon"] . "\"> ";
-            }
-            echo $launch["destination"];
-            echo "</td>";
-
-
-
-            echo "<td>";
-            if ($launch["vidURLs"] && count($launch["vidURLs"]) > 0) {
-                echo "<a href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"images/video.png\"></a>";
-            }
-            echo "</td>";
-            echo "</tr>";
-
-        }
+        echo get_table();
     ?>
 </table>
 

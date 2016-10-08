@@ -331,19 +331,23 @@ function init() {
 function init_embedded() {
     is_embedded = true;
 
-    $.getJSON(url + "index.php?get_json=true", function(data) {
-        launches = data["launches"];
-        available_selections = data["available_selections"];
-        events = data["events"]; //TODO delete
-        rockets = data["rockets"]; //TODO delete
-        missions = data["missions"]; //TODO delete
-        selected = data["selected"];
-        agency = data["agency"];
+    $.get(url + "index.php?get_table=true", function(data) {
+        $("#launch_table").innerHTML(data);
+        
+        $.getJSON(url + "index.php?get_json=true", function(data) {
+            launches = data["launches"];
+            available_selections = data["available_selections"];
+            events = data["events"]; //TODO delete
+            rockets = data["rockets"]; //TODO delete
+            missions = data["missions"]; //TODO delete
+            selected = data["selected"];
+            agency = data["agency"];
 
-        $.get("/get_selected", function(selected_rockets_str) {
-            selected = selected_rockets_str.split(",");
-            recreate_table(false);
-            update_countdown_timeout();
+            $.get("/get_selected", function(selected_rockets_str) {
+                selected = selected_rockets_str.split(",");
+                recreate_table(false);
+                update_countdown_timeout();
+            });
         });
     });
 
