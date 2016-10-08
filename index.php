@@ -164,6 +164,7 @@ if (isset($_REQUEST["get_json"])) {
 }
 
 if (isset($_REQUEST["get_table"])) {
+    header('Access-Control-Allow-Origin: *');
     echo get_table();
     exit;
 }
