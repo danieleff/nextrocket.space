@@ -82,7 +82,7 @@ function on_change() {
         createCookie("unchecked_visibility", $('input[name=unchecked_visibility]:checked').val(), 10000);
     }
 
-    recreate_table(true);
+    recreate_table();
 }
 
 function is_selected(launch) {
@@ -139,19 +139,17 @@ function is_match(launch, rocketID) {
     return false;
 }
 
-function recreate_table(checkboxes_exist) {
+function recreate_table() {
         var all = available_selections;//$.extend({}, rockets, missions, events);
 
         var none_found = true;
 
-        if (checkboxes_exist || true) {
-            selected = [];
+        selected = [];
 
-            for(rocketID in all) {
-                var e = document.getElementById(rocketID);
-                if (e && e.checked) {
-                    selected.push(rocketID);
-                }
+        for(rocketID in all) {
+            var e = document.getElementById(rocketID);
+            if (e && e.checked) {
+                selected.push(rocketID);
             }
         }
 
@@ -324,7 +322,7 @@ function init() {
         $('.filter_row').toggle();$('.filter_icon').toggle();
     }
 
-    recreate_table(false);
+    recreate_table();
     update_countdown_timeout();
 }
 
@@ -345,7 +343,11 @@ function init_embedded() {
 
             $.get("/get_selected", function(selected_rockets_str) {
                 selected = selected_rockets_str.split(",");
-                recreate_table(false);
+                for(var sel in selected) {
+                    $("#" + selected[sel]).prop("checked", true);
+                }
+                
+                recreate_table();
                 update_countdown_timeout();
             });
         });
