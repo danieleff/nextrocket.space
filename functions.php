@@ -221,7 +221,7 @@ function get_launches() {
         $launches[$key]["time"] = strtotime($launch["net"]);
 
         if ($launch["name"]) {
-            $rocket_mission = split("\|", $launch["name"]);
+            $rocket_mission = split(" \| ", $launch["name"]);
 
             $launches[$key]["launch_vehicle"] = $rocket_mission[0];
             $launches[$key]["payload"] = $rocket_mission[1];
