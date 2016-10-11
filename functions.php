@@ -350,6 +350,7 @@ $agency = [
     "ASA"  => ["Arianespace", "arianespace.png"],
     "CASC" => ["China Academy of Space Technology", "china_academy.png"],
     "SpX"  => ["SpaceX", "logo_spacex.png"],
+    "NASA"  => ["NASA", "nasa.png"],
     "MHI"  => ["Mitsubishi Heavy Industries", "mhi.png"],
 ];
 
@@ -365,6 +366,7 @@ $available_selections = [
     "0g" => ["Khrunichev State Research and Production Space Center", "ksrpsc.png", "KSRPSC"],
     "0b" => ["Lockheed Martin", "lockheed.png", "LMT"],
     "0m" => ["Mitsubishi Heavy Industries", "mhi.png", "MHI"],
+    "0n" => ["National Aeronautics and Space Administration", "nasa.png", "NASA"],
     "0a" => ["Indian Space Research Organization", "isro.png", "ISRO"],
     "0e" => ["Orbital Sciences Corporation", "orbital.png", "OSC"],
     "0h" => ["Progress State Research and Production Rocket Space Center", "progress.png", "TsSKB-Progress"],
