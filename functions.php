@@ -155,6 +155,7 @@ function get_launches() {
         "Spektr-RG"  =>["Scientific probe", "probe.png", "LEO", "leo.png"],
         "NISAR"      =>["Scientific probe", "probe.png", "LEO", "leo.png"],
         "TESS"       =>["Scientific probe", "probe.png", "HEO", ""],
+        "HXMT"       =>["Scientific probe", "probe.png", "", ""],
 
         "PROBA-3"    =>["Scientific probe", "probe.png", "Highly-elliptical Earth Orbit", ""],
 
@@ -180,9 +181,10 @@ function get_launches() {
         "Exploration Mission 1" =>["Scientific probe", "probe.png"    , "Moon", "moon.png"],
         "Chandrayaan-2" =>["Scientific probe", "probe.png"    , "Moon", "moon.png"],
 
-        "SpX-Demo"   =>["Test flight", ""    , "Test", ""],
-        "Test Flight"=>["Test flight", ""    , "Test", ""],
-        "Demo Flight"=>["Test flight", ""    , "Test", ""],
+        "SpX-Demo"   =>["Test flight", "test.png"    , "Test", ""],
+        "Test Flight"=>["Test flight", "test.png"    , "Test", ""],
+        "Demo Flight"=>["Test flight", "test.png"    , "Test", ""],
+        "Flight-"   =>["Test flight", "test.png"    , "Test", ""],
 
         "Solar Orbiter"=>["Scientific probe", "probe.png"    , "Sun", "sun.png"],
         "Solar Probe Plus"=>["Scientific probe", "probe.png"    , "Sun", "sun.png"],
