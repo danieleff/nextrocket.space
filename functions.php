@@ -387,7 +387,7 @@ $available_selections = [
     "1n"=>["SLS"],
 
     //Payloads
-    "2a"=>["Test flight"],
+    "2a"=>["Test flight", "test.png"],
     "2b"=>["Communications satellite", "satellite.png"],
     "2c"=>["Earth observing satellite", "earth_satellite.png"],
     "2d"=>["Weather satellite", "weather_satellite.png"],
