@@ -288,54 +288,7 @@ function get_launches() {
     return $launches;
 }
 
-
-$rockets = [
-    "a"=>"Falcon 9",
-    "b"=>"Falcon Heavy",
-    "c"=>"Mars Colonial Transporter",
-
-    "d"=>"Delta",
-    "e"=>"Ariane",
-    "f"=>"Atlas",
-    "g"=>"Antares",
-
-    "h"=>"Long March",
-    "i"=>"GSLV",
-    "j"=>"Vega",
-    "k"=>"PSLV",
-
-    "l"=>"Soyuz",
-    "m"=>"Proton",
-    "n"=>"Rokot",
-
-    "n"=>"SLS",
-    //"Other"=>false,
-];
-
-$missions = [
-    "A"=>"LEO/Sat",
-    "B"=>"GEO/Sat",
-
-    "C"=>"ISS/Cargo",
-    "D"=>"ISS/Manned",
-
-    "E"=>"Tiangong-2/Cargo",
-    "F"=>"Tiangong-2/Manned",
-
-    "G"=>"Mars/Probe",
-    "H"=>"Mars/Lander",
-    "I"=>"Mars/Manned",
-
-    "J"=>"Test flight",
-
-    "K"=>"Presentation",
-    "L"=>"AMA",
-
-    "M"=>"Other",
-
-];
-$selected = ["a", "b", "c", "H", "K"];
-
+$selected = [];
 
 $agency = [
     "ISRO" => ["Indian Space Research Organization", "isro.png"],
