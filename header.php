@@ -11,6 +11,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <title>nextrocket.space -  List of upcoming rocket launches to space.</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="script.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
