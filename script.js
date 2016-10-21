@@ -20,7 +20,7 @@ function seconds_to_dhms(time, tbdtime, tbddate) {
         var months = (t.getFullYear() - new Date().getFullYear()) * 12 + t.getMonth() - new Date().getMonth();
 
         if (months == 1) {
-            return "&nbsp;&nbsp;&nbsp;" + months + " month";
+            return "next month";
         } else if (months > 1 && months < 10){
             return "&nbsp;&nbsp;&nbsp;" + months + " months";
         } else if (months >= 10){
