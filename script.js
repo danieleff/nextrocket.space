@@ -107,58 +107,62 @@ function save_settings_gray_out_rows() {
 }
 
 function is_selected(launch) {
+    
+    var found = [false, false, false, false];
+    var needed = [false, false, false, false];
+
     for (var rocketID in available_selections) {
         if (selected.indexOf(rocketID) == -1) {
             continue;
         }
 
-        var match = is_match(launch, rocketID);
 
-        if (match) {
-            return match;
-        }
-    }
-    return false;
-}
+        var sel = available_selections[rocketID][0].toLowerCase();
 
-function is_match(launch, rocketID) {
-    if (!launch["name"]) {
-        return false;
-    }
-
-    var sel = available_selections[rocketID][0].toLowerCase();
-
-    if (rocketID.charAt(0) == '0') {
-        for(var i = 0; i < launch["agency"].length; i++) {
-            if (available_selections[rocketID][2] == launch["agency"][i]) {
-                return rocketID
+        if (rocketID.charAt(0) == '0') {
+            needed[0] = true;
+            for(var i = 0; i < launch["agency"].length; i++) {
+                if (available_selections[rocketID][2] == launch["agency"][i]) {
+                    found[0] = true;
+                }
             }
         }
-    }
 
-    if (rocketID.charAt(0) == '1'
-        && launch["launch_vehicle"]
-        && launch["launch_vehicle"].toLowerCase().indexOf(sel) != -1
-        ) {
-        return rocketID
-    }
+        if (rocketID.charAt(0) == '1') {
+            needed[1] = true;
+            if (launch["launch_vehicle"] && launch["launch_vehicle"].toLowerCase().indexOf(sel) != -1) {
+                found[1] = true;
+            }
+        }
 
-    if (rocketID.charAt(0) == '2'
-        && launch["payload_type"]
-        && launch["payload_type"].toLowerCase().indexOf(sel) != -1
-        ) {
-        return rocketID
-    }
+        if (rocketID.charAt(0) == '2') {
+            needed[2] = true;
+            if (launch["payload_type"] && launch["payload_type"].toLowerCase().indexOf(sel) != -1 ) {
+                found[2] = true;
+            }
+        }
 
-    if (rocketID.charAt(0) == '3'
-        && launch["destination"]
-        && launch["destination"].toLowerCase().indexOf(sel) != -1
-        ) {
-        return rocketID
-    }
+        if (rocketID.charAt(0) == '3') {
+            needed[3] = true;
+            if (launch["destination"] && launch["destination"].toLowerCase().indexOf(sel) != -1) {
+                found[3] = true;
+            }
+        }
 
-    return false;
+        //
+    }
+    
+    if ($("input[name='filters_join']:checked").val() == 'all') {
+        return (!needed[0] || found[0]) && (!needed[1] || found[1]) && (!needed[2] || found[2]) && (!needed[3] || found[3]);
+    } else {
+        return found[0] || found[1] || found[2] || found[3];  
+    }
+    
+    //
+    
+    //return false;
 }
+
 
 function gray_out_rows() {
     var all = available_selections;//$.extend({}, rockets, missions, events);
@@ -176,10 +180,13 @@ function gray_out_rows() {
 
     for(var i = 0; i < launches.length; i++) {
         var launch = launches[i];
-        rocketIDSelected = is_selected(launch);
-        if (rocketIDSelected) {
+        if (is_selected(launch)) {
             none_found = false;
         }
+    }
+    
+    if (none_found && selected.length) {
+        none_found = false;
     }
 
     var prev_y;

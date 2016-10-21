@@ -67,6 +67,11 @@ function get_table() {
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
     
+    $ret .= "<br>";
+    $ret .= "Filter combination:<br>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"filters_join\" value=\"any\" checked>Any</label><br>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
+    
     /*
     $ret .= " <br>";
     $ret .= " Filter by date:<br>";
