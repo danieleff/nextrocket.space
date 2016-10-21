@@ -39,7 +39,14 @@ function is_match($launch, $rocketID) {
 }
 
 function get_launches() {
-    $launchlibrary_data = launchlibrary_get_upcoming_launches();
+    if ($_REQUEST["past_launches"]) {
+        $launchlibrary_data = launchlibrary_get_past_launches();
+        
+        $upcoming = launchlibrary_get_upcoming_launches();
+        $launchlibrary_data["launches"] = array_merge($launchlibrary_data["launches"], $upcoming["launches"]);
+    } else {
+        $launchlibrary_data = launchlibrary_get_upcoming_launches();
+    }
     $launches = $launchlibrary_data["launches"];
 
 

@@ -67,3 +67,6 @@ label.filter.checked {
     font-weight: bold;
     border: 1px solid black;
 }
+.datepicker {
+    width: 6em;
+}

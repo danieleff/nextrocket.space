@@ -13,8 +13,10 @@
     <meta charset="utf-8">
     <title>nextrocket.space -  List of upcoming rocket launches to space.</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <script src="script.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
     <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script id="script" src="script.js"></script>
 
 </head>
 

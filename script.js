@@ -1,9 +1,16 @@
-var url = "http://nextrocket.space/";
+url = "http://nextrocket.space/";
+
+var is_embedded = false;
+
+var past_launches_loaded = false;
 
 function seconds_to_dhms(time, tbdtime, tbddate) {
     //return new Date(time * 1000);
 
     var seconds = time - new Date().getTime() / 1000;
+    if (seconds < 0) {
+        return "";
+    }
 
     if (tbddate == "1") {
         var t = new Date(time * 1000);
@@ -63,6 +70,20 @@ function seconds_to_dhms(time, tbdtime, tbddate) {
 }
 
 function on_change() {
+    if (!past_launches_loaded && $("input[name='launch_date_filter']:checked").val() == 'date_range') {
+        $.get(url + "index.php?get_table=true&past_launches=true", function(data) {
+            $("#launch_table").html(data);
+            
+            past_launches_loaded = true;
+            save_settings_gray_out_rows();
+        });
+    } else {
+        save_settings_gray_out_rows();
+    }
+}
+    
+    
+function save_settings_gray_out_rows() {
     var selected_rockets = "";
     var first = true;
     var all = available_selections;
@@ -82,7 +103,7 @@ function on_change() {
         createCookie("unchecked_visibility", $('input[name=unchecked_visibility]:checked').val(), 10000);
     }
 
-    recreate_table();
+    gray_out_rows();
 }
 
 function is_selected(launch) {
@@ -139,88 +160,88 @@ function is_match(launch, rocketID) {
     return false;
 }
 
-function recreate_table() {
-        var all = available_selections;//$.extend({}, rockets, missions, events);
+function gray_out_rows() {
+    var all = available_selections;//$.extend({}, rockets, missions, events);
 
-        var none_found = true;
+    var none_found = true;
 
-        selected = [];
+    selected = [];
 
-        for(rocketID in all) {
-            var e = document.getElementById(rocketID);
-            if (e && e.checked) {
-                selected.push(rocketID);
-            }
+    for(rocketID in all) {
+        var e = document.getElementById(rocketID);
+        if (e && e.checked) {
+            selected.push(rocketID);
+        }
+    }
+
+    for(var i = 0; i < launches.length; i++) {
+        var launch = launches[i];
+        rocketIDSelected = is_selected(launch);
+        if (rocketIDSelected) {
+            none_found = false;
+        }
+    }
+
+    var prev_y;
+    var prev_m;
+
+    for(var i = 0; i < launches.length; i++) {
+        var launch = launches[i];
+
+        var style_color = "";
+
+        var unchecked_visibility = $('input[name=unchecked_visibility]:checked').val()
+        if (!unchecked_visibility) {
+            unchecked_visibility = readCookie("unchecked_visibility");
+        }
+        if (!unchecked_visibility) {
+            unchecked_visibility = "gray_out";
         }
 
-        for(var i = 0; i < launches.length; i++) {
-            var launch = launches[i];
-            rocketIDSelected = is_selected(launch);
-            if (rocketIDSelected) {
-                none_found = false;
-            }
-        }
-
-        var prev_y;
-        var prev_m;
-
-        for(var i = 0; i < launches.length; i++) {
-            var launch = launches[i];
-
-            var style_color = "";
-
-            var unchecked_visibility = $('input[name=unchecked_visibility]:checked').val()
-            if (!unchecked_visibility) {
-                unchecked_visibility = readCookie("unchecked_visibility");
-            }
-            if (!unchecked_visibility) {
-                unchecked_visibility = "gray_out";
-            }
-
-            var e = $("#launch_" + i);
-            var show = true;
-            
-            if (!none_found && !is_selected(launch)) {
-                if (unchecked_visibility == "hidden") {
-                    show = false;
-                    if (e.is(":visible")) e.hide();
-                } else if (unchecked_visibility == "gray_out") {
-                    style_color = "color: darkgray; ";
-                    e.css("color", "darkgray");
-                    if (!e.is(":visible")) e.show();
-                } else {
-                    e.css("color", "");
-                    if (!e.is(":visible")) e.show();
-                }
+        var e = $("#launch_" + i);
+        var show = true;
+        
+        if (!none_found && !is_selected(launch)) {
+            if (unchecked_visibility == "hidden") {
+                show = false;
+                if (e.is(":visible")) e.hide();
+            } else if (unchecked_visibility == "gray_out") {
+                style_color = "color: darkgray; ";
+                e.css("color", "darkgray");
+                if (!e.is(":visible")) e.show();
             } else {
                 e.css("color", "");
                 if (!e.is(":visible")) e.show();
             }
-
-            var time = new Date(launch["time"] * 1000);
-            if (show && prev_y != time.getYear()) {
-                e.css('border-top', '2px solid brown');
-                prev_y = time.getYear();
-                prev_m = time.getMonth();
-            } else if(show && prev_m != time.getMonth() ) {
-                e.css('border-top', '1px solid black');
-                prev_y = time.getYear();
-                prev_m = time.getMonth();
-            } else {
-                e.css('border-top', '');
-            }
-
+        } else {
+            e.css("color", "");
+            if (!e.is(":visible")) e.show();
         }
 
-        update_dates();
-
-        $("label").removeClass("checked");
-        $("label:has(input:checked)").addClass("checked");
-        
-        jQuery('tr:visible:odd').addClass("odd");
-        jQuery('tr:visible:even').removeClass("odd");
+        var time = new Date(launch["time"] * 1000);
+        if (show && prev_y != time.getYear()) {
+            e.css('border-top', '2px solid brown');
+            prev_y = time.getYear();
+            prev_m = time.getMonth();
+        } else if(show && prev_m != time.getMonth() ) {
+            e.css('border-top', '1px solid black');
+            prev_y = time.getYear();
+            prev_m = time.getMonth();
+        } else {
+            e.css('border-top', '');
+        }
 
     }
+
+    update_dates();
+
+    $("label").removeClass("checked");
+    $("label:has(input:checked)").addClass("checked");
+    
+    jQuery('tr:visible:odd').addClass("odd");
+    jQuery('tr:visible:even').removeClass("odd");
+
+}
 
 function update_countdown_timeout() {
     update_countdowns();
@@ -301,8 +322,6 @@ function readCookie(name) {
     return null;
 }
 
-var is_embedded = false;
-
 function init() {
     var cookie = readCookie("selected");
     if (cookie) {
@@ -322,7 +341,7 @@ function init() {
         $('.filter_row').toggle();$('.filter_icon').toggle();
     }
 
-    recreate_table();
+    gray_out_rows();
     update_countdown_timeout();
 }
 
@@ -347,7 +366,7 @@ function init_embedded() {
                     $("#" + selected[sel]).prop("checked", true);
                 }
                 
-                recreate_table();
+                gray_out_rows();
                 update_countdown_timeout();
             });
         });
