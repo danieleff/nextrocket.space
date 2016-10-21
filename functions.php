@@ -1,28 +1,6 @@
 <?php
-function get_launchlibrary_data() {
 
-    $cache_file = "launchlibrary.json";
-    $cache_timeout_seconds = 15 * 60 * 10;
-
-    if (file_exists($cache_file) && filemtime($cache_file) > time() - $cache_timeout_seconds) {
-        return json_decode(file_get_contents($cache_file), true);
-    }
-
-    $opts = array(
-        'http'=>array(
-            'method'=>"GET",
-            'header'=>"User-Agent: nextrocket.space danieleff@gmail.com\r\n"
-        )
-    );
-
-    $context = stream_context_create($opts);
-    $json = file_get_contents("https://launchlibrary.net/1.2/launch?next=200&mode=verbose", false, $context);
-
-    file_put_contents($cache_file, $json);
-
-    return json_decode($json, true);
-}
-
+require_once("launchlibrary.php");
 
 function is_match($launch, $rocketID) {
     global $available_selections;
@@ -61,7 +39,7 @@ function is_match($launch, $rocketID) {
 }
 
 function get_launches() {
-    $launchlibrary_data = get_launchlibrary_data();
+    $launchlibrary_data = launchlibrary_get_upcoming_launches();
     $launches = $launchlibrary_data["launches"];
 
 
