@@ -4,6 +4,8 @@ var is_embedded = false;
 
 var past_launches_loaded = false;
 
+var select_counts = [];
+
 function seconds_to_dhms(time, tbdtime, tbddate) {
     //return new Date(time * 1000);
 
@@ -106,13 +108,13 @@ function save_settings_gray_out_rows() {
     gray_out_rows();
 }
 
-function is_selected(launch) {
+function is_selected(launch, increase_counts = false) {
     
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
 
     for (var rocketID in available_selections) {
-        if (selected.indexOf(rocketID) == -1) {
+        if (!increase_counts && selected.indexOf(rocketID) == -1) {
             continue;
         }
 
@@ -123,6 +125,7 @@ function is_selected(launch) {
             needed[0] = true;
             for(var i = 0; i < launch["agency"].length; i++) {
                 if (available_selections[rocketID][2] == launch["agency"][i]) {
+                    if (increase_counts) select_counts[rocketID] ++;
                     found[0] = true;
                 }
             }
@@ -131,6 +134,7 @@ function is_selected(launch) {
         if (rocketID.charAt(0) == '1') {
             needed[1] = true;
             if (launch["launch_vehicle"] && launch["launch_vehicle"].toLowerCase().indexOf(sel) != -1) {
+                if (increase_counts) select_counts[rocketID] ++;
                 found[1] = true;
             }
         }
@@ -138,6 +142,7 @@ function is_selected(launch) {
         if (rocketID.charAt(0) == '2') {
             needed[2] = true;
             if (launch["payload_type"] && launch["payload_type"].toLowerCase().indexOf(sel) != -1 ) {
+                if (increase_counts) select_counts[rocketID] ++;
                 found[2] = true;
             }
         }
@@ -145,6 +150,7 @@ function is_selected(launch) {
         if (rocketID.charAt(0) == '3') {
             needed[3] = true;
             if (launch["destination"] && launch["destination"].toLowerCase().indexOf(sel) != -1) {
+                if (increase_counts) select_counts[rocketID] ++;
                 found[3] = true;
             }
         }
@@ -170,8 +176,10 @@ function gray_out_rows() {
     var none_found = true;
 
     selected = [];
-
+    
     for(rocketID in all) {
+        select_counts[rocketID] = 0;
+        
         var e = document.getElementById(rocketID);
         if (e && e.checked) {
             selected.push(rocketID);
@@ -221,6 +229,7 @@ function gray_out_rows() {
                 if (!e.is(":visible")) e.show();
             }
         } else {
+            is_selected(launch, true);
             e.css("color", "");
             if (!e.is(":visible")) e.show();
         }
@@ -238,6 +247,10 @@ function gray_out_rows() {
             e.css('border-top', '');
         }
 
+    }
+    
+    for(rocketID in all) {
+        $("#count_" + rocketID).html(select_counts[rocketID]);
     }
 
     update_dates();

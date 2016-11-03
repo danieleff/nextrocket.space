@@ -12,21 +12,15 @@ function get_table() {
     $filters = array("", "", "", "");
 
     foreach($available_selections as $rocketId => $selection) {
-        $count = 0;
-        
-        for($i = 0; $i < count($launches); $i++) {
-            $launch = $launches[$i];
-            if (is_match($launch, $rocketId)) $count++;
-        }
-        
         $check = "";
         $check .= "<label class=\"filter\">";
+        $check .= "(<span id='count_" . $rocketId . "'></span>) ";
         $check .= " <input style=\"display: none;\" id=\"" . $rocketId . "\" onchange=\"on_change()\" style=\"vertical-align: -1px;\" type=\"checkbox\" >";
         if (count($selection) > 1 && $selection[1]) {
             $check .= "<img class=\"icon\" src=\"" . $url . "images/" . $selection[1] . "\"> ";
         }
 
-        $name = "(" . $count . ") " . $selection[0];
+        $name = $selection[0];
         $check .= "<span title=\"" . $name . "\">" . $name . "</span>";
         $check .= "</input>";
         $check .= "</label>";
