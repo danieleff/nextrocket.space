@@ -44,7 +44,7 @@ td.agency, td.rocket, td.payload, td.destination {
 	text-overflow: ellipsis;
 }
 
-.launch_table td.date, .launch_table td.countdown {
+.launch_table td.date, .launch_table td.countdown, .selection_count {
 	font-family: 'Inconsolata', monospace;
 }
 

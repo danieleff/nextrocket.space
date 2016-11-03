@@ -250,7 +250,9 @@ function gray_out_rows() {
     }
     
     for(rocketID in all) {
-        $("#count_" + rocketID).html(select_counts[rocketID]);
+        count_string = select_counts[rocketID];
+        if (count_string < 10) count_string = "&nbsp;" + count_string;
+        $("#count_" + rocketID).html(count_string);
     }
 
     update_dates();

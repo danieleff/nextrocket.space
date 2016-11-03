@@ -14,7 +14,7 @@ function get_table() {
     foreach($available_selections as $rocketId => $selection) {
         $check = "";
         $check .= "<label class=\"filter\">";
-        $check .= "(<span id='count_" . $rocketId . "'></span>) ";
+        $check .= "<span class='selection_count' id='count_" . $rocketId . "'></span> ";
         $check .= " <input style=\"display: none;\" id=\"" . $rocketId . "\" onchange=\"on_change()\" style=\"vertical-align: -1px;\" type=\"checkbox\" >";
         if (count($selection) > 1 && $selection[1]) {
             $check .= "<img class=\"icon\" src=\"" . $url . "images/" . $selection[1] . "\"> ";
