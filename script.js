@@ -73,11 +73,18 @@ function seconds_to_dhms(time, tbdtime, tbddate) {
 
 function on_change() {
     if (!past_launches_loaded && $("input[name='launch_date_filter']:checked").val() == 'date_range') {
-        $.get(url + "index.php?get_table=true&past_launches=true", function(data) {
-            $("#launch_table").html(data);
-            
-            past_launches_loaded = true;
-            save_settings_gray_out_rows();
+        $("#filter").nextAll('tr').remove();
+        $("#filter").after("<tr><td colspan='6' style='text-align: center;'><img src='images/ajax_loading.gif'><br>Loading</td></tr>");
+        
+        $.getJSON(url + "index.php?get_json=true&past_launches=true", function(data) {
+            launches = data['launches'];
+            $.get(url + "index.php?get_table_content=true&past_launches=true", function(data) {
+                $("#filter").nextAll('tr').remove();
+                $("#filter").after(data);
+                
+                past_launches_loaded = true;
+                save_settings_gray_out_rows();
+            });
         });
     } else {
         save_settings_gray_out_rows();
@@ -112,13 +119,23 @@ function is_selected(launch, increase_counts = false) {
     
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
-
+/*
+    var date_from = new Date();
+    var date_to = new Date(2099, 1, 1);
+    if ($("input[name='launch_date_filter']:checked").val() == 'date_range') {
+        date_from = $("input[name='launch_from'").datepicker('getDate');
+        date_to = $("input[name='launch_to'").datepicker('getDate');
+    }
+*/
     for (var rocketID in available_selections) {
         if (!increase_counts && selected.indexOf(rocketID) == -1) {
             continue;
         }
-
-
+        /*
+        var launch_time = new Date(launch["time"] * 1000);
+        if (launch_time < date_from | launch_time > date_to) {
+            continue;
+        }*/
         var sel = available_selections[rocketID][0].toLowerCase();
 
         if (rocketID.charAt(0) == '0') {
@@ -200,41 +217,54 @@ function gray_out_rows() {
     var prev_y;
     var prev_m;
 
+    var date_from = new Date();
+    var date_to = new Date(2099, 1, 1);
+    if ($("input[name='launch_date_filter']:checked").val() == 'date_range') {
+        date_from = $("input[name='launch_from'").datepicker('getDate');
+        date_to = $("input[name='launch_to'").datepicker('getDate');
+    }
+    
+    var timestamp_from = date_from.getTime() / 1000;
+    var timestamp_to = date_to.getTime() / 1000;
+
+    var unchecked_visibility = $('input[name=unchecked_visibility]:checked').val()
+    if (!unchecked_visibility) {
+        unchecked_visibility = readCookie("unchecked_visibility");
+    }
+    if (!unchecked_visibility) {
+        unchecked_visibility = "gray_out";
+    }
+
     for(var i = 0; i < launches.length; i++) {
         var launch = launches[i];
 
         var style_color = "";
 
-        var unchecked_visibility = $('input[name=unchecked_visibility]:checked').val()
-        if (!unchecked_visibility) {
-            unchecked_visibility = readCookie("unchecked_visibility");
-        }
-        if (!unchecked_visibility) {
-            unchecked_visibility = "gray_out";
-        }
-
         var e = $("#launch_" + i);
         var show = true;
         
-        if (!none_found && !is_selected(launch)) {
+        if ((launch["time"] < timestamp_from) | (launch["time"] > timestamp_to)) {
+            e.hide();
+        } else if (!none_found && !is_selected(launch)) {
             if (unchecked_visibility == "hidden") {
                 show = false;
-                if (e.is(":visible")) e.hide();
+                e.hide();
             } else if (unchecked_visibility == "gray_out") {
                 style_color = "color: darkgray; ";
                 e.css("color", "darkgray");
-                if (!e.is(":visible")) e.show();
+                e.show();
             } else {
                 e.css("color", "");
-                if (!e.is(":visible")) e.show();
+                e.show();
             }
         } else {
             is_selected(launch, true);
             e.css("color", "");
-            if (!e.is(":visible")) e.show();
+            e.show();
         }
 
         var time = new Date(launch["time"] * 1000);
+        
         if (show && prev_y != time.getYear()) {
             e.css('border-top', '2px solid brown');
             prev_y = time.getYear();

@@ -6,8 +6,8 @@ $launches = get_launches();
 
 $url = "http://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpos($_SERVER["REQUEST_URI"], "/") + 1);
 
-function get_table() {
-    global $available_selections, $launches, $agency, $url;
+function get_table_header() {
+    global $available_selections, $url;
     
     $filters = array("", "", "", "");
 
@@ -56,6 +56,14 @@ function get_table() {
     
     $ret .= "<th style=\"text-align: left; padding: 0px;vertical-align: top;\" colspan=\"2\">";
     $ret .= "<div style=\"margin: 0.5em;\" class=\"filter_row\">";
+    
+    $ret .= " Filter by date:<br>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"launch_date_filter\" value=\"upcoming\" checked>Upcoming</label><br>";
+    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"launch_date_filter\" value=\"date_range\">";
+    $ret .= " <input onchange=\"on_change()\" type=\"text\" class=\"datepicker\" name=\"launch_from\"> - <input onchange=\"on_change()\" type=\"text\" class=\"datepicker\" name=\"launch_to\">";
+    $ret .= " </label><br>";
+    
+    $ret .= " <br>";
     $ret .= "Unselected launches:<br>";
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
@@ -66,15 +74,6 @@ function get_table() {
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"filters_join\" value=\"any\" checked>Any</label><br>";
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
     
-    /*
-    $ret .= " <br>";
-    $ret .= " Filter by date:<br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"launch_date_filter\" value=\"upcoming\">Upcoming</label><br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"launch_date_filter\" value=\"date_range\">";
-    $ret .= " <input type=\"text\" class=\"datepicker\" name=\"launch_from\"> - <input type=\"text\" class=\"datepicker\" name=\"launch_to\">";
-    $ret .= " </label>";
-    */
-    
     $ret .= "</div>";
     $ret .= "</th>";
     
@@ -84,18 +83,13 @@ function get_table() {
     $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[3]."</div></td>";
     $ret .= "<th style=\"padding: 0px; \"></th>";
     $ret .= "</tr>";
-
-    /*
-    $ret .= "<th colspan=\"7\">";
-    $ret .= "Unselected launches:";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label>";
-    $ret .= "</th>";
-    $ret .= "</tr>";
-    */
     
+    return $ret;
+}
 
+function get_table_content() {
+    global $launches, $agency, $url;
+    
     foreach($launches as $key => $launch) {
         $style_color = "";
         $ret .= "<tr id=\"launch_" . $key . "\">";
@@ -163,6 +157,10 @@ function get_table() {
     return $ret;
 }
 
+function get_table() {
+    return get_table_header() . get_table_content();
+}
+
 if (isset($_REQUEST["get_json"])) {
      header('Access-Control-Allow-Origin: *');
      $ret = array("launches" => array_values($launches),
@@ -176,6 +174,12 @@ if (isset($_REQUEST["get_json"])) {
 if (isset($_REQUEST["get_table"])) {
     header('Access-Control-Allow-Origin: *');
     echo get_table();
+    exit;
+}
+
+if (isset($_REQUEST["get_table_content"])) {
+    header('Access-Control-Allow-Origin: *');
+    echo get_table_content();
     exit;
 }
 
@@ -202,7 +206,14 @@ if ($_REQUEST["old_header"]) {
     
     var url = '<?=$url?>';
     
-    $( ".datepicker" ).datepicker();
+    $(".datepicker").datepicker();
+    var toDate = new Date();
+    var fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - 30);
+    $(".datepicker[name='launch_from']").datepicker('setDate', fromDate);
+    $(".datepicker[name='launch_to']").datepicker('setDate', toDate);
+    
+    
 
     init();
 </script>
