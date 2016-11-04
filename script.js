@@ -121,7 +121,7 @@ function save_settings_gray_out_rows() {
 function increate_selection_counts(launch) {
      for (var index = 0; index < launch["matches"].length; index++) {
         var rocketID = launch["matches"][index];
-        select_counts[rocketID] ++;
+        select_counts[rocketID]++;
     }
 }
 
@@ -135,11 +135,15 @@ function is_selected(launch, filter_combination_all) {
         
         var category = parseInt(rocketID.charAt(0));
         
-        needed[category] = true;
-        
         if ($.inArray(rocketID, launch["matches"]) != -1) {
+            if (!filter_combination_all) {
+                return true;
+            }
+            
             found[category] = true;
         }
+        
+        needed[category] = true;
     }
     
     if (filter_combination_all) {
@@ -151,7 +155,7 @@ function is_selected(launch, filter_combination_all) {
 
 
 function gray_out_rows() {
-    var all = available_selections;//$.extend({}, rockets, missions, events);
+    var all = available_selections;
 
     var none_found = true;
     
@@ -186,6 +190,7 @@ function gray_out_rows() {
 
     var date_from = new Date();
     var date_to = new Date(2099, 1, 1);
+    
     if ($("input[name='launch_date_filter']:checked").val() == 'date_range') {
         date_from = $("input[name='launch_from'").datepicker('getDate');
         date_to = $("input[name='launch_to'").datepicker('getDate');
@@ -205,19 +210,16 @@ function gray_out_rows() {
     for(var i = 0; i < launches.length; i++) {
         var launch = launches[i];
 
-        var style_color = "";
-
         var e = $("#launch_" + i);
-        var show = true;
         
         if ((launch["time"] < timestamp_from) | (launch["time"] > timestamp_to)) {
             e.hide();
+            continue;
         } else if (!none_found && !is_selected(launch, filter_combination_all)) {
             if (unchecked_visibility == "hidden") {
-                show = false;
                 e.hide();
+                continue;
             } else if (unchecked_visibility == "gray_out") {
-                style_color = "color: darkgray; ";
                 e.css("color", "darkgray");
                 e.show();
             } else {
@@ -232,11 +234,11 @@ function gray_out_rows() {
 
         var time = new Date(launch["time"] * 1000);
         
-        if (show && prev_y != time.getYear()) {
+        if (prev_y != time.getYear()) {
             e.css('border-top', '2px solid brown');
             prev_y = time.getYear();
             prev_m = time.getMonth();
-        } else if(show && prev_m != time.getMonth() ) {
+        } else if(prev_m != time.getMonth()) {
             e.css('border-top', '1px solid black');
             prev_y = time.getYear();
             prev_m = time.getMonth();
