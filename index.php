@@ -94,12 +94,27 @@ function get_table_content() {
         $style_color = "";
         $ret .= "<tr id=\"launch_" . $key . "\">";
 
-        if ($launch["status"]==4) {
-            $ret .= "<td>Failed</td>";
-        } else {
-            $ret .= "<td class=\"countdown\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
+        $launch_status = "Unknown";
+        switch ($launch["status"]) {
+            case 1: 
+                $launch_status = ""; // GO
+                break;
+            case 2: 
+                $launch_status = ""; //  NO-GO
+                break;
+            case 3: 
+                $launch_status = "Success";
+                break;
+            case 4: 
+                $launch_status = "<span style='color:red;'>Failed</span>";
+                break;
         }
-
+        $launch_status .= " " . $launch["holdreason"];
+        $launch_status .= " " . $launch["failreason"];
+        $launch_status = trim($launch_status);
+        
+        $ret .= "<td class=\"countdown\" data-status=\"" . $launch_status . "\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\">".$launch_status."</td>";
+        
         $ret .= "<td class=\"date\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
 
 

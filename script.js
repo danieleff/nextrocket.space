@@ -6,7 +6,7 @@ var past_launches_loaded = false;
 
 var select_counts = [];
 
-function seconds_to_dhms(time, tbdtime, tbddate) {
+function seconds_to_dhms(time, tbdtime, tbddate, launch_status) {
     //return new Date(time * 1000);
 
     var seconds = time - new Date().getTime() / 1000;
@@ -22,13 +22,13 @@ function seconds_to_dhms(time, tbdtime, tbddate) {
         var months = (t.getFullYear() - new Date().getFullYear()) * 12 + t.getMonth() - new Date().getMonth();
 
         if (months == 1) {
-            return "next month";
+            return "next month " + launch_status;
         } else if (months > 1 && months < 10){
-            return "&nbsp;&nbsp;&nbsp;" + months + " months";
+            return "&nbsp;&nbsp;&nbsp;" + months + " months " + launch_status;
         } else if (months >= 10){
-            return "&nbsp;&nbsp;" + months + " months";
+            return "&nbsp;&nbsp;" + months + " months " + launch_status;
         } else if (months == 0) {
-            return "this month";
+            return "this month " + launch_status;
         }
 
     }
@@ -65,6 +65,8 @@ function seconds_to_dhms(time, tbdtime, tbddate) {
         result += " " + (hours < 10 ? "0" + hours : hours);
         result += ":" + (minutes < 10 ? "0" + minutes : minutes);
         result += ":" + (seconds  < 10 ? "0" + seconds : seconds);
+    } else {
+        result += " " + launch_status;
     }
 
 
@@ -308,8 +310,8 @@ function update_countdowns() {
     var cusid_ele = document.getElementsByClassName('countdown');
     for (var i = 0; i < cusid_ele.length; ++i) {
         var item = cusid_ele[i];
-        var newHTML = seconds_to_dhms(item.getAttribute("data-time"), item.getAttribute("data-tbdtime"), item.getAttribute("data-tbddate"));
-        if (item.innerHTML != newHTML) {
+        var newHTML = seconds_to_dhms(item.getAttribute("data-time"), item.getAttribute("data-tbdtime"), item.getAttribute("data-tbddate"), item.getAttribute("data-status"));
+        if (newHTML && item.innerHTML != newHTML) {
             item.innerHTML = newHTML;
         }
     }
