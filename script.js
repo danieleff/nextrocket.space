@@ -119,11 +119,9 @@ function save_settings_gray_out_rows() {
 
 
 function increate_selection_counts(launch) {
-     for (var rocketID in available_selections) {
-         
-        if ($.inArray(rocketID, launch["matches"]) != -1) {
-            select_counts[rocketID] ++;
-        }
+     for (var index = 0; index < launch["matches"].length; index++) {
+        var rocketID = launch["matches"][index];
+        select_counts[rocketID] ++;
     }
 }
 
@@ -132,7 +130,7 @@ function is_selected(launch, filter_combination_all) {
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
     
-    for (var index in selected) {
+    for (var index = 0; index < selected.length; index++) {
         var rocketID = selected[index];
         
         var category = parseInt(rocketID.charAt(0));
