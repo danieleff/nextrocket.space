@@ -39,6 +39,8 @@ function is_match($launch, $rocketID) {
 }
 
 function get_launches() {
+    global $available_selections;
+    
     if ($_REQUEST["past_launches"]) {
         $launchlibrary_data = launchlibrary_get_past_launches();
         
@@ -205,6 +207,8 @@ function get_launches() {
     ];
 
     foreach($launches as $key => $launch) {
+        
+        
         $launches[$key]["time"] = strtotime($launch["net"]);
 
         if ($launch["name"]) {
@@ -269,6 +273,16 @@ function get_launches() {
                 }
             }
         }
+        
+        $matches = array();
+        
+        foreach($available_selections as $rocketID => $selection_name) {
+            if (is_match($launches[$key], $rocketID)) {
+                $matches[] = $rocketID;
+            }
+        }
+        $launches[$key]["matches"] = $matches;
+        
     }
     return $launches;
 }

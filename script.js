@@ -117,75 +117,38 @@ function save_settings_gray_out_rows() {
     gray_out_rows();
 }
 
-function is_selected(launch, increase_counts = false) {
+
+function increate_selection_counts(launch) {
+     for (var rocketID in available_selections) {
+         
+        if ($.inArray(rocketID, launch["matches"]) != -1) {
+            select_counts[rocketID] ++;
+        }
+    }
+}
+
+function is_selected(launch, filter_combination_all) {
     
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
-/*
-    var date_from = new Date();
-    var date_to = new Date(2099, 1, 1);
-    if ($("input[name='launch_date_filter']:checked").val() == 'date_range') {
-        date_from = $("input[name='launch_from'").datepicker('getDate');
-        date_to = $("input[name='launch_to'").datepicker('getDate');
-    }
-*/
-    for (var rocketID in available_selections) {
-        if (!increase_counts && selected.indexOf(rocketID) == -1) {
-            continue;
+    
+    for (var index in selected) {
+        var rocketID = selected[index];
+        
+        var category = parseInt(rocketID.charAt(0));
+        
+        needed[category] = true;
+        
+        if ($.inArray(rocketID, launch["matches"]) != -1) {
+            found[category] = true;
         }
-        /*
-        var launch_time = new Date(launch["time"] * 1000);
-        if (launch_time < date_from | launch_time > date_to) {
-            continue;
-        }*/
-        var sel = available_selections[rocketID][0].toLowerCase();
-
-        if (rocketID.charAt(0) == '0') {
-            needed[0] = true;
-            for(var i = 0; i < launch["agency"].length; i++) {
-                if (available_selections[rocketID][2] == launch["agency"][i]) {
-                    if (increase_counts) select_counts[rocketID] ++;
-                    found[0] = true;
-                }
-            }
-        }
-
-        if (rocketID.charAt(0) == '1') {
-            needed[1] = true;
-            if (launch["launch_vehicle"] && launch["launch_vehicle"].toLowerCase().indexOf(sel) != -1) {
-                if (increase_counts) select_counts[rocketID] ++;
-                found[1] = true;
-            }
-        }
-
-        if (rocketID.charAt(0) == '2') {
-            needed[2] = true;
-            if (launch["payload_type"] && launch["payload_type"].toLowerCase().indexOf(sel) != -1 ) {
-                if (increase_counts) select_counts[rocketID] ++;
-                found[2] = true;
-            }
-        }
-
-        if (rocketID.charAt(0) == '3') {
-            needed[3] = true;
-            if (launch["destination"] && launch["destination"].toLowerCase().indexOf(sel) != -1) {
-                if (increase_counts) select_counts[rocketID] ++;
-                found[3] = true;
-            }
-        }
-
-        //
     }
     
-    if ($("input[name='filters_join']:checked").val() == 'all') {
+    if (filter_combination_all) {
         return (!needed[0] || found[0]) && (!needed[1] || found[1]) && (!needed[2] || found[2]) && (!needed[3] || found[3]);
     } else {
         return found[0] || found[1] || found[2] || found[3];  
     }
-    
-    //
-    
-    //return false;
 }
 
 
@@ -193,6 +156,8 @@ function gray_out_rows() {
     var all = available_selections;//$.extend({}, rockets, missions, events);
 
     var none_found = true;
+    
+    var filter_combination_all = $("input[name='filters_join']:checked").val() == 'all';
 
     selected = [];
     
@@ -205,10 +170,12 @@ function gray_out_rows() {
         }
     }
 
-    for(var i = 0; i < launches.length; i++) {
-        var launch = launches[i];
-        if (is_selected(launch)) {
-            none_found = false;
+    if (selected.length > 0) {
+        for(var i = 0; i < launches.length; i++) {
+            var launch = launches[i];
+            if (is_selected(launch, filter_combination_all)) {
+                none_found = false;
+            }
         }
     }
     
@@ -247,7 +214,7 @@ function gray_out_rows() {
         
         if ((launch["time"] < timestamp_from) | (launch["time"] > timestamp_to)) {
             e.hide();
-        } else if (!none_found && !is_selected(launch)) {
+        } else if (!none_found && !is_selected(launch, filter_combination_all)) {
             if (unchecked_visibility == "hidden") {
                 show = false;
                 e.hide();
@@ -260,7 +227,7 @@ function gray_out_rows() {
                 e.show();
             }
         } else {
-            is_selected(launch, true);
+            increate_selection_counts(launch);
             e.css("color", "");
             e.show();
         }
