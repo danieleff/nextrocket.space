@@ -251,6 +251,7 @@ function gray_out_rows() {
     for(rocketID in all) {
         count_string = select_counts[rocketID];
         if (count_string < 10) count_string = "&nbsp;" + count_string;
+        if (select_counts[rocketID] == 0) count_string = "&nbsp;&nbsp;";
         $("#count_" + rocketID).html(count_string);
     }
 
