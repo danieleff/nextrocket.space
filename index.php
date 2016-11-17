@@ -143,8 +143,8 @@ function get_table_content() {
         
         $ret .= "<div style=\"display: inline-block; width: 24px;\">";
         $country_codes = array();
-        foreach($launch["rocket"]["agencies"] as $agency) {
-            $country_codes []= "<img class=\"flag\" src='images/flag_".$agency["countryCode"].".png'>";
+        foreach($launch["rocket"]["agencies"] as $rocketAgency) {
+            $country_codes []= "<img class=\"flag\" src='images/flag_".$rocketAgency["countryCode"].".png'>";
         }
         $ret .= join(array_unique($country_codes), "<br>");
         $ret .= "</div>";
