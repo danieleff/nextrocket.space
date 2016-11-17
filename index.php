@@ -140,6 +140,15 @@ function get_table_content() {
 
 
         $ret .= "<td title=\"" . $launch["launch_vehicle"] . "\" class=\"rocket\">";
+        
+        $ret .= "<div style=\"display: inline-block; width: 24px;\">";
+        $country_codes = array();
+        foreach($launch["rocket"]["agencies"] as $agency) {
+            $country_codes []= "<img class=\"flag\" src='images/flag_".$agency["countryCode"].".png'>";
+        }
+        $ret .= join(array_unique($country_codes), "<br>");
+        $ret .= "</div>";
+        
         $ret .= $launch["launch_vehicle"];
         if ($launch["probability"] && $launch["probability"]!="-1") $ret .= " (" . $launch["probability"] . "%)";
         $ret .= "</td>";

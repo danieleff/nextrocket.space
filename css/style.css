@@ -70,3 +70,8 @@ label.filter.checked {
 .datepicker {
     width: 6em;
 }
+
+img.flag {
+    width: 21px;
+    vertical-align: middle; 
+}
