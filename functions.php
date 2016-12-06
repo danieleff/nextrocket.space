@@ -42,15 +42,16 @@ function get_launches() {
     global $available_selections;
     
     if ($_REQUEST["past_launches"]) {
-        $launchlibrary_data = launchlibrary_get_past_launches();
         
-        $upcoming = launchlibrary_get_upcoming_launches();
-        $launchlibrary_data["launches"] = array_merge($launchlibrary_data["launches"], $upcoming["launches"]);
+        $past_launches = launchlibrary_get_past_launches();
+        
+        $upcoming_launches = launchlibrary_get_upcoming_launches();
+        
+        $launches = launchlibrary_merge_launches(array($past_launches, $upcoming_launches));
     } else {
-        $launchlibrary_data = launchlibrary_get_upcoming_launches();
+        $launches = launchlibrary_get_upcoming_launches();
     }
-    $launches = $launchlibrary_data["launches"];
-
+    
 
 /*
     $launches[] = ["name"=>"Elon Musk | Making Humans A Multiplanetary Spieces",
