@@ -18,7 +18,7 @@ function launchlibrary_get_upcoming_launches() {
         "startdate=" . $today_date . "&enddate=" . $shortterm_end_date . "&limit=200&mode=verbose");
         
     $longterm_launches = launchlibrary_get("launchlibrary_upcoming_shortterm_longterm.json", 
-        UPCOMING_SHORTTERM_CACHE_SECONDS, 
+        UPCOMING_LONGTERM_CACHE_SECONDS, 
         "startdate=" . $shortterm_end_date . "&enddate=" . $longterm_end_date . "&limit=200&mode=verbose");
     
     return launchlibrary_merge_launches(array($shortterm_launches["launches"], $longterm_launches["launches"]));
