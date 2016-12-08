@@ -211,6 +211,7 @@ function gray_out_rows() {
         var launch = launches[i];
 
         var e = $("#launch_" + i);
+        var e_images = $("#launch_" + i+" img");
         
         if ((launch["time"] < timestamp_from) | (launch["time"] > timestamp_to)) {
             e.hide();
@@ -221,14 +222,17 @@ function gray_out_rows() {
                 continue;
             } else if (unchecked_visibility == "gray_out") {
                 e.css("color", "darkgray");
+                e_images.css("opacity", "0.5");
                 e.show();
             } else {
                 e.css("color", "");
+                e_images.css("opacity", "");
                 e.show();
             }
         } else {
             increate_selection_counts(launch);
             e.css("color", "");
+            e_images.css("opacity", "");
             e.show();
         }
 
