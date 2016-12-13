@@ -179,6 +179,13 @@ function get_launches() {
         "JUICE"       =>["Scientific probe", "probe.png", "Jupiter", "jupiter.png"],
         "Europa Clipper"=>["Scientific probe", "probe.png", "Jupiter/Europa", "jupiter.png"],
 
+
+        "Exploration of energization" =>["Scientific probe", "probe.png", "LEO", "leo.png"],
+        "Gaojing 1" =>["Earth observing satellite", "earth_satellite.png", "LEO", "leo.png"],
+        "ORS-5" =>["Earth observing satellite", "earth_satellite.png", "LEO", "leo.png"],
+        "KazSTSAT" =>["Earth observing satellite", "earth_satellite.png", "LEO", "leo.png"],
+        "Chang'e 5" =>["Scientific probe", "probe.png", "Moon", "moon.png"],
+        
     ];
 
 
