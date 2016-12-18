@@ -189,6 +189,7 @@ function gray_out_rows() {
     var prev_m;
 
     var date_from = new Date();
+    date_from.setHours(0, 0, 0, 0);
     var date_to = new Date(2099, 1, 1);
     
     if ($("input[name='launch_date_filter']:checked").val() == 'date_range') {
