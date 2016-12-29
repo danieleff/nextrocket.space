@@ -63,7 +63,7 @@
 
 </script>
 
-<h2 style="float:right; padding-top:0.5em;">
+<h2 class="menu" style="float:right; padding-top:0.5em;">
   <!--<a <?=_menu_select_class("index")?> href="index.php">Home</a>-->
   <!--<a <?=_menu_select_class("hardware")?> href="hardware.php">Get the countdown rocket</a>-->
   <a <?=_menu_select_class("about")?> href="about.php">About</a>
@@ -75,11 +75,11 @@
     <!--
     <img src="images/logo.png" style="height:1em; vertical-align: middle;" alt="LaunchTime">
     -->
+    <div class="title">
     <span style="color:#b40000;">nextrocket</span>.space
-    <br>
-    
+    </div>
     <span style="width:100%; vertical-align: middle; font-size:small;maring:0; padding:0;">
-        List of upcoming rocket launches to space.
+        List of upcoming rocket launches to space
     </span>
 
 

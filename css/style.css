@@ -3,6 +3,24 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:500");
 @import url("https://fonts.googleapis.com/css?family=Inconsolata:700");
 
+@font-face {
+  font-family: 'SquareSansSerif7';
+  src: url('square-sans-serif-7.regular.ttf') format('truetype');
+}
+
+.menu {
+    font-family: 'SquareSansSerif7';
+    letter-spacing: 0.1em;
+}
+
+.title {
+    font-family: 'SquareSansSerif7';
+    letter-spacing: 0.3em;
+    padding: 7px 0 0 7px;
+    margin: 0;
+    /*daf8f4*/
+}
+
 body {
 	font-family: 'Open Sans', sans-serif;
 	margin:0;
