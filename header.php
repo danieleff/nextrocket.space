@@ -76,7 +76,7 @@
     <img src="images/logo.png" style="height:1em; vertical-align: middle;" alt="LaunchTime">
     -->
     <div class="title">
-    <span style="color:#b40000;">nextrocket</span>.space
+        <a href="http://nextrocket.space"><span style="color:#b40000;">nextrocket</span>.space</a>
     </div>
     <span style="width:100%; vertical-align: middle; font-size:small;maring:0; padding:0;">
         List of upcoming rocket launches to space
