@@ -81,7 +81,7 @@ function get_launches() {
 
     foreach($launches as $key => $launch) {
         if ($launch["tbddate"] == "1") {
-            $launches[$key]["net"] = date("Y-m-t 00:00", strtotime($launch["net"]));
+            $launches[$key]["net"] = date("Y-m-t 00:00", strtotime($launch["net"]) + 60*60*24);
         }
     }
 
