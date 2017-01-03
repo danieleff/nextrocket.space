@@ -78,6 +78,13 @@ function get_launches() {
                 "tbdtime"=>"1", "tbddate"=>"1"
         ];
 */
+
+    foreach($launches as $key => $launch) {
+        if ($launch["tbddate"] == "1") {
+            $launches[$key]["net"] = date("Y-m-t 23:59", strtotime($launch["net"]));
+        }
+    }
+
     uasort($launches, function($a, $b) {return strtotime($a["net"]) - strtotime($b["net"]);});
     
     $launches = array_values($launches);
