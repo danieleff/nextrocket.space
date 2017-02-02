@@ -85,7 +85,7 @@ function get_launches() {
             $launches[$key]["tbdtime"] = "0";
         }
         
-        $launches[$key]["month"] = date("Y-m", strtotime($launch["net"]));
+        $launches[$key]["month"] = date("Y-m", strtotime($launch["net"]) + 60 * 60 * 12);
     }
 
     uasort($launches, 
