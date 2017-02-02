@@ -80,12 +80,22 @@ function get_launches() {
 */
 
     foreach($launches as $key => $launch) {
-        if ($launch["tbddate"] == "1") {
-            $launches[$key]["net"] = date("Y-m-t 00:00", strtotime($launch["net"]) + 60*60*24);
+        if (strpos($launch["net"], "00:00:00") == false) {
+            $launches[$key]["tbddate"] = "0";
+            $launches[$key]["tbdtime"] = "0";
         }
+        
+        $launches[$key]["month"] = date("Y-m", strtotime($launch["net"]));
     }
 
-    uasort($launches, function($a, $b) {return strtotime($a["net"]) - strtotime($b["net"]);});
+    uasort($launches, 
+        function($a, $b) {
+            if ($a["tbddate"] != $b["tbddate"] && $a["month"] == $b["month"]) {
+                return $a["tbddate"] - $b["tbddate"];
+            }
+            return strtotime($a["net"]) - strtotime($b["net"]);
+        }
+        );
     
     $launches = array_values($launches);
 
