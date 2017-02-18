@@ -10,10 +10,16 @@ include_once("header.php");
 
 <ul style="list-style-type: none;">
 
-  <li style="margin:1em;">Created by Daniel Fekete (<a href="mailto:danieleff@gmail.com">danieleff@gmail.com</a>)
-
+  <li style="margin:1em;">
+    Created by Daniel Fekete (<a href="mailto:danieleff@gmail.com">danieleff@gmail.com</a>)
+  </li>
+  
+  <li style="margin:1em;">
+    Code available on <a href="https://github.com/danieleff/nextrocket.space">github</a>
   </li>
 
-<li style="margin:1em;">Launch data from <a href="http://launchlibrary.net">launchlibrary.net</a></li>
+  <li style="margin:1em;">
+    Launch data from <a href="http://launchlibrary.net">launchlibrary.net</a>
+  </li>
 
 </ul>
