@@ -30,9 +30,9 @@ function get_table_header() {
     $ret .= "<colgroup>";
     $ret .= "<col style=\"width:10em\">";
     $ret .= "<col style=\"width:11em\">";
+    $ret .= "<col style=\"width:20%\">";
     $ret .= "<col style=\"width:25%\">";
-    $ret .= "<col style=\"width:15%\">";
-    $ret .= "<col style=\"width:35%\">";
+    $ret .= "<col style=\"width:30%\">";
     $ret .= "<col style=\"width:15%\">";
     $ret .= "<col style=\"width:22px\">";
     $ret .= "</colgroup>";
