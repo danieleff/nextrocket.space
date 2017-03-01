@@ -35,6 +35,7 @@ function get_table_header() {
     $ret .= "<col style=\"width:30%\">";
     $ret .= "<col style=\"width:15%\">";
     $ret .= "<col style=\"width:22px\">";
+    $ret .= "<col style=\"width:22px\">";
     $ret .= "</colgroup>";
 
     $ret .= "<tr style=\"cursor:pointer;\" onclick=\"createCookie('filter_hidden', $('.filter_row').is(':visible'));$('.filter_row').slideToggle(200);$('.filter_icon').toggle();\">";
@@ -48,6 +49,7 @@ function get_table_header() {
     $ret .= "<th>Launch vehicle</th>";
     $ret .= "<th>Payload</th>";
     $ret .= "<th>Destination</th>";
+    $ret .= "<th></th>";
     $ret .= "<th></th>";
     $ret .= "</tr>";
 
@@ -81,7 +83,8 @@ function get_table_header() {
     $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[1]."</div></td>";
     $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[2]."</div></td>";
     $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[3]."</div></td>";
-    $ret .= "<th style=\"padding: 0px; \"></th>";
+    $ret .= "<td style=\"padding: 0px; \"></td>";
+    $ret .= "<td style=\"padding: 0px; \"></td>";
     $ret .= "</tr>";
     
     return $ret;
@@ -169,11 +172,17 @@ function get_table_content() {
         $ret .= $launch["destination"];
         $ret .= "</td>";
 
+        
+        $ret .= "<td style=\"text-align: center; \" title=\"" . $launch["location"]["pads"][0]["name"] . "\" class=\"destination\">";
+        if ($launch["location"]["pads"] && count($launch["location"]["pads"]) == 1) {
+            $ret .= "<a target=\"_blank\" href=" . $launch["location"]["pads"][0]["mapURL"] . "><img style=\"vertical-align: middle; height: 1em;\" src=\"images/map_pin.png\"></a>";
+        }
+        $ret .= "</td>";
+        
 
-
-        $ret .= "<td>";
+        $ret .= "<td style=\"text-align: center; \" >";
         if ($launch["vidURLs"] && count($launch["vidURLs"]) > 0) {
-            $ret .= "<a href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"images/video.png\"></a>";
+            $ret .= "<a target=\"_blank\" href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"images/video.png\"></a>";
         }
         $ret .= "</td>";
         $ret .= "</tr>";
