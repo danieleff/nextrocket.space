@@ -130,8 +130,8 @@ function get_launches() {
         "ADM-Aeolus" =>["Communications satellite", "satellite.png", "LEO", "leo.png"],
 
         "Shijian-17" =>["Communications satellite", "satellite.png",  "", ""],
-        "Galileo FOC"=>["Communications satellite", "satellite.png", "MEO", ""],
-        "GLONASS"    =>["Communications satellite", "satellite.png", "MEO", ""],
+        "Galileo FOC"=>["Communications satellite", "satellite.png", "MEO", "meo.png"],
+        "GLONASS"    =>["Communications satellite", "satellite.png", "MEO", "meo.png"],
         "Eu:CROPIS"  =>["Communications satellite", "probe.png", "LEO", "leo.png"],
 
         "SkySat"     =>["Earth observing satellite", "earth_satellite.png", "LEO", "leo.png"],
@@ -381,7 +381,7 @@ $available_selections = [
 
     //Destinations
     "3a"=>["LEO", "leo.png"],
-    "3b"=>["MEO"],
+    "3b"=>["MEO", "meo.png"],
     "3c"=>["GEO", "geo.png"],
     "3d"=>["ISS", "iss.png"],
     "3e"=>["Tiangong-2", "tiangong-2.png"],
