@@ -174,7 +174,10 @@ function get_table_content() {
 
         
         $ret .= "<td style=\"text-align: center; \" title=\"" . $launch["location"]["pads"][0]["name"] . "\" class=\"destination\">";
-        if ($launch["location"]["pads"] && count($launch["location"]["pads"]) == 1) {
+        if ($launch["location"]["pads"] 
+            && count($launch["location"]["pads"]) == 1
+            && $launch["location"]["pads"][0]["mapURL"]
+            ) {
             $ret .= "<a target=\"_blank\" href=" . $launch["location"]["pads"][0]["mapURL"] . "><img style=\"vertical-align: middle; height: 1em;\" src=\"images/map_pin.png\"></a>";
         }
         $ret .= "</td>";
