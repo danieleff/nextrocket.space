@@ -38,8 +38,10 @@ function is_match($launch, $rocketID) {
     return false;
 }
 
-function get_launches() {
-    global $available_selections;
+function get_launches_old() {
+    global $available_selections, $conn_string ;
+    
+    $dbconn = pg_connect($conn_string );
     
     if ($_REQUEST["past_launches"]) {
         
@@ -307,6 +309,19 @@ function get_launches() {
             }
         }
         $launches[$key]["matches"] = $matches;
+        
+        pg_query_params($dbconn, "UPDATE launch SET 
+            payload_type = $1, 
+            payload_type_icon = $2, 
+            destination = $3, 
+            destination_icon = $4
+            WHERE launchlibrary_id = $5", array(
+                $launches[$key]["payload_type"],
+                $launches[$key]["payload_icon"],
+                $launches[$key]["destination"],
+                $launches[$key]["destination_icon"],
+                $launches[$key]["id"],
+            ));
         
     }
     return $launches;

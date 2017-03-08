@@ -2,7 +2,7 @@
 
 require_once("local.php");
 
-function get_launches_new() {
+function get_launches() {
     global $available_selections, $conn_string;
     
     $dbconn = pg_connect($conn_string);
@@ -46,6 +46,11 @@ function get_launches_new() {
             }
         }
         $launch["matches"] = $matches;
+        
+        $launch["destination"] = $row["destination"];
+        $launch["destination_icon"] = $row["destination_icon"];
+        $launch["payload_type"] = $row["payload_type"];
+        $launch["payload_icon"] = $row["payload_type_icon"];
         
         $launches[] = $launch;
     }
