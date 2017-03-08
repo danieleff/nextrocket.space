@@ -43,6 +43,11 @@ function get_launches() {
         
         $launch["time"] = strtotime($launch["net"]);
         
+        $launch["destination"] = $row["destination"];
+        $launch["destination_icon"] = $row["destination_icon"];
+        $launch["payload_type"] = $row["payload_type"];
+        $launch["payload_icon"] = $row["payload_type_icon"];
+        
         $matches = array();
             
         foreach($available_selections as $rocketID => $selection_name) {
@@ -51,11 +56,6 @@ function get_launches() {
             }
         }
         $launch["matches"] = $matches;
-        
-        $launch["destination"] = $row["destination"];
-        $launch["destination_icon"] = $row["destination_icon"];
-        $launch["payload_type"] = $row["payload_type"];
-        $launch["payload_icon"] = $row["payload_type_icon"];
         
         $launches[] = $launch;
     }
