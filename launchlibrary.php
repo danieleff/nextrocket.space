@@ -1,5 +1,7 @@
 <?php
 
+require_once("database.php");
+
 define("UPCOMING_SHORTTERM_CACHE_SECONDS", 60 * 10);
 
 define("UPCOMING_LONGTERM_CACHE_SECONDS", 60 * 60);
@@ -70,5 +72,7 @@ function launchlibrary_get($cache_filename, $cache_timeout_seconds, $query_strin
 
     file_put_contents($cache_filename, $json);
 
+    update_launches(json_decode($json, true));
+    
     return json_decode($json, true);
 }
