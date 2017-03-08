@@ -106,10 +106,66 @@ function api_v2() {
     }
 }
 
+
+function api_v3_print_launch($launch) {
+    echo str_pad($launch["id"], 6) . "\n";
+    echo $launch["status"];
+    if ($launch["tbddate"] == "1") {
+        echo "M";
+    } else if ($launch["tbdtime"] == "1") {
+        echo "D";
+    } else {
+        echo "T";
+    }
+    echo str_pad(strtotime($launch["net"]), 10) . "\n";
+    
+    
+    $agency_string = implode($launch["agency"], ", ");
+    echo strtoupper(str_pad(substr($agency_string, 0, 20), 20, " ")). "\n";
+    
+    echo strtoupper(str_pad(substr(str_replace("IV", "4", $launch["launch_vehicle"]), 0, 20), 20, " ")). "\n";
+    echo strtoupper(str_pad(substr($launch["payload"], 0, 20), 20, " ")). "\n";
+    echo strtoupper(str_pad(substr($launch["destination"], 0, 10), 10, " ")). "\n";
+}
+
+function api_v3() {
+    header("Content-type: text/plain");
+    
+    $launches = get_launches();
+    $selected_rockets = split(",", $_REQUEST["q"]);
+
+    echo str_pad(time(), 10, ' ')."\n";
+    
+    $count = 0;
+    $data = "";
+    
+    foreach($launches as $launch) {
+        
+        foreach($selected_rockets as $select_id) {
+        
+            if (is_match($launch, $select_id)) {
+                $data .= api_v3_print_launch($launch);
+                
+                $count++;
+                if ($count > 5) break 2;
+                
+                break;
+            }
+        }
+    }
+    
+    echo str_pad($count, 3, ' ')."\n";
+    
+    echo $data;
+    
+}
+
 if ($_REQUEST["v"] == 1) {
     api_v1();
 } else if ($_REQUEST["v"] == 2) {
     api_v2();
+} else if ($_REQUEST["v"] == 3) {
+    api_v3();
 } else {
     echo "Unknown API " . $_REQUEST["v"];
 }

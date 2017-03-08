@@ -2,13 +2,30 @@
 
 require_once("local.php");
 
+function get_launch($launch_id) {
+    global $conn_string;
+    $dbconn = pg_connect($conn_string) or die("Could not connect to database");
+    
+    return pg_fetch_assoc(pg_query_params('SELECT * FROM launch WHERE id=$1', array($launch_id)));
+}
+
+function update_launch() {
+    global $conn_string;
+    $dbconn = pg_connect($conn_string) or die("Could not connect to database");
+    
+    pg_query_params("UPDATE launch SET
+        payload_type_icon = $1,
+        destination_icon = $2,
+        destination = $3
+        WHERE id=$4"
+        , array($_REQUEST["payload_type"], $_REQUEST["destination_type"], $_REQUEST["destination"], $_REQUEST["id"])
+        );
+}
+
 function get_launches() {
     global $available_selections, $conn_string;
     
-    $dbconn = pg_connect($conn_string);
-    if (!$dbconn) {
-        die("Could not connect to database");
-    }
+    $dbconn = pg_connect($conn_string) or die("Could not connect to database");
     
     $launches = array();
     
@@ -20,6 +37,9 @@ function get_launches() {
     
     foreach($rows as $row) {
         $launch = json_decode($row["launchlibrary_json"], true);
+        
+        $launch["launchlibrary_id"] = $launch["id"];
+        $launch["id"] = $row["id"];
         
         if (strpos($launch["net"], "00:00:00") == false) {
             $launch["tbddate"] = "0";
@@ -80,10 +100,7 @@ function get_launches() {
 function update_launches($launchlibrary_data) {
     global $conn_string;
     
-    $dbconn = pg_connect($conn_string);
-    if (!$dbconn) {
-        die("Could not connect to database");
-    }
+    $dbconn = pg_connect($conn_string) or die("Could not connect to database");
     
     $db_launches = array();
     

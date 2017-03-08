@@ -6,8 +6,10 @@ $launches = get_launches();
 
 $url = "http://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpos($_SERVER["REQUEST_URI"], "/") + 1);
 
+$is_admin = $_REQUEST["admin_pwd"] == $admin_pwd;
+    
 function get_table_header() {
-    global $available_selections, $url;
+    global $available_selections, $url, $is_admin;
     
     $filters = array("", "", "", "");
 
@@ -36,6 +38,7 @@ function get_table_header() {
     $ret .= "<col style=\"width:15%\">";
     $ret .= "<col style=\"width:22px\">";
     $ret .= "<col style=\"width:22px\">";
+    if ($is_admin) $ret .= "<col style=\"width:60px\">";
     $ret .= "</colgroup>";
 
     $ret .= "<tr style=\"cursor:pointer;\" onclick=\"createCookie('filter_hidden', $('.filter_row').is(':visible'));$('.filter_row').slideToggle(200);$('.filter_icon').toggle();\">";
@@ -51,6 +54,7 @@ function get_table_header() {
     $ret .= "<th>Destination</th>";
     $ret .= "<th></th>";
     $ret .= "<th></th>";
+    if ($is_admin) $ret .= "<th>Admin</th>";
     $ret .= "</tr>";
 
     
@@ -85,6 +89,7 @@ function get_table_header() {
     $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[3]."</div></td>";
     $ret .= "<td style=\"padding: 0px; \"></td>";
     $ret .= "<td style=\"padding: 0px; \"></td>";
+    if ($is_admin) $ret .= "<td style=\"padding: 0px; \"></td>";
     $ret .= "</tr>";
     
     return $ret;
@@ -92,7 +97,7 @@ function get_table_header() {
 
 function get_table_content() {
     global $launches, $agency, $url;
-    global $selection_destinations, $selection_payloads;
+    global $selection_destinations, $selection_payloads, $is_admin;
     
     foreach($launches as $key => $launch) {
         $style_color = "";
@@ -213,6 +218,13 @@ function get_table_content() {
             $ret .= "<a target=\"_blank\" href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"images/video.png\"></a>";
         }
         $ret .= "</td>";
+        
+        if ($is_admin) {
+            $ret .= "<td style=\"cursor: pointer\" onclick=\"open_admin_popup(" . $launch["id"] . ");\">";
+            $ret .= "Admin";
+            $ret .= "</td>";
+        }
+        
         $ret .= "</tr>";
     }
     return $ret;
@@ -252,6 +264,60 @@ if ($_REQUEST["old_header"]) {
 
 
 ?>
+
+<div style="display: none; " id="dialog" title="Modify Data">
+    <table style="width:100%;">
+        <tr>
+            <td style="vertical-align: top; width:50%;">
+                LaunchLibray data
+                <hr>
+                TODO
+            </td>
+            
+            <td style="vertical-align: top; width:50%;">
+                Nextrocket data
+                <hr>
+                <table style="width:100%;">
+                    <tr>
+                        <td>Payload type:</td>
+                        <td>
+                            <select style="width:100%;" name="admin_payload_type">
+                                <option value=""></option>
+                                <?php
+                                    foreach($selection_payloads as $id => $name) {
+                                        echo '<option value="' . $id . '">' . $name[0] . '</option>';
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Destination type:</td>
+                        <td>
+                            <select style="width:100%;" name="admin_destination_type">
+                                <option value=""></option>
+                                <?php
+                                    foreach($selection_destinations as $id => $name) {
+                                        echo '<option value="' . $id . '">' . $name[0] . '</option>';
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Destination:</td>
+                        <td><input style="width:100%;" name="admin_destination"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <center>
+        <button onclick="save_launch()">Save</button>
+    </center>
+    
+</div>
 
 <table id="launch_table" class="launch_table">
     <?php
