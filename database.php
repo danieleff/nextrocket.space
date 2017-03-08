@@ -12,7 +12,12 @@ function get_launches() {
     
     $launches = array();
     
-    $rows = pg_fetch_all(pg_query('SELECT * FROM launch'));
+    if ($_REQUEST["past_launches"]) {
+        $rows = pg_fetch_all(pg_query('SELECT * FROM launch'));
+    } else {
+        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE date(launchlibrary_time) > date(now())'));
+    }
+    
     foreach($rows as $row) {
         $launch = json_decode($row["launchlibrary_json"], true);
         
@@ -41,7 +46,7 @@ function get_launches() {
         $matches = array();
             
         foreach($available_selections as $rocketID => $selection_name) {
-            if (is_match($launches[$key], $rocketID)) {
+            if (is_match($launch, $rocketID)) {
                 $matches[] = $rocketID;
             }
         }
