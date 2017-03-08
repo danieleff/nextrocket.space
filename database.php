@@ -92,13 +92,14 @@ function update_launches($launchlibrary_data) {
                 pg_query_params($dbconn, "UPDATE launch SET 
                   launchlibrary_modified_time = now(),  
                   launchlibrary_name = $1,  
-                  launchlibrary_json = $2
-                  WHERE id= $3", array($launchlibrary["name"], $launchlibrary_json, $launchlibrary_id));
+                  launchlibrary_time = $2,
+                  launchlibrary_json = $3
+                  WHERE id= $4", array($launchlibrary["name"], $launchlibrary["net"], $launchlibrary_json, $launchlibrary_id));
             }
             
         } else {
-            pg_query_params($dbconn, "INSERT INTO launch (launchlibrary_id, launchlibrary_name, launchlibrary_modified_time, launchlibrary_json) 
-              VALUES ($1, $2, now(), $3)", array($launchlibrary_id, $launchlibrary["name"], $launchlibrary_json));
+            pg_query_params($dbconn, "INSERT INTO launch (launchlibrary_id, launchlibrary_time, launchlibrary_name, launchlibrary_modified_time, launchlibrary_json) 
+              VALUES ($1, $2, $3, now(), $4)", array($launchlibrary_id, $launchlibrary["net"], $launchlibrary["name"], $launchlibrary_json));
         }
     }
     
