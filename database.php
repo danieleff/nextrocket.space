@@ -104,7 +104,7 @@ function update_launches($launchlibrary_data) {
                   launchlibrary_name = $1,  
                   launchlibrary_time = $2,
                   launchlibrary_json = $3
-                  WHERE id= $4", array($launchlibrary["name"], $launchlibrary["net"], $launchlibrary_json, $launchlibrary_id));
+                  WHERE launchlibrary_id = $4", array($launchlibrary["name"], $launchlibrary["net"], $launchlibrary_json, $launchlibrary_id));
             }
             
         } else {
