@@ -95,5 +95,21 @@ label.filter.checked {
 
 img.flag {
     width: 21px;
-    vertical-align: middle; 
+    vertical-align: baseline; 
+}
+
+.multiple_flags {
+    display: none;
+}
+
+.multiple_flags_hover {
+    font-size: smaller;
+}
+
+.multiple_flags_hover:hover + div {
+    position: absolute;
+    display: block;
+    background: white;
+    border: 1px solid black;
+    padding: 3px;
 }

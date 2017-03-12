@@ -144,13 +144,32 @@ function get_table_content() {
 
         $ret .= "<td title=\"" . $launch["launch_vehicle"] . "\" class=\"rocket\">";
         
-        $ret .= "<div style=\"display: inline-block; width: 24px;\">";
         $country_codes = array();
         foreach($launch["rocket"]["agencies"] as $rocketAgency) {
-            $country_codes []= "<img class=\"flag\" src='images/flag_".$rocketAgency["countryCode"].".png'>";
+            foreach(explode(",", $rocketAgency["countryCode"]) as $countryCode) {
+                if (file_exists("images/flag_" . $countryCode . ".png")) {
+                    $country_codes[] = "<img class=\"flag\" src='images/flag_" . $countryCode . ".png'>";
+                } else {
+                    $country_codes[] = $countryCode;
+                }
+            }
         }
-        $ret .= join(array_unique($country_codes), "<br>");
-        $ret .= "</div>";
+        $country_codes = array_unique($country_codes);
+        
+        if (count($country_codes) > 1) {
+            //TODO multiple country codes
+            $ret .= "<div class=\"multiple_flags_hover\" style=\"text-align: center; display: inline-block; width: 24px;\">";
+            $ret .= "[" . count($country_codes) . "]";
+            $ret .= "</div>";
+            
+            $ret .= "<div class=\"multiple_flags\">";
+            $ret .= join(array_unique($country_codes), ", ");
+            $ret .= "</div>";
+        } else {
+            $ret .= "<div style=\"display: inline-block; width: 24px;\">";
+            $ret .= join(array_unique($country_codes), " ");
+            $ret .= "</div>";
+        }
         
         $ret .= $launch["launch_vehicle"];
         if ($launch["probability"] && $launch["probability"]!="-1") $ret .= " (" . $launch["probability"] . "%)";
