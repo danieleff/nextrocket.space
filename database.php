@@ -40,6 +40,7 @@ function get_launches() {
                 $launch["agency"][] = $launch["rocket"]["agencies"][$i]["abbrev"];
             }
         }
+        $launch["agency"] = array_values(array_unique($launch["agency"]));
         
         $launch["time"] = strtotime($launch["net"]);
         
