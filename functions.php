@@ -348,6 +348,7 @@ $agency = [
     "SpX"  => ["SpaceX", "logo_spacex.png"],
     "NASA"  => ["NASA", "nasa.png"],
     "MHI"  => ["Mitsubishi Heavy Industries", "mhi.png"],
+    "BA"  => ["Boeing", "boeing.png"],
 ];
 
 
@@ -357,6 +358,7 @@ $available_selections = [
     "0j" => ["Arianespace", "arianespace.png", "ASA"],
     "0i" => ["Astrium Satellites", "astrium.png", "EADS"],
     "0f" => ["Avio S.p.A", "avio.png", "Avio"],
+    "0s" => ["Boeing", "boeing.png", "BA"],
     "0k" => ["China Academy of Space Technology", "china_academy.png", "CASC"],
     "0p" => ["European Space Agency", "esa.png", "ESA"],
     "0d" => ["General Dynamics", "gd.png", "GD"],
