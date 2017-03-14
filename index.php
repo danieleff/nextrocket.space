@@ -125,6 +125,9 @@ function get_table_content() {
 
         $agency_string = "";
         for($j = 0; $j < count($launch["agency"]); $j++) {
+            if ($agency_string) {
+                $agency_string .= '<span style="border-left:1px solid gray; margin: 0 3px;"></span>';
+            }
             $a = $launch["agency"][$j];
 
             foreach($agency as $agencyId => $agen) {
