@@ -15,7 +15,7 @@ function get_launches() {
     if ($_REQUEST["past_launches"]) {
         $rows = pg_fetch_all(pg_query('SELECT * FROM launch ORDER BY id'));
     } else {
-        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE date(launchlibrary_time) > date(now()) ORDER BY id'));
+        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE date(launchlibrary_time) >= date(now()) ORDER BY id'));
     }
     
     foreach($rows as $row) {
