@@ -175,7 +175,9 @@ function get_table_content() {
         }
         
         $ret .= $launch["launch_vehicle"];
-        if ($launch["probability"] && $launch["probability"]!="-1") $ret .= " (" . $launch["probability"] . "%)";
+        if ($launch["probability"] && $launch["probability"]!="-1" && $launch["time"] > time()) {
+            $ret .= " (" . $launch["probability"] . "%)";
+        }
         $ret .= "</td>";
 
 
