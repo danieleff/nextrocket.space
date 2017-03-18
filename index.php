@@ -92,6 +92,7 @@ function get_table_header() {
 
 function get_table_content() {
     global $launches, $agency, $url;
+    global $selection_destinations, $selection_payloads;
     
     foreach($launches as $key => $launch) {
         $style_color = "";
@@ -184,14 +185,14 @@ function get_table_content() {
         $ret .= "<td title=\"" . $launch["payload_type"] . "\" class=\"payload\">";
 
         if ($launch["payload_icon"] && $launch["payload_icon"] != '.') {
-            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . $launch["payload_icon"] . "\"> ";
+            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . "images/" . $selection_payloads[$launch["payload_icon"]][1] . "\"> ";
         }
         $ret .= "<span title=\"" . $launch["payload"] . "\">" . $launch["payload"] . "</span>";
         $ret .= "</td>";
 
         $ret .= "<td title=\"" . $launch["destination"] . "\" class=\"destination\">";
         if ($launch["destination_icon"] && $launch["destination_icon"] != '.') {
-            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . $launch["destination_icon"] . "\"> ";
+            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . "/images/" . $selection_destinations[$launch["destination_icon"]][1] . "\"> ";
         }
         $ret .= $launch["destination"];
         $ret .= "</td>";

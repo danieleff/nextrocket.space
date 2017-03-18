@@ -352,7 +352,7 @@ $agency = [
 ];
 
 
-$available_selections = [
+$selection_agencies = [
 
     //Agencies
     "0j" => ["Arianespace", "arianespace.png", "ASA"],
@@ -374,7 +374,9 @@ $available_selections = [
     "0r" => ["Rocket Lab", "rocketlab.png", "Rocket Lab"],
     "0l" => ["SpaceX", "logo_spacex.png", "SpX"],
     "0c" => ["United Launch Alliance", "ula.png", "ULA"],
+];
 
+$selection_rockets = [
     //Rockets
     "1g"=>["Antares"],
     "1e"=>["Ariane"],
@@ -391,7 +393,9 @@ $available_selections = [
     "1l"=>["Soyuz"],
     "1j"=>["Vega"],
     "1n"=>["SLS"],
+];
 
+$selection_payloads = [
     //Payloads
     "2a"=>["Test flight", "test.png"],
     "2b"=>["Communications satellite", "satellite.png"],
@@ -400,8 +404,9 @@ $available_selections = [
     "2e"=>["Scientific probe", "probe.png"],
     "2f"=>["Manned spacecraft", "manned.png"],
     "2g"=>["Automated cargo spacecraft", "cargo.png"],
+];
 
-
+$selection_destinations = [
     //Destinations
     "3a"=>["LEO", "leo.png"],
     "3b"=>["MEO", "meo.png"],
@@ -417,5 +422,6 @@ $available_selections = [
 
 ];
 
+$available_selections = array_merge($selection_agencies, $selection_rockets, $selection_payloads, $selection_destinations);
 
 
