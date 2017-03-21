@@ -347,6 +347,7 @@ $agency = [
     "CASC" => ["China Academy of Space Technology", "china_academy.png"],
     "SpX"  => ["SpaceX", "logo_spacex.png"],
     "NASA"  => ["NASA", "nasa.png"],
+    "FKA"  => ["Russian Federal Space Agency (ROSCOSMOS)", "roscosmos.png"],
     "MHI"  => ["Mitsubishi Heavy Industries", "mhi.png"],
     "BA"  => ["Boeing", "boeing.png"],
 ];
@@ -372,6 +373,7 @@ $selection_agencies = [
     "0o" => ["Orbital ATK", "orbital_atk.png", "OA"],
     "0h" => ["Progress State Research and Production Rocket Space Center", "progress.png", "TsSKB-Progress"],
     "0r" => ["Rocket Lab", "rocketlab.png", "Rocket Lab"],
+    "0t" => ["Russian Federal Space Agency (ROSCOSMOS)", "roscosmos.png", "FKA"],
     "0l" => ["SpaceX", "logo_spacex.png", "SpX"],
     "0c" => ["United Launch Alliance", "ula.png", "ULA"],
 ];
