@@ -2,10 +2,20 @@
 
 require_once("functions.php");
 
+$parts = split("\|", $_REQUEST["q"]);
+
+if ($parts[0] == '1') {
+    $selected_rockets = split(",", $parts[1]);
+} else {
+    echo "Unknown selections: " . $_REQUEST["q"];
+    exit;
+}
+
 function api_v1() {
+    global $selected_rockets;
     $launches = get_launches();
     $time = time();
-    $selected_rockets = split(",", $_REQUEST["q"]);
+    
 
     $len = 8;
 
@@ -72,10 +82,10 @@ function api_v2_print_launch($launch) {
 }
 
 function api_v2() {
+    global $selected_rockets;
     header("Content-type: text/plain");
     
     $launches = get_launches();
-    $selected_rockets = split(",", $_REQUEST["q"]);
 
     echo str_pad(time(), 10, ' ')."\n";
     echo str_pad(count($selected_rockets), 3, ' ')."\n";
@@ -129,10 +139,10 @@ function api_v3_print_launch($launch) {
 }
 
 function api_v3() {
+    global $selected_rockets;
     header("Content-type: text/plain");
     
     $launches = get_launches();
-    $selected_rockets = split(",", $_REQUEST["q"]);
 
     echo str_pad(time(), 10, ' ')."\n";
     
