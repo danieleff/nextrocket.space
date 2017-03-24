@@ -157,7 +157,7 @@ function get_table_content() {
         foreach($launch["rocket"]["agencies"] as $rocketAgency) {
             foreach(explode(",", $rocketAgency["countryCode"]) as $countryCode) {
                 if (file_exists("images/flag_" . $countryCode . ".png")) {
-                    $country_codes[] = "<img class=\"flag\" src='images/flag_" . $countryCode . ".png'>";
+                    $country_codes[] = "<img class=\"flag\" src='" . $url . "images/flag_" . $countryCode . ".png'>";
                 } else {
                     $country_codes[] = $countryCode;
                 }
@@ -208,14 +208,14 @@ function get_table_content() {
             && count($launch["location"]["pads"]) == 1
             && $launch["location"]["pads"][0]["mapURL"]
             ) {
-            $ret .= "<a target=\"_blank\" href=" . $launch["location"]["pads"][0]["mapURL"] . "><img style=\"vertical-align: middle; height: 1em;\" src=\"images/map_pin.png\"></a>";
+            $ret .= "<a target=\"_blank\" href=" . $launch["location"]["pads"][0]["mapURL"] . "><img style=\"vertical-align: middle; height: 1em;\" src=\"" . $url . "images/map_pin.png\"></a>";
         }
         $ret .= "</td>";
         
 
         $ret .= "<td style=\"text-align: center; \" >";
         if ($launch["vidURLs"] && count($launch["vidURLs"]) > 0) {
-            $ret .= "<a target=\"_blank\" href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"images/video.png\"></a>";
+            $ret .= "<a target=\"_blank\" href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"" . $url . "images/video.png\"></a>";
         }
         $ret .= "</td>";
         
