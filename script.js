@@ -426,11 +426,8 @@ function init_embedded() {
             selected = data["selected"];
             agency = data["agency"];
 
-            $.get("/get_selected", function(selected_rockets_str) {
-                selected = selected_rockets_str.split(",");
-                for(var sel in selected) {
-                    $("#" + selected[sel]).prop("checked", true);
-                }
+            $.get("/get_selected", function(serialized) {
+                unserialize_selection(serialized);
                 
                 gray_out_rows();
                 update_countdown_timeout();
