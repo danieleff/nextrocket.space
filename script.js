@@ -6,6 +6,59 @@ var past_launches_loaded = false;
 
 var select_counts = [];
 
+var delimiter = "|";
+
+var cookie_key_serialized = "serialized";
+
+
+function serialize_selection() {
+    var serialized = "1";
+    serialized += delimiter;
+    
+    var first = true;
+    var all = available_selections;
+
+    for(rocketID in all) {
+        if (document.getElementById(rocketID) && document.getElementById(rocketID).checked) {
+            if (!first) serialized += ",";
+            serialized += rocketID;
+            first = false;
+        }
+    }
+    
+    serialized += delimiter;
+    serialized += $('input[name=unchecked_visibility]:checked').val();
+    
+    serialized += delimiter;
+    serialized += $('input[name=filters_join]:checked').val();
+    
+    return serialized;
+}
+
+function unserialize_selection_v1(data) {
+    var parts = data.split(delimiter);
+    
+    selected = parts[1].split(",");
+    
+    console.log(selected);
+    
+    for(var index in selected) {
+        if (selected[index]) {
+            $("#" + selected[index]).prop("checked", true);
+        }
+    }
+    
+    $("input[name=unchecked_visibility][value=" + parts[2] + "]").prop('checked', true);
+    
+    $("input[name=filters_join][value=" + parts[3] + "]").prop('checked', true);
+}
+
+function unserialize_selection(data) {
+    if (data[0] == '1') {
+        unserialize_selection_v1(data);
+    }
+}
+
 function seconds_to_dhms(time, tbdtime, tbddate, launch_status) {
     //return new Date(time * 1000);
 
@@ -92,26 +145,15 @@ function on_change() {
         save_settings_gray_out_rows();
     }
 }
-    
+
     
 function save_settings_gray_out_rows() {
-    var selected_rockets = "";
-    var first = true;
-    var all = available_selections;
-
-    for(rocketID in all) {
-        if (document.getElementById(rocketID) && document.getElementById(rocketID).checked) {
-            if (!first) selected_rockets += ",";
-            selected_rockets += rocketID;
-            first = false;
-        }
-    }
-
+    serialized = serialize_selection();
+        
     if (is_embedded) {
-        $.getJSON("?r=" + selected_rockets);
+        $.getJSON("?r=" + serialized);
     } else {
-        createCookie("selected", selected_rockets, 10000);
-        createCookie("unchecked_visibility", $('input[name=unchecked_visibility]:checked').val(), 10000);
+        createCookie(cookie_key_serialized, serialized, 10000);
     }
 
     gray_out_rows();
@@ -202,9 +244,6 @@ function gray_out_rows() {
 
     var unchecked_visibility = $('input[name=unchecked_visibility]:checked').val()
     if (!unchecked_visibility) {
-        unchecked_visibility = readCookie("unchecked_visibility");
-    }
-    if (!unchecked_visibility) {
         unchecked_visibility = "gray_out";
     }
 
@@ -218,23 +257,14 @@ function gray_out_rows() {
             e.hide();
             continue;
         } else if (!none_found && !is_selected(launch, filter_combination_all)) {
+            e.addClass("unselected");
             if (unchecked_visibility == "hidden") {
-                e.hide();
                 continue;
-            } else if (unchecked_visibility == "gray_out") {
-                e.css("color", "darkgray");
-                e_images.css("opacity", "0.5");
-                e.show();
-            } else {
-                e.css("color", "");
-                e_images.css("opacity", "");
-                e.show();
             }
         } else {
             increate_selection_counts(launch);
-            e.css("color", "");
-            e_images.css("opacity", "");
-            e.show();
+            
+            e.removeClass("unselected");
         }
 
         var time = new Date(launch["time"] * 1000);
@@ -251,6 +281,23 @@ function gray_out_rows() {
             e.css('border-top', '');
         }
 
+    }
+    
+    $("#launch_table").removeClass("hide_unselected");
+    $("#launch_table").removeClass("gray_out_unselected");
+
+    if (none_found) {
+        $("#filter").removeClass("gray_out_selections");
+        
+        
+    } else {
+        $("#filter").addClass("gray_out_selections");
+        
+        if (unchecked_visibility == "hidden") {
+            $("#launch_table").addClass("hide_unselected");
+        } else if (unchecked_visibility == "gray_out") {
+            $("#launch_table").addClass("gray_out_unselected");
+        }
     }
     
     for(rocketID in all) {
@@ -350,18 +397,10 @@ function readCookie(name) {
 }
 
 function init() {
-    var cookie = readCookie("selected");
+    var cookie = readCookie(cookie_key_serialized);
     if (cookie) {
-        selected = cookie.split(",");
+        unserialize_selection(cookie);
     }
-    for(var sel in selected) {
-        $("#" + selected[sel]).prop("checked", true);
-    }
-    
-    var sel = readCookie('unchecked_visibility');
-    /*if (sel != null) {
-        $("input[name=unchecked_visibility][value=" + sel + "]").prop('checked', true);
-    }*/
     
     var sel = readCookie("filter_hidden");
     if (sel == 'true') {

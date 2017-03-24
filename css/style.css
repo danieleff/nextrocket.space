@@ -85,10 +85,21 @@ label.filter {
     font-size: small;
 }
 
-label.filter.checked {
-    font-weight: bold;
-    border: 1px solid black;
+#filter.gray_out_selections label.filter:not(.checked) {
+    color: darkgray;
 }
+
+#launch_table.gray_out_unselected .unselected {
+    color: darkgray;
+}
+#launch_table.gray_out_unselected .unselected img {
+    opacity: 0.5;
+}
+#launch_table.hide_unselected .unselected {
+    display: none;
+}
+
+
 .datepicker {
     width: 6em;
 }
