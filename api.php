@@ -118,24 +118,26 @@ function api_v2() {
 
 
 function api_v3_print_launch($launch) {
-    echo str_pad($launch["id"], 6) . "\n";
-    echo $launch["status"];
+    $ret = "";
+    $ret .= str_pad($launch["id"], 6) . "\n";
+    $ret .= $launch["status"];
     if ($launch["tbddate"] == "1") {
-        echo "M";
+        $ret .= "M";
     } else if ($launch["tbdtime"] == "1") {
-        echo "D";
+        $ret .= "D";
     } else {
-        echo "T";
+        $ret .= "T";
     }
-    echo str_pad(strtotime($launch["net"]), 10) . "\n";
+    $ret .= str_pad(strtotime($launch["net"]), 10) . "\n";
     
     
     $agency_string = implode($launch["agency"], ", ");
-    echo strtoupper(str_pad(substr($agency_string, 0, 20), 20, " ")). "\n";
+    $ret .= strtoupper(str_pad(substr($agency_string, 0, 20), 20, " ")). "\n";
     
-    echo strtoupper(str_pad(substr(str_replace("IV", "4", $launch["launch_vehicle"]), 0, 20), 20, " ")). "\n";
-    echo strtoupper(str_pad(substr($launch["payload"], 0, 20), 20, " ")). "\n";
-    echo strtoupper(str_pad(substr($launch["destination"], 0, 10), 10, " ")). "\n";
+    $ret .= strtoupper(str_pad(substr(str_replace("IV", "4", $launch["launch_vehicle"]), 0, 20), 20, " ")). "\n";
+    $ret .= strtoupper(str_pad(substr($launch["payload"], 0, 20), 20, " ")). "\n";
+    $ret .= strtoupper(str_pad(substr($launch["destination"], 0, 10), 10, " ")). "\n";
+    return $ret;
 }
 
 function api_v3() {
@@ -157,7 +159,7 @@ function api_v3() {
                 $data .= api_v3_print_launch($launch);
                 
                 $count++;
-                if ($count > 5) break 2;
+                if ($count >= 5) break 2;
                 
                 break;
             }
