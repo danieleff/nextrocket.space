@@ -132,11 +132,11 @@ function api_v3_print_launch($launch) {
     
     
     $agency_string = implode($launch["agency"], ", ");
-    $ret .= strtoupper(str_pad(substr($agency_string, 0, 20), 20, " ")). "\n";
+    $ret .= strtoupper(str_pad(substr($agency_string, 0, 10), 10, " ")). "\n";
     
     $ret .= strtoupper(str_pad(substr(str_replace("IV", "4", $launch["launch_vehicle"]), 0, 20), 20, " ")). "\n";
-    $ret .= strtoupper(str_pad(substr($launch["payload"], 0, 20), 20, " ")). "\n";
-    $ret .= strtoupper(str_pad(substr($launch["destination"], 0, 10), 10, " ")). "\n";
+    //$ret .= strtoupper(str_pad(substr($launch["payload"], 0, 20), 20, " ")). "\n";
+    //$ret .= strtoupper(str_pad(substr($launch["destination"], 0, 10), 10, " ")). "\n";
     return $ret;
 }
 
