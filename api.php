@@ -3,9 +3,12 @@
 require_once("functions.php");
 
 $parts = split("\|", $_REQUEST["q"]);
+$selected_rockets = false;
 
 if ($parts[0] == '1') {
-    $selected_rockets = split(",", $parts[1]);
+    if ($parts[1]) {
+        $selected_rockets = split(",", $parts[1]);
+    }
 } else {
     echo "Unknown selections: " . $_REQUEST["q"];
     exit;
@@ -152,18 +155,25 @@ function api_v3() {
     $data = "";
     
     foreach($launches as $launch) {
-        
-        foreach($selected_rockets as $select_id) {
-        
-            if (is_match($launch, $select_id)) {
-                $data .= api_v3_print_launch($launch);
-                
-                $count++;
-                if ($count >= 5) break 2;
-                
-                break;
+        $match = false;
+        if ($selected_rockets) {
+            foreach($selected_rockets as $select_id) {
+                if (is_match($launch, $select_id)) {
+                    $match = true;
+                    break;
+                }
             }
+        } else {
+            $match = true;
         }
+        
+        if ($match) {
+            $data .= api_v3_print_launch($launch);
+            
+            $count++;
+            if ($count >= 5) break;
+        }
+            
     }
     
     echo str_pad($count, 3, ' ')."\n";
