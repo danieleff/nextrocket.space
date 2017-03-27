@@ -427,7 +427,7 @@ function init_embedded() {
         
         $("#filters_left").hide();
             
-        $("input[name=unchecked_visibility][value=hidden]").prop('checked', true);
+        $("input[name=unchecked_visibility][value=gray_out]").prop('checked', true);
         $("input[name=filters_join][value=any]").prop('checked', true);
         
         $("#embedded_message").html("Your desktop countdown can track only the upcoming " + embedded_max_visible + " launches!");
