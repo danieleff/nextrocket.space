@@ -61,7 +61,7 @@ function get_table_header() {
     $ret .= "<tr id=\"filter\">";
     
     $ret .= "<th style=\"text-align: left; padding: 0px;vertical-align: top;\" colspan=\"2\">";
-    $ret .= "<div style=\"margin: 0.5em;\" class=\"filter_row\">";
+    $ret .= "<div id=\"filters_left\" style=\"margin: 0.5em;\" class=\"filter_row\">";
     
     $ret .= " Filter by date:<br>";
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"launch_date_filter\" value=\"upcoming\" checked>Upcoming</label><br>";
@@ -81,6 +81,7 @@ function get_table_header() {
     $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
     
     $ret .= "</div>";
+    $ret .= "<div style=\"margin: 1em;\" id=\"embedded_message\"></div>";
     $ret .= "</th>";
     
     $ret .= "<td valign=\"top\" style=\"padding: 0px; white-space: nowrap; text-align: left;overflow: hidden; text-overflow: ellipsis;\"><div class=\"filter_row\">".$filters[0]."</div></td>";

@@ -2,6 +2,8 @@ url = "http://nextrocket.space/";
 
 var is_embedded = false;
 
+var embedded_max_visible = 5;
+
 var past_launches_loaded = false;
 
 var select_counts = [];
@@ -39,8 +41,6 @@ function unserialize_selection_v1(data) {
     var parts = data.split(delimiter);
     
     selected = parts[1].split(",");
-    
-    console.log(selected);
     
     for(var index in selected) {
         if (selected[index]) {
@@ -247,9 +247,11 @@ function gray_out_rows() {
         unchecked_visibility = "gray_out";
     }
 
+    var visible_count = 0;
+    
     for(var i = 0; i < launches.length; i++) {
         var launch = launches[i];
-
+        
         var e = $("#launch_" + i);
         var e_images = $("#launch_" + i+" img");
         
@@ -265,6 +267,12 @@ function gray_out_rows() {
             increate_selection_counts(launch);
             
             e.removeClass("unselected");
+            
+            visible_count++;
+        }
+        
+        if (is_embedded && visible_count > embedded_max_visible) {
+            e.addClass("unselected");
         }
 
         var time = new Date(launch["time"] * 1000);
@@ -289,7 +297,7 @@ function gray_out_rows() {
     if (none_found) {
         $("#filter").removeClass("gray_out_selections");
         
-        
+        $("#launch_table").addClass("gray_out_unselected");
     } else {
         $("#filter").addClass("gray_out_selections");
         
@@ -413,9 +421,16 @@ function init() {
 
 function init_embedded() {
     is_embedded = true;
-
+    
     $.get(url + "index.php?get_table=true", function(data) {
         $("#launch_table").html(data);
+        
+        $("#filters_left").hide();
+            
+        $("input[name=unchecked_visibility][value=hidden]").prop('checked', true);
+        $("input[name=filters_join][value=any]").prop('checked', true);
+        
+        $("#embedded_message").html("Your desktop countdown can track only the upcoming " + embedded_max_visible + " launches!");
         
         $.getJSON(url + "index.php?get_json=true", function(data) {
             launches = data["launches"];
