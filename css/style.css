@@ -96,7 +96,7 @@ label.filter {
     opacity: 0.5;
 }
 #launch_table.hide_unselected .unselected {
-    display: none;
+    display: none !important;
 }
 
 
