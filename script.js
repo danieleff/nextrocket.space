@@ -259,11 +259,13 @@ function gray_out_rows() {
             e.hide();
             continue;
         } else if (!none_found && !is_selected(launch, filter_combination_all)) {
+            e.show();
             e.addClass("unselected");
             if (unchecked_visibility == "hidden") {
                 continue;
             }
         } else {
+            e.show();
             increate_selection_counts(launch);
             
             e.removeClass("unselected");
