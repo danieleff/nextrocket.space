@@ -235,8 +235,8 @@ function gray_out_rows() {
     var date_to = new Date(2099, 1, 1);
     
     if ($("input[name='launch_date_filter']:checked").val() == 'date_range') {
-        date_from = $("input[name='launch_from'").datepicker('getDate');
-        date_to = $("input[name='launch_to'").datepicker('getDate');
+        date_from = $("input[name='launch_from']").datepicker('getDate');
+        date_to = $("input[name='launch_to']").datepicker('getDate');
     }
     
     var timestamp_from = date_from.getTime() / 1000;
