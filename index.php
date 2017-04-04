@@ -7,6 +7,17 @@ $launches = get_launches();
 $url = "http://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpos($_SERVER["REQUEST_URI"], "/") + 1);
 
 $is_admin = $_REQUEST["admin_pwd"] == $admin_pwd;
+
+function launches_script($launches) {
+    $ret = [];
+    foreach($launches as $launch) {
+        $ret [] = array(
+            "time" => $launch["time"],
+            "matches" => $launch["matches"],
+        );
+    }
+    return $ret;
+}
     
 function get_table_header() {
     global $available_selections, $url, $is_admin;
@@ -128,7 +139,7 @@ function get_table_content() {
         $ret .= "<td class=\"date\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
 
 
-        $ret .= "<td class=\"agency\" style=\"text-align: center;\">";
+        $ret .= "<td class=\"agency\">";
 
         $agency_string = "";
         for($j = 0; $j < count($launch["agency"]); $j++) {
@@ -139,7 +150,7 @@ function get_table_content() {
 
             foreach($agency as $agencyId => $agen) {
                 if ($a == $agencyId && count($agen) > 1) {
-                    $a = "<img title=\"" . $agen[0] . "\" style=\"vertical-align:baseline; height:16px;\" src=\"" . $url . "images/" . $agen[1] . "\">";
+                    $a = "<img title=\"" . $agen[0] . "\" src=\"" . $url . "images/" . $agen[1] . "\">";
                     break;
                 }
             }
@@ -168,7 +179,7 @@ function get_table_content() {
         
         if (count($country_codes) > 1) {
             //TODO multiple country codes
-            $ret .= "<div class=\"multiple_flags_hover\" style=\"text-align: center; display: inline-block; width: 24px;\">";
+            $ret .= "<div class=\"multiple_flags_hover\">";
             $ret .= "[" . count($country_codes) . "]";
             $ret .= "</div>";
             
@@ -176,7 +187,7 @@ function get_table_content() {
             $ret .= join(array_unique($country_codes), ", ");
             $ret .= "</div>";
         } else {
-            $ret .= "<div style=\"display: inline-block; width: 24px;\">";
+            $ret .= "<div class=\"flag\" >";
             $ret .= join(array_unique($country_codes), " ");
             $ret .= "</div>";
         }
@@ -188,35 +199,35 @@ function get_table_content() {
         $ret .= "</td>";
 
 
-        $ret .= "<td title=\"" . $launch["payload_type"] . "\" class=\"payload\">";
+        $ret .= "<td class=\"payload\" title=\"" . $launch["payload_type"] . "\">";
 
         if ($launch["payload_icon"] && $launch["payload_icon"] != '.') {
-            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . "images/" . $selection_payloads[$launch["payload_icon"]][1] . "\"> ";
+            $ret .= "<img src=\"" . $url . "images/" . $selection_payloads[$launch["payload_icon"]][1] . "\"> ";
         }
         $ret .= "<span title=\"" . $launch["payload"] . "\">" . $launch["payload"] . "</span>";
         $ret .= "</td>";
 
         $ret .= "<td title=\"" . $launch["destination"] . "\" class=\"destination\">";
         if ($launch["destination_icon"] && $launch["destination_icon"] != '.') {
-            $ret .= "<img style=\"vertical-align:top; height:1em;\" src=\"" . $url . "/images/" . $selection_destinations[$launch["destination_icon"]][1] . "\"> ";
+            $ret .= "<img src=\"" . $url . "/images/" . $selection_destinations[$launch["destination_icon"]][1] . "\"> ";
         }
         $ret .= $launch["destination"];
         $ret .= "</td>";
 
         
-        $ret .= "<td style=\"text-align: center; \" title=\"" . $launch["location"]["pads"][0]["name"] . "\" class=\"destination\">";
+        $ret .= "<td title=\"" . $launch["location"]["pads"][0]["name"] . "\" class=\"map\">";
         if ($launch["location"]["pads"] 
             && count($launch["location"]["pads"]) == 1
             && $launch["location"]["pads"][0]["mapURL"]
             ) {
-            $ret .= "<a target=\"_blank\" href=" . $launch["location"]["pads"][0]["mapURL"] . "><img style=\"vertical-align: middle; height: 1em;\" src=\"" . $url . "images/map_pin.png\"></a>";
+            $ret .= "<a target=\"_blank\" href=" . $launch["location"]["pads"][0]["mapURL"] . "><img src=\"" . $url . "images/map_pin.png\"></a>";
         }
         $ret .= "</td>";
         
 
-        $ret .= "<td style=\"text-align: center; \" >";
+        $ret .= "<td class=\"video\" >";
         if ($launch["vidURLs"] && count($launch["vidURLs"]) > 0) {
-            $ret .= "<a target=\"_blank\" href=\"" . $launch["vidURLs"][0] . "\"><img style=\"vertical-align: middle; height: 1em;\" src=\"" . $url . "images/video.png\"></a>";
+            $ret .= "<a target=\"_blank\" href=\"" . $launch["vidURLs"][0] . "\"><img src=\"" . $url . "images/video.png\"></a>";
         }
         $ret .= "</td>";
         
@@ -227,6 +238,7 @@ function get_table_content() {
         }
         
         $ret .= "</tr>";
+        $ret .= "\n";
     }
     return $ret;
 }
@@ -237,7 +249,7 @@ function get_table() {
 
 if (isset($_REQUEST["get_json"])) {
      header('Access-Control-Allow-Origin: *');
-     $ret = array("launches" => array_values($launches),
+     $ret = array("launches" => launches_script($launches),
         "available_selections" => $available_selections,
         "agency" => $agency,
         "selected" => array_values($selected));
@@ -327,7 +339,7 @@ if ($_REQUEST["old_header"]) {
 </table>
 
 <script type='text/javascript'>
-    var launches = <?=json_encode(array_values($launches));?>;
+    var launches = <?=json_encode(launches_script($launches));?>;
     var available_selections = <?=json_encode($available_selections);?>;
     var agency = <?=json_encode($agency);?>;
     var selected = <?=json_encode(array_values($selected));?>;

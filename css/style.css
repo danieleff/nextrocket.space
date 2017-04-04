@@ -66,6 +66,15 @@ td.agency, td.rocket, td.payload, td.destination {
 	text-overflow: ellipsis;
 }
 
+td.agency {
+    text-align: center;
+}
+
+td.agency img {
+    vertical-align:baseline; 
+    height:16px;
+}
+
 .launch_table td.date, .launch_table td.countdown, .selection_count {
 	font-family: 'Inconsolata', monospace;
 }
@@ -99,6 +108,38 @@ label.filter {
     display: none !important;
 }
 
+td.payload img {
+    vertical-align:top; 
+    height:1em;
+}
+
+td.destination img {
+    vertical-align:top; 
+    height:1em;
+}
+
+td.map {
+    text-align: center;
+}
+
+td.map img {
+    vertical-align:top; 
+    height:1em;
+}
+
+td.video {
+    text-align: center;
+}
+
+td.video img {
+    vertical-align: top; 
+    height: 1em;
+}
+
+.flag {
+    display: inline-block; 
+    width: 24px;
+}
 
 .datepicker {
     width: 6em;
@@ -115,6 +156,9 @@ img.flag {
 
 .multiple_flags_hover {
     font-size: smaller;
+    text-align: center; 
+    display: inline-block; 
+    width: 24px;
 }
 
 .multiple_flags_hover:hover + div {
