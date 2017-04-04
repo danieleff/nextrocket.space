@@ -253,7 +253,6 @@ function gray_out_rows() {
         var launch = launches[i];
         
         var e = $("#launch_" + i);
-        var e_images = $("#launch_" + i+" img");
         
         if ((launch["time"] < timestamp_from) | (launch["time"] > timestamp_to)) {
             e.hide();
