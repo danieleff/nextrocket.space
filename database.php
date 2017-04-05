@@ -46,6 +46,17 @@ function get_launches() {
             $launch["tbdtime"] = "0";
         }
         
+        if ($row["data_modified_time"]
+            && strtotime($row["data_modified_time"]) > strtotime($row["launchlibrary_modified_time"])
+            ) {
+            
+            if ($row["launch_time"]) {
+                $launch["net"] = $row["launch_time"];
+                $launch["tbddate"] = ($row["launch_date_exact"] == 't') ? "0" : "1";
+                $launch["tbdtime"] = ($row["launch_time_exact"] == 't') ? "0" : "1";
+            }
+        }
+        
         $launch["month"] = date("Y-m", strtotime($launch["net"]) + 60 * 60 * 12);
         
         $rocket_mission = split(" \| ", $launch["name"]);
