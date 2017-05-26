@@ -124,7 +124,7 @@ function get_table_content() {
                 $launch_status = ""; //  NO-GO
                 break;
             case 3: 
-                $launch_status = "Success";
+                $launch_status = "<span style='color:green;'>Success</span>";
                 break;
             case 4: 
                 $launch_status = "<span style='color:red;'>Failed</span>";
