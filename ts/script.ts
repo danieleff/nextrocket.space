@@ -225,7 +225,7 @@ function gray_out_rows() {
 
     var all = available_selections;
 
-    var none_found = true;
+    var noLaunchSelected = true;
     
     var filter_combination_all = $("input[name='filters_join']:checked").val() == 'all';
 
@@ -243,13 +243,13 @@ function gray_out_rows() {
     if (selected.length > 0) {
         for(var id of sortedLaunchIds) {
             if (is_selected(launches[id], filter_combination_all)) {
-                none_found = false;
+                noLaunchSelected = false;
             }
         }
     }
     
-    if (none_found && selected.length) {
-        none_found = false;
+    if (noLaunchSelected && selected.length) {
+        noLaunchSelected = false;
     }
 
     var prev_y;
@@ -273,23 +273,23 @@ function gray_out_rows() {
     }
 
     var visible_count = 0;
-    
+    var counter = 0;
+
     for(var id of sortedLaunchIds) {
         var launch = launches[id];
         
         var e = document.getElementById(id.toString());
+
+        var show = true;
         
         if ((launch["time"] < timestamp_from) || (launch["time"] > timestamp_to)) {
-            e.style.display = "none";
-            continue;
-        } else if (!none_found && !is_selected(launch, filter_combination_all)) {
-            e.style.display = "";
+            show = false;
+        } else if (!noLaunchSelected && !is_selected(launch, filter_combination_all)) {
             e.classList.add("unselected");
             if (unchecked_visibility == "hidden") {
-                continue;
+                show = false;
             }
         } else {
-            e.style.display = "";
             increate_selection_counts(launch);
             e.classList.remove("unselected");
             
@@ -300,17 +300,30 @@ function gray_out_rows() {
             e.classList.add("unselected");
         }
 
-        var time = new Date(launch["time"] * 1000);
-        if (prev_y != time.getFullYear()) {
-            e.style.borderTop = '2px solid brown';
-            prev_y = time.getFullYear();
-            prev_m = time.getMonth();
-        } else if(prev_m != time.getMonth()) {
-            e.style.borderTop = '1px solid black';
-            prev_y = time.getFullYear();
-            prev_m = time.getMonth();
+        if (show) {
+            e.style.display = "";
+
+            if (counter % 2 == 0) {
+                e.classList.remove("odd");
+            } else {
+                e.classList.add("odd");
+            }
+            counter++;
+
+            var time = new Date(launch["time"] * 1000);
+            if (prev_y != time.getFullYear()) {
+                e.style.borderTop = '2px solid brown';
+                prev_y = time.getFullYear();
+                prev_m = time.getMonth();
+            } else if(prev_m != time.getMonth()) {
+                e.style.borderTop = '1px solid black';
+                prev_y = time.getFullYear();
+                prev_m = time.getMonth();
+            } else {
+                e.style.borderTop = '';
+            }
         } else {
-            e.style.borderTop = '';
+            e.style.display = "none";
         }
 
     }
@@ -318,7 +331,7 @@ function gray_out_rows() {
     $("#launch_table").removeClass("hide_unselected");
     $("#launch_table").removeClass("gray_out_unselected");
 
-    if (none_found) {
+    if (noLaunchSelected) {
         $("#filter").removeClass("gray_out_selections");
         
         $("#launch_table").addClass("gray_out_unselected");
@@ -346,20 +359,6 @@ function gray_out_rows() {
 
     $("label").removeClass("checked");
     $("label:has(input:checked)").addClass("checked");
-    
-    var counter = 0;
-    var trs = document.getElementById("launch_table").getElementsByTagName("tr");
-    for(var index = 0; index < trs.length; index++) {
-        var tr = trs[index];
-        if (tr.offsetParent !== null) {
-            if (counter % 2 == 0) {
-                tr.classList.remove("odd");
-            } else {
-                tr.classList.add("odd");
-            }
-            counter++;
-        }
-    }
 
     if (debug) console.timeEnd("gray_out_rows");
 }
