@@ -1,2 +1,4 @@
 cache/*.json
 local.php
+node_modules
+js/

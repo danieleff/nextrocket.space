@@ -341,8 +341,6 @@ if ($_REQUEST["old_header"]) {
 <script type='text/javascript'>
     var launches = <?=json_encode(launches_script($launches));?>;
     var available_selections = <?=json_encode($available_selections);?>;
-    var agency = <?=json_encode($agency);?>;
-    var selected = <?=json_encode(array_values($selected));?>;
     
     var url = '<?=$url?>';
     

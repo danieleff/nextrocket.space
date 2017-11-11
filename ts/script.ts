@@ -1,4 +1,14 @@
-url = "http://nextrocket.space/";
+/// <reference types="jquery" />
+/// <reference types="jquery.ui.layout" />
+
+// From index.php
+var launches: [{time: number; matches: string[]}];
+var available_selections: {[key: string]: string[]};
+var url: string;
+
+
+
+var selected = [];
 
 var is_embedded = false;
 
@@ -6,7 +16,7 @@ var embedded_max_visible = 5;
 
 var past_launches_loaded = false;
 
-var select_counts = [];
+var select_counts: number[] = [];
 
 var delimiter = "|";
 
@@ -20,8 +30,8 @@ function serialize_selection() {
     var first = true;
     var all = available_selections;
 
-    for(rocketID in all) {
-        if (document.getElementById(rocketID) && document.getElementById(rocketID).checked) {
+    for(var rocketID in all) {
+        if (document.getElementById(rocketID) && (<HTMLInputElement>document.getElementById(rocketID)).checked) {
             if (!first) serialized += ",";
             serialized += rocketID;
             first = false;
@@ -92,10 +102,10 @@ function seconds_to_dhms(time, tbdtime, tbddate, launch_status) {
         result += "-";
     }
 
-    var days = parseInt( seconds / (60*60*24) );
-    var hours = parseInt( seconds / (60*60) ) % 24;
-    var minutes = parseInt( seconds / 60 ) % 60;
-    var seconds = parseInt(seconds % 60);
+    var days = Math.floor(seconds / (60*60*24));
+    var hours = Math.floor(seconds / (60*60) ) % 24;
+    var minutes = Math.floor(seconds / 60 ) % 60;
+    var seconds = Math.floor(seconds % 60);
 
     if (tbdtime == "1")  {
         days += 1;
@@ -148,7 +158,7 @@ function on_change() {
 
     
 function save_settings_gray_out_rows() {
-    serialized = serialize_selection();
+    var serialized = serialize_selection();
         
     if (is_embedded) {
         $.getJSON("?r=" + serialized);
@@ -167,7 +177,7 @@ function increate_selection_counts(launch) {
     }
 }
 
-function is_selected(launch, filter_combination_all) {
+function is_selected(launch, filter_combination_all: boolean) {
     
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
@@ -205,11 +215,11 @@ function gray_out_rows() {
 
     selected = [];
     
-    for(rocketID in all) {
+    for(var rocketID in all) {
         select_counts[rocketID] = 0;
         
-        var e = document.getElementById(rocketID);
-        if (e && e.checked) {
+        var checkElement = <HTMLInputElement>document.getElementById(rocketID);
+        if (checkElement && checkElement.checked) {
             selected.push(rocketID);
         }
     }
@@ -254,7 +264,7 @@ function gray_out_rows() {
         
         var e = $("#launch_" + i);
         
-        if ((launch["time"] < timestamp_from) | (launch["time"] > timestamp_to)) {
+        if ((launch["time"] < timestamp_from) || (launch["time"] > timestamp_to)) {
             e.hide();
             continue;
         } else if (!none_found && !is_selected(launch, filter_combination_all)) {
@@ -278,13 +288,13 @@ function gray_out_rows() {
 
         var time = new Date(launch["time"] * 1000);
         
-        if (prev_y != time.getYear()) {
+        if (prev_y != time.getFullYear()) {
             e.css('border-top', '2px solid brown');
-            prev_y = time.getYear();
+            prev_y = time.getFullYear();
             prev_m = time.getMonth();
         } else if(prev_m != time.getMonth()) {
             e.css('border-top', '1px solid black');
-            prev_y = time.getYear();
+            prev_y = time.getFullYear();
             prev_m = time.getMonth();
         } else {
             e.css('border-top', '');
@@ -309,8 +319,8 @@ function gray_out_rows() {
         }
     }
     
-    for(rocketID in all) {
-        count_string = select_counts[rocketID];
+    for(var rocketID in all) {
+        var count_string = select_counts[rocketID];
         if (count_string < 10) count_string = "&nbsp;" + count_string;
         if (select_counts[rocketID] == 0) count_string = "&nbsp;&nbsp;";
         $("#count_" + rocketID).html(count_string);
@@ -355,7 +365,7 @@ function update_dates() {
     for (var i = 0; i < cusid_ele.length; ++i) {
         var item = cusid_ele[i];
 
-        var d = new Date(item.getAttribute("data-time") * 1000);
+        var d = new Date(parseInt(item.getAttribute("data-time")) * 1000);
 
         if (item.getAttribute("data-tbdtime") == "0")  {
             item.innerHTML = days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
@@ -387,7 +397,7 @@ function createCookie(name, value, days) {
     if (days) {
         var date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toGMTString();
+        expires = "; expires=" + date.toUTCString();
     } else {
         expires = "";
     }
@@ -436,11 +446,7 @@ function init_embedded() {
         $.getJSON(url + "index.php?get_json=true", function(data) {
             launches = data["launches"];
             available_selections = data["available_selections"];
-            events = data["events"]; //TODO delete
-            rockets = data["rockets"]; //TODO delete
-            missions = data["missions"]; //TODO delete
             selected = data["selected"];
-            agency = data["agency"];
 
             $.get("/get_selected", function(serialized) {
                 unserialize_selection(serialized);
@@ -451,33 +457,4 @@ function init_embedded() {
         });
     });
 
-}
-
-var launch_id_to_save = null;
-
-function open_admin_popup(launch_id) {
-    $.getJSON("ajax.php", {action: 'get', launch_id: launch_id}, function(result) {
-        
-        launch_id_to_save = launch_id;
-        
-        $('[name=admin_payload_type]').val(result['payload_type_icon']);
-        $('[name=admin_destination_type]').val(result['destination_icon']);
-        $('[name=admin_destination]').val(result['destination']);
-        
-        $("#dialog").dialog({width: "800", height: "400"});
-    });
-}
-
-function save_launch() {
-    var data = {};
-    data['action'] = 'update';
-    data['id'] = launch_id_to_save;
-    data['payload_type'] = $('[name=admin_payload_type]').val();
-    data['destination_type'] = $('[name=admin_destination_type]').val();
-    data['destination'] = $('[name=admin_destination]').val();
-    
-    $.getJSON("ajax.php", data, function(result) {
-        
-        $("#dialog").dialog('close');
-    });
 }
