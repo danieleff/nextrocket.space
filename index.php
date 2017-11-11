@@ -8,17 +8,20 @@ $url = "http://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpo
 
 $is_admin = $_REQUEST["admin_pwd"] == $admin_pwd;
 
-function launches_script($launches) {
-    $ret = [];
+function get_launches_by_id($launches) {
+    $ret = array();
     foreach($launches as $launch) {
-        $ret [] = array(
+        $ret[$launch["id"]] = array(
             "time" => $launch["time"],
+            "tbdtime" => $launch["tbdtime"],
+            "tbddate" => $launch["tbddate"],
+            "status" => $launch["status"],
             "matches" => $launch["matches"],
         );
     }
     return $ret;
 }
-    
+
 function get_table_header() {
     global $available_selections, $url, $is_admin;
     
@@ -113,7 +116,7 @@ function get_table_content() {
     
     foreach($launches as $key => $launch) {
         $style_color = "";
-        $ret .= "<tr id=\"launch_" . $key . "\">";
+        $ret .= "<tr class=\"launch\" id=\"" . $launch["id"] . "\">";
 
         $launch_status = "Unknown";
         switch ($launch["status"]) {
@@ -134,9 +137,9 @@ function get_table_content() {
         $launch_status .= " " . $launch["failreason"];
         $launch_status = trim($launch_status);
         
-        $ret .= "<td class=\"countdown\" data-status=\"" . $launch_status . "\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\">".$launch_status."</td>";
+        $ret .= "<td class=\"countdown\" data-id=\"" . $launch["id"] . "\" >".$launch_status."</td>";
         
-        $ret .= "<td class=\"date\" data-tbdtime=\"" . $launch["tbdtime"] . "\" data-tbddate=\"" . $launch["tbddate"] . "\" data-time=\"" . $launch["time"] . "\"></td>";
+        $ret .= "<td class=\"date\" data-id=\"" . $launch["id"] . "\" ></td>";
 
 
         $ret .= "<td class=\"agency\">";
@@ -220,7 +223,7 @@ function get_table_content() {
             && count($launch["location"]["pads"]) == 1
             && $launch["location"]["pads"][0]["mapURL"]
             ) {
-            $ret .= "<a target=\"_blank\" href=" . $launch["location"]["pads"][0]["mapURL"] . "><img src=\"" . $url . "images/map_pin.png\"></a>";
+            $ret .= "<a target=\"_blank\" href=\"" . htmlentities($launch["location"]["pads"][0]["mapURL"]) . "\"><img src=\"" . $url . "images/map_pin.png\"></a>";
         }
         $ret .= "</td>";
         
@@ -249,7 +252,7 @@ function get_table() {
 
 if (isset($_REQUEST["get_json"])) {
      header('Access-Control-Allow-Origin: *');
-     $ret = array("launches" => launches_script($launches),
+     $ret = array("launches" => get_launches_by_id($launches),
         "available_selections" => $available_selections,
         "agency" => $agency,
         "selected" => array_values($selected));
@@ -342,7 +345,7 @@ if ($_REQUEST["old_header"]) {
 <script src="lib/jquery-ui.min.js"></script>
 <script id="script" src="js/app.js"></script>
 <script type='text/javascript'>
-    var launches = <?=json_encode(launches_script($launches));?>;
+    var launches = <?=json_encode(get_launches_by_id($launches));?>;
     var available_selections = <?=json_encode($available_selections);?>;
     
     var url = '<?=$url?>';

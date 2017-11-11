@@ -10,10 +10,11 @@ type Launch = {
     matches: string[];
 };
 
-var launches: Launch[]; //deprecated
-var launchesById: {
+var launches: {
     [key: number]: Launch
 };
+var sortedLaunchIds: number[];
+
 var available_selections: {[key: string]: string[]};
 var url: string;
 
@@ -240,9 +241,8 @@ function gray_out_rows() {
     }
 
     if (selected.length > 0) {
-        for(var i = 0; i < launches.length; i++) {
-            var launch = launches[i];
-            if (is_selected(launch, filter_combination_all)) {
+        for(var id of sortedLaunchIds) {
+            if (is_selected(launches[id], filter_combination_all)) {
                 none_found = false;
             }
         }
@@ -274,45 +274,43 @@ function gray_out_rows() {
 
     var visible_count = 0;
     
-    for(var i = 0; i < launches.length; i++) {
-        var launch = launches[i];
+    for(var id of sortedLaunchIds) {
+        var launch = launches[id];
         
-        var e = $("#launch_" + i);
+        var e = document.getElementById(id.toString());
         
         if ((launch["time"] < timestamp_from) || (launch["time"] > timestamp_to)) {
-            e.hide();
+            e.style.display = "none";
             continue;
         } else if (!none_found && !is_selected(launch, filter_combination_all)) {
-            e.show();
-            e.addClass("unselected");
+            e.style.display = "";
+            e.classList.add("unselected");
             if (unchecked_visibility == "hidden") {
                 continue;
             }
         } else {
-            e.show();
+            e.style.display = "";
             increate_selection_counts(launch);
-            
-            e.removeClass("unselected");
+            e.classList.remove("unselected");
             
             visible_count++;
         }
         
         if (is_embedded && visible_count > embedded_max_visible) {
-            e.addClass("unselected");
+            e.classList.add("unselected");
         }
 
         var time = new Date(launch["time"] * 1000);
-        
         if (prev_y != time.getFullYear()) {
-            e.css('border-top', '2px solid brown');
+            e.style.borderTop = '2px solid brown';
             prev_y = time.getFullYear();
             prev_m = time.getMonth();
         } else if(prev_m != time.getMonth()) {
-            e.css('border-top', '1px solid black');
+            e.style.borderTop = '1px solid black';
             prev_y = time.getFullYear();
             prev_m = time.getMonth();
         } else {
-            e.css('border-top', '');
+            e.style.borderTop = '';
         }
 
     }
@@ -335,9 +333,12 @@ function gray_out_rows() {
     }
     
     for(var rocketID in all) {
-        var count_string = select_counts[rocketID];
-        if (count_string < 10) count_string = "&nbsp;" + count_string;
+        var count = select_counts[rocketID];
+        var count_string = count.toString();
+
+        if (count < 10) count_string = "&nbsp;" + count_string;
         if (select_counts[rocketID] == 0) count_string = "&nbsp;&nbsp;";
+
         $("#count_" + rocketID).html(count_string);
     }
 
@@ -346,9 +347,21 @@ function gray_out_rows() {
     $("label").removeClass("checked");
     $("label:has(input:checked)").addClass("checked");
     
-    jQuery('tr:visible:odd').addClass("odd");
-    jQuery('tr:visible:even').removeClass("odd");
+    var counter = 0;
+    var trs = document.getElementById("launch_table").getElementsByTagName("tr");
+    for(var index = 0; index < trs.length; index++) {
+        var tr = trs[index];
+        if (tr.offsetParent !== null) {
+            if (counter % 2 == 0) {
+                tr.classList.remove("odd");
+            } else {
+                tr.classList.add("odd");
+            }
+            counter++;
+        }
+    }
 
+    if (debug) console.timeEnd("gray_out_rows");
 }
 
 function update_countdown_timeout() {
@@ -361,12 +374,16 @@ function update_countdown_timeout() {
 
 function update_countdowns() {
 
-    var cusid_ele = document.getElementsByClassName('countdown');
-    for (var i = 0; i < cusid_ele.length; ++i) {
-        var item = cusid_ele[i];
-        var newHTML = seconds_to_dhms(item.getAttribute("data-time"), item.getAttribute("data-tbdtime"), item.getAttribute("data-tbddate"), item.getAttribute("data-status"));
-        if (newHTML && item.innerHTML != newHTML) {
-            item.innerHTML = newHTML;
+    var countdownElements = document.getElementsByClassName('countdown');
+    for (var i = 0; i < countdownElements.length; ++i) {
+        var element = countdownElements[i];
+        
+        const id = parseInt(element.getAttribute("data-id"));
+        const launch = launches[id];
+        
+        var newHTML = seconds_to_dhms(launch.time, launch.tbdtime, launch.tbddate, launch.status);
+        if (newHTML && element.innerHTML != newHTML) {
+            element.innerHTML = newHTML;
         }
     }
 
@@ -376,19 +393,22 @@ function update_dates() {
 
     var days = ['sun','mon','tue','wed','thu','fri','sat'];
 
-    var cusid_ele = document.getElementsByClassName('date');
-    for (var i = 0; i < cusid_ele.length; ++i) {
-        var item = cusid_ele[i];
+    var dateElements = document.getElementsByClassName('date');
+    for (var i = 0; i < dateElements.length; ++i) {
+        const element = dateElements[i];
 
-        var d = new Date(parseInt(item.getAttribute("data-time")) * 1000);
+        const id = parseInt(element.getAttribute("data-id"));
+        const launch = launches[id];
 
-        if (item.getAttribute("data-tbdtime") == "0")  {
-            item.innerHTML = days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
+        var d = new Date(launch.time * 1000);
+
+        if (launch.tbdtime == "0")  {
+            element.innerHTML = days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
                 +  " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
-        } else if (item.getAttribute("data-tbddate") == "0")  {
-            item.innerHTML = days[d.getDay()] +  " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+        } else if (launch.tbddate == "0")  {
+            element.innerHTML = days[d.getDay()] +  " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
         } else {
-            item.innerHTML = "&nbsp;&nbsp;&nbsp; " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2);
+            element.innerHTML = "&nbsp;&nbsp;&nbsp; " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2);
         }
     }
 
@@ -440,6 +460,14 @@ function init() {
     if (sel == 'true') {
         $('.filter_row').toggle();$('.filter_icon').toggle();
     }
+
+    sortedLaunchIds = [];
+
+    var launchElements = document.getElementsByClassName("launch");
+    for(var index = 0; index < launchElements.length; index++) {
+        sortedLaunchIds.push(parseInt(launchElements[index].id));
+    }
+    
 
     gray_out_rows();
     update_countdown_timeout();
