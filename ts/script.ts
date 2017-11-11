@@ -160,6 +160,9 @@ function on_change() {
             $.get(url + "index.php?get_table_content=true&past_launches=true", function(data) {
                 $("#filter").nextAll('tr').remove();
                 $("#filter").after(data);
+
+                initLaunchIds();
+                update_dates();
                 
                 past_launches_loaded = true;
                 save_settings_gray_out_rows();
@@ -355,8 +358,6 @@ function gray_out_rows() {
         $("#count_" + rocketID).html(count_string);
     }
 
-    update_dates();
-
     $("label").removeClass("checked");
     $("label:has(input:checked)").addClass("checked");
 
@@ -460,16 +461,22 @@ function init() {
         $('.filter_row').toggle();$('.filter_icon').toggle();
     }
 
-    sortedLaunchIds = [];
+    initLaunchIds();
+    
+    update_dates();
+    
+    gray_out_rows();
+    
+    update_countdown_timeout();
+}
 
+function initLaunchIds() {
+    sortedLaunchIds = [];
+    
     var launchElements = document.getElementsByClassName("launch");
     for(var index = 0; index < launchElements.length; index++) {
         sortedLaunchIds.push(parseInt(launchElements[index].id));
     }
-    
-
-    gray_out_rows();
-    update_countdown_timeout();
 }
 
 function init_embedded() {

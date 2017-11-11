@@ -169,12 +169,14 @@ function get_table_content() {
         $ret .= "<td title=\"" . $launch["launch_vehicle"] . "\" class=\"rocket\">";
         
         $country_codes = array();
-        foreach($launch["rocket"]["agencies"] as $rocketAgency) {
-            foreach(explode(",", $rocketAgency["countryCode"]) as $countryCode) {
-                if (file_exists("images/flag_" . $countryCode . ".png")) {
-                    $country_codes[] = "<img class=\"flag\" src='" . $url . "images/flag_" . $countryCode . ".png'>";
-                } else {
-                    $country_codes[] = $countryCode;
+        if ($launch["rocket"]["agencies"]) {
+            foreach($launch["rocket"]["agencies"] as $rocketAgency) {
+                foreach(explode(",", $rocketAgency["countryCode"]) as $countryCode) {
+                    if (file_exists("images/flag_" . $countryCode . ".png")) {
+                        $country_codes[] = "<img class=\"flag\" src='" . $url . "images/flag_" . $countryCode . ".png'>";
+                    } else {
+                        $country_codes[] = $countryCode;
+                    }
                 }
             }
         }
