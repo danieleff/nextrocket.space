@@ -214,7 +214,7 @@ function get_table_content() {
 
         $ret .= "<td title=\"" . $launch["destination"] . "\" class=\"destination\">";
         if ($launch["destination_icon"] && $launch["destination_icon"] != '.') {
-            $ret .= "<img src=\"" . $url . "/images/" . $selection_destinations[$launch["destination_icon"]][1] . "\"> ";
+            $ret .= "<img src=\"" . $url . "images/" . $selection_destinations[$launch["destination_icon"]][1] . "\"> ";
         }
         $ret .= $launch["destination"];
         $ret .= "</td>";
