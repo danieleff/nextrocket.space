@@ -1,7 +1,7 @@
 
-var launch_id_to_save = null;
+var launch_id_to_save: number = null;
 
-function open_admin_popup(launch_id) {
+function open_admin_popup(launch_id: number) {
     $.getJSON("ajax.php", {action: 'get', launch_id: launch_id}, function(result) {
         
         launch_id_to_save = launch_id;
@@ -15,7 +15,7 @@ function open_admin_popup(launch_id) {
 }
 
 function save_launch() {
-    var data = {};
+    var data: any = {};
     data['action'] = 'update';
     data['id'] = launch_id_to_save;
     data['payload_type'] = $('[name=admin_payload_type]').val();

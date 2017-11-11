@@ -2,13 +2,26 @@
 /// <reference types="jquery.ui.layout" />
 
 // From index.php
-var launches: [{time: number; matches: string[]}];
+type Launch = {
+    time: number; 
+    tbdtime: "0" | "1";
+    tbddate: "0" | "1";
+    status: string;
+    matches: string[];
+};
+
+var launches: Launch[]; //deprecated
+var launchesById: {
+    [key: number]: Launch
+};
 var available_selections: {[key: string]: string[]};
 var url: string;
 
 
+var debug = true;
 
-var selected = [];
+
+var selected: string[] = [];
 
 var is_embedded = false;
 
@@ -16,7 +29,7 @@ var embedded_max_visible = 5;
 
 var past_launches_loaded = false;
 
-var select_counts: number[] = [];
+var select_counts: {[key: string]: number} = {};
 
 var delimiter = "|";
 
@@ -47,7 +60,7 @@ function serialize_selection() {
     return serialized;
 }
 
-function unserialize_selection_v1(data) {
+function unserialize_selection_v1(data: string) {
     var parts = data.split(delimiter);
     
     selected = parts[1].split(",");
@@ -63,26 +76,26 @@ function unserialize_selection_v1(data) {
     $("input[name=filters_join][value=" + parts[3] + "]").prop('checked', true);
 }
 
-function unserialize_selection(data) {
+function unserialize_selection(data: string) {
     if (data[0] == '1') {
         unserialize_selection_v1(data);
     }
 }
 
-function seconds_to_dhms(time, tbdtime, tbddate, launch_status) {
-    //return new Date(time * 1000);
+function seconds_to_dhms(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", launch_status: string) {
+    var now = new Date();
 
-    var seconds = time - new Date().getTime() / 1000;
+    var seconds = time - now.getTime() / 1000;
     if (seconds < 0) {
         return "";
     }
 
     if (tbddate == "1") {
         var t = new Date(time * 1000);
-        var firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
         //var monthSeconds = time - firstDay.getTime() / 1000;
 
-        var months = (t.getFullYear() - new Date().getFullYear()) * 12 + t.getMonth() - new Date().getMonth();
+        var months = (t.getFullYear() - now.getFullYear()) * 12 + t.getMonth() - now.getMonth();
 
         if (months == 1) {
             return "next month " + launch_status;
@@ -170,14 +183,14 @@ function save_settings_gray_out_rows() {
 }
 
 
-function increate_selection_counts(launch) {
+function increate_selection_counts(launch: Launch) {
      for (var index = 0; index < launch["matches"].length; index++) {
         var rocketID = launch["matches"][index];
         select_counts[rocketID]++;
     }
 }
 
-function is_selected(launch, filter_combination_all: boolean) {
+function is_selected(launch: Launch, filter_combination_all: boolean) {
     
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
@@ -207,6 +220,8 @@ function is_selected(launch, filter_combination_all: boolean) {
 
 
 function gray_out_rows() {
+    if (debug) console.time("gray_out_rows");
+
     var all = available_selections;
 
     var none_found = true;
@@ -391,7 +406,7 @@ function update_dates() {
 
 }
 
-function createCookie(name, value, days) {
+function createCookie(name: string, value: string, days: number) {
     var expires;
 
     if (days) {
@@ -404,7 +419,7 @@ function createCookie(name, value, days) {
     document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
 }
 
-function readCookie(name) {
+function readCookie(name: string) {
     var nameEQ = encodeURIComponent(name) + "=";
     var ca = document.cookie.split(';');
     for (var i = 0; i < ca.length; i++) {
