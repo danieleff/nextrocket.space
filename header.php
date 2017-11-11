@@ -14,9 +14,6 @@
     <title>nextrocket.space -  List of upcoming rocket launches to space.</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
-    <script src="lib/jquery.min.js"></script>
-    <script src="lib/jquery-ui.min.js"></script>
-    <script id="script" src="js/app.js"></script>
 
 </head>
 
@@ -52,17 +49,6 @@
     }
     
 </style>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-84608228-1', 'auto');
-  ga('send', 'pageview');
-
-</script>
-
 <h2 class="menu" style="float:right; padding-top:0.5em;">
   <!--<a <?=_menu_select_class("index")?> href="index.php">Home</a>-->
   <!--<a <?=_menu_select_class("hardware")?> href="hardware.php">Get the countdown rocket</a>-->
