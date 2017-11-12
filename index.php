@@ -31,7 +31,7 @@ function get_table_header() {
         $check = "";
         $check .= "<label class=\"filter\">";
         $check .= "<span class='selection_count' id='count_" . $rocketId . "'></span> ";
-        $check .= " <input style=\"display: none;\" id=\"" . $rocketId . "\" onchange=\"on_change()\" style=\"vertical-align: -1px;\" type=\"checkbox\" >";
+        $check .= " <input style=\"display: none;\" id=\"" . $rocketId . "\" onchange=\"app.onFiltersChanged()\" style=\"vertical-align: -1px;\" type=\"checkbox\" >";
         if (count($selection) > 1 && $selection[1]) {
             $check .= "<img class=\"icon\" src=\"" . $url . "images/" . $selection[1] . "\"> ";
         }
@@ -55,7 +55,7 @@ function get_table_header() {
     if ($is_admin) $ret .= "<col style=\"width:60px\">";
     $ret .= "</colgroup>";
 
-    $ret .= "<tr style=\"cursor:pointer;\" onclick=\"createCookie('filter_hidden', $('.filter_row').is(':visible'));$('.filter_row').slideToggle(200);$('.filter_icon').toggle();\">";
+    $ret .= "<tr style=\"cursor:pointer;\" onclick=\"app.onToggleFilters(this);\">";
     $ret .= "<th>";
     $ret .= "<span style=\"float:left; padding:0 0 2px 2px; display:none; \" class=\"filter_icon\">&#x25B2;</span>";
     $ret .= "<span style=\"float:left; padding:0 0 2px 2px; text-align: left; \"class=\"filter_icon\">&#x25BC;</span>";
@@ -78,21 +78,21 @@ function get_table_header() {
     $ret .= "<div id=\"filters_left\" style=\"margin: 0.5em;\" class=\"filter_row\">";
     
     $ret .= " Filter by date:<br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"launch_date_filter\" value=\"upcoming\" checked>Upcoming</label><br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"launch_date_filter\" value=\"date_range\">";
-    $ret .= " <input onchange=\"on_change()\" type=\"text\" class=\"datepicker\" name=\"launch_from\"> - <input onchange=\"on_change()\" type=\"text\" class=\"datepicker\" name=\"launch_to\">";
+    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"launch_date_filter\" value=\"upcoming\" checked>Upcoming</label><br>";
+    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"launch_date_filter\" value=\"date_range\">";
+    $ret .= " <input onchange=\"app.onFiltersChanged()\" type=\"text\" class=\"datepicker\" name=\"launch_from\"> - <input onchange=\"on_change()\" type=\"text\" class=\"datepicker\" name=\"launch_to\">";
     $ret .= " </label><br>";
     
     $ret .= " <br>";
     $ret .= "Unselected launches:<br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
+    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
+    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
+    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
     
     $ret .= "<br>";
     $ret .= "Filter combination:<br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"filters_join\" value=\"any\" checked>Any</label><br>";
-    $ret .= " <label><input onchange=\"on_change()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
+    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"any\" checked>Any</label><br>";
+    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
     
     $ret .= "</div>";
     $ret .= "<div style=\"margin: 1em;\" id=\"embedded_message\"></div>";
@@ -237,7 +237,7 @@ function get_table_content() {
         $ret .= "</td>";
         
         if ($is_admin) {
-            $ret .= "<td style=\"cursor: pointer\" onclick=\"open_admin_popup(" . $launch["id"] . ");\">";
+            $ret .= "<td style=\"cursor: pointer\" onclick=\"app.admin.open_admin_popup(" . $launch["id"] . ");\">";
             $ret .= "Admin";
             $ret .= "</td>";
         }
@@ -332,7 +332,7 @@ if ($_REQUEST["old_header"]) {
     </table>
     
     <center>
-        <button onclick="save_launch()">Save</button>
+        <button onclick="app.admin.save_launch()">Save</button>
     </center>
     
 </div>
@@ -343,25 +343,19 @@ if ($_REQUEST["old_header"]) {
     ?>
 </table>
 
-<script src="lib/jquery.min.js"></script>
-<script src="lib/jquery-ui.min.js"></script>
-<script id="script" src="js/app.js"></script>
+<!--<script src="lib/system.js"></script>-->
+<script src="js/bundle.min.js"></script>
+
 <script type='text/javascript'>
+
+
     var launches = <?=json_encode(get_launches_by_id($launches));?>;
     var available_selections = <?=json_encode($available_selections);?>;
     
     var url = '<?=$url?>';
-    
-    $(".datepicker").datepicker();
-    var toDate = new Date();
-    var fromDate = new Date();
-    fromDate.setDate(fromDate.getDate() - 30);
-    $(".datepicker[name='launch_from']").datepicker('setDate', fromDate);
-    $(".datepicker[name='launch_to']").datepicker('setDate', toDate);
-    
-    
 
-    init();
+    app.init(launches, available_selections, url);
+
 </script>
 
 <script>

@@ -1,5 +1,9 @@
-/// <reference types="jquery" />
-/// <reference types="jquery.ui.layout" />
+import * as Settings from  "./usersettings";
+import * as $ from "jquery";
+import "jqueryui";
+import * as adminModule from "./admin"
+
+export var admin = adminModule;
 
 // From index.php
 type Launch = {
@@ -13,11 +17,10 @@ type Launch = {
 var launches: {
     [key: number]: Launch
 };
-var sortedLaunchIds: number[];
-
 var available_selections: {[key: string]: string[]};
 var url: string;
 
+var sortedLaunchIds: number[];
 
 var debug = true;
 
@@ -32,55 +35,28 @@ var past_launches_loaded = false;
 
 var select_counts: {[key: string]: number} = {};
 
-var delimiter = "|";
+export function init(_launches: {[key: number]: Launch}, _available_selections: {[key: string]: string[]}, _url: string) {
+    launches = _launches;
+    available_selections = _available_selections;
+    url = _url;
 
-var cookie_key_serialized = "serialized";
+    selected = Settings.loadSettings();
+
+    initLaunchIds();
+    
+    update_dates();
+    
+    gray_out_rows();
+    
+    update_countdown_timeout();
 
 
-function serialize_selection() {
-    var serialized = "1";
-    serialized += delimiter;
-    
-    var first = true;
-    var all = available_selections;
-
-    for(var rocketID in all) {
-        if (document.getElementById(rocketID) && (<HTMLInputElement>document.getElementById(rocketID)).checked) {
-            if (!first) serialized += ",";
-            serialized += rocketID;
-            first = false;
-        }
-    }
-    
-    serialized += delimiter;
-    serialized += $('input[name=unchecked_visibility]:checked').val();
-    
-    serialized += delimiter;
-    serialized += $('input[name=filters_join]:checked').val();
-    
-    return serialized;
-}
-
-function unserialize_selection_v1(data: string) {
-    var parts = data.split(delimiter);
-    
-    selected = parts[1].split(",");
-    
-    for(var index in selected) {
-        if (selected[index]) {
-            $("#" + selected[index]).prop("checked", true);
-        }
-    }
-    
-    $("input[name=unchecked_visibility][value=" + parts[2] + "]").prop('checked', true);
-    
-    $("input[name=filters_join][value=" + parts[3] + "]").prop('checked', true);
-}
-
-function unserialize_selection(data: string) {
-    if (data[0] == '1') {
-        unserialize_selection_v1(data);
-    }
+    $(".datepicker").datepicker();
+    var toDate = new Date();
+    var fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - 30);
+    $(".datepicker[name='launch_from']").datepicker('setDate', fromDate);
+    $(".datepicker[name='launch_to']").datepicker('setDate', toDate);
 }
 
 function seconds_to_dhms(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", launch_status: string) {
@@ -93,9 +69,7 @@ function seconds_to_dhms(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", 
 
     if (tbddate == "1") {
         var t = new Date(time * 1000);
-        var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-        //var monthSeconds = time - firstDay.getTime() / 1000;
-
+        
         var months = (t.getFullYear() - now.getFullYear()) * 12 + t.getMonth() - now.getMonth();
 
         if (months == 1) {
@@ -150,7 +124,13 @@ function seconds_to_dhms(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", 
     return result;
 }
 
-function on_change() {
+export function onToggleFilters() {
+    $('.filter_row').toggle();
+    $('.filter_icon').toggle();
+    onFiltersChanged();
+}
+
+export function onFiltersChanged() {
     if (!past_launches_loaded && $("input[name='launch_date_filter']:checked").val() == 'date_range') {
         $("#filter").nextAll('tr').remove();
         $("#filter").after("<tr><td colspan='6' style='text-align: center;'><img src='images/ajax_loading.gif'><br>Loading</td></tr>");
@@ -165,25 +145,14 @@ function on_change() {
                 update_dates();
                 
                 past_launches_loaded = true;
-                save_settings_gray_out_rows();
+                Settings.saveSettings(available_selections);
+                gray_out_rows();
             });
         });
     } else {
-        save_settings_gray_out_rows();
+        Settings.saveSettings(available_selections);
+        gray_out_rows();
     }
-}
-
-    
-function save_settings_gray_out_rows() {
-    var serialized = serialize_selection();
-        
-    if (is_embedded) {
-        $.getJSON("?r=" + serialized);
-    } else {
-        createCookie(cookie_key_serialized, serialized, 10000);
-    }
-
-    gray_out_rows();
 }
 
 
@@ -426,49 +395,6 @@ function update_dates() {
 
 }
 
-function createCookie(name: string, value: string, days: number) {
-    var expires;
-
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    } else {
-        expires = "";
-    }
-    document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
-}
-
-function readCookie(name: string) {
-    var nameEQ = encodeURIComponent(name) + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-    }
-    return null;
-}
-
-function init() {
-    var cookie = readCookie(cookie_key_serialized);
-    if (cookie) {
-        unserialize_selection(cookie);
-    }
-    
-    var sel = readCookie("filter_hidden");
-    if (sel == 'true') {
-        $('.filter_row').toggle();$('.filter_icon').toggle();
-    }
-
-    initLaunchIds();
-    
-    update_dates();
-    
-    gray_out_rows();
-    
-    update_countdown_timeout();
-}
 
 function initLaunchIds() {
     sortedLaunchIds = [];
@@ -498,8 +424,7 @@ function init_embedded() {
             selected = data["selected"];
 
             $.get("/get_selected", function(serialized) {
-                unserialize_selection(serialized);
-                
+
                 gray_out_rows();
                 update_countdown_timeout();
             });
