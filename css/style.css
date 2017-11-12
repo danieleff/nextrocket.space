@@ -102,6 +102,11 @@ label.filter {
                                     supported by Chrome and Opera */
 }
 
+label.filter:hover {
+    background-color: lightgray;
+}
+
+
 #filter.gray_out_selections label.filter:not(.checked) {
     color: darkgray;
 }
