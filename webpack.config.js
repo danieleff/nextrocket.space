@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
-    entry: "./ts/script.ts",
+    entry: "./ts/app.ts",
     output: {
         path: __dirname + "/js",
         filename: "bundle.min.js",
