@@ -19,8 +19,10 @@
   "devDependencies": {
     "@types/jquery": "^3.2.16",
     "@types/jquery.ui.layout": "0.0.29",
+    "@types/pikaday": "^1.6.3",
     "jquery": "^3.2.1",
     "jqueryui": "^1.11.1",
+    "pikaday": "^1.6.1",
     "ts-loader": "^3.1.1",
     "webpack": "^3.8.1"
   }

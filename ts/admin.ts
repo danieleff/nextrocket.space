@@ -1,5 +1,4 @@
 import * as $ from "jquery"
-import "jqueryui"
 
 var launch_id_to_save: number = null;
 

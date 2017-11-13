@@ -1,23 +1,33 @@
-import * as Settings from  "./usersettings";
 import * as $ from "jquery";
-import "jqueryui";
+import * as Pikaday from "pikaday";
+
+import * as Settings from  "./usersettings";
 import * as adminModule from "./admin"
 
 export var admin = adminModule;
 
-// From index.php
+
 type Launch = {
     time: number; 
     tbdtime: "0" | "1";
     tbddate: "0" | "1";
     status: string;
     matches: string[];
+    trElement: HTMLElement;
+    countdownElement: HTMLElement;
+    dateElement: HTMLElement;
 };
 
-var launches: {
+type LaunchList = {
     [key: number]: Launch
 };
-var available_selections: {[key: string]: string[]};
+
+type SelectionList = {
+    [key: string]: string[];
+};
+
+var launches: LaunchList;
+var available_selections: SelectionList;
 var url: string;
 
 var sortedLaunchIds: number[];
@@ -25,41 +35,84 @@ var sortedLaunchIds: number[];
 var debug = true;
 
 
-var selected: string[] = [];
-
-var is_embedded = false;
-
-var embedded_max_visible = 5;
+var selectedFilters: string[] = [];
 
 var past_launches_loaded = false;
 
-var select_counts: {[key: string]: number} = {};
+var initialized = false;
 
-export function init(_launches: {[key: number]: Launch}, _available_selections: {[key: string]: string[]}, _url: string) {
+var pikadayFrom: Pikaday;
+var pikadayTo: Pikaday;
+
+declare global {
+    namespace Pikaday {
+    interface PikadayOptions {
+        toString: any;
+    }
+}
+}
+
+export function init(_launches: {[key: number]: Launch}, _available_selections: {[key: string]: string[]}, _url: string, _debug: boolean) {
+    debug = _debug;
+    
+    if(debug) console.time("init");
+
     launches = _launches;
     available_selections = _available_selections;
     url = _url;
 
-    selected = Settings.loadSettings();
+    selectedFilters = Settings.loadSettings();
 
-    initLaunchIds();
+    initLaunchElements();
     
-    update_dates();
-    
-    gray_out_rows();
+    updateLaunchDates();
     
     update_countdown_timeout();
 
-
-    $(".datepicker").datepicker();
     var toDate = new Date();
     var fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 30);
-    $(".datepicker[name='launch_from']").datepicker('setDate', fromDate);
-    $(".datepicker[name='launch_to']").datepicker('setDate', toDate);
+
+    const fromOptions = {
+        field: document.getElementById('filter-launch-from'),
+        defaultDate: fromDate,
+        setDefaultDate: true,
+        toString: (date: Date, format: string) => date.toLocaleDateString()
+    };
+    pikadayFrom = new Pikaday(fromOptions);
+
+    const toOptions = {
+        field: document.getElementById('filter-launch-to'),
+        defaultDate: toDate,
+        setDefaultDate: true,
+        toString: (date: Date, format: string) => date.toLocaleDateString()
+    };
+    pikadayTo = new Pikaday(toOptions);
+    
+    initialized = true;
+
+    updateLaunches();
+    
+    if(debug) console.timeEnd("init");
 }
 
-function seconds_to_dhms(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", launch_status: string) {
+function initLaunchElements() {
+    sortedLaunchIds = [];
+    
+    var launchElements = document.getElementsByClassName("launch");
+    for(var index = 0; index < launchElements.length; index++) {
+        var element = <HTMLElement>launchElements[index];
+
+        var launchId = parseInt(launchElements[index].id);
+        launches[launchId].trElement = element;
+        launches[launchId].countdownElement = <HTMLElement>element.getElementsByClassName("countdown")[0];
+        launches[launchId].dateElement = <HTMLElement>element.getElementsByClassName("date")[0];
+
+        sortedLaunchIds.push(launchId);
+    }
+}
+
+function formatCountdown(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", launch_status: string) {
     var now = new Date();
 
     var seconds = time - now.getTime() / 1000;
@@ -141,47 +194,39 @@ export function onFiltersChanged() {
                 $("#filter").nextAll('tr').remove();
                 $("#filter").after(data);
 
-                initLaunchIds();
-                update_dates();
+                initLaunchElements();
+                updateLaunchDates();
                 
                 past_launches_loaded = true;
                 Settings.saveSettings(available_selections);
-                gray_out_rows();
+                updateLaunches();
             });
         });
     } else {
         Settings.saveSettings(available_selections);
-        gray_out_rows();
+        updateLaunches();
     }
 }
 
-
-function increate_selection_counts(launch: Launch) {
-     for (var index = 0; index < launch["matches"].length; index++) {
-        var rocketID = launch["matches"][index];
-        select_counts[rocketID]++;
-    }
-}
-
-function is_selected(launch: Launch, filter_combination_all: boolean) {
+function isSelected(launch: Launch, filter_combination_all: boolean) {
     
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
     
-    for (var index = 0; index < selected.length; index++) {
-        var rocketID = selected[index];
+    for (var index = 0; index < selectedFilters.length; index++) {
+        var filterKey = selectedFilters[index];
         
-        var category = parseInt(rocketID.charAt(0));
+        var filterCategory = parseInt(filterKey.charAt(0));
         
-        if ($.inArray(rocketID, launch["matches"]) != -1) {
+        if ($.inArray(filterKey, launch["matches"]) != -1) {
             if (!filter_combination_all) {
                 return true;
             }
             
-            found[category] = true;
+            found[filterCategory] = true;
         }
         
-        needed[category] = true;
+        needed[filterCategory] = true;
     }
     
     if (filter_combination_all) {
@@ -192,35 +237,42 @@ function is_selected(launch: Launch, filter_combination_all: boolean) {
 }
 
 
-function gray_out_rows() {
-    if (debug) console.time("gray_out_rows");
+function updateLaunches() {
+    if (!initialized) return;
+
+    if (debug) console.time("updateLaunchRows");
 
     var all = available_selections;
 
     var noLaunchSelected = true;
     
-    var filter_combination_all = $("input[name='filters_join']:checked").val() == 'all';
+    var filter_combination_all = (<HTMLInputElement>document.getElementById("filter-all")).checked;
 
-    selected = [];
+    selectedFilters = [];
+
+    var selectionCounts: {[key: string]: number} = {};
     
-    for(var rocketID in all) {
-        select_counts[rocketID] = 0;
+    for(var filterKey in all) {
+        selectionCounts[filterKey] = 0;
         
-        var checkElement = <HTMLInputElement>document.getElementById(rocketID);
+        var checkElement = <HTMLInputElement>document.getElementById(filterKey);
         if (checkElement && checkElement.checked) {
-            selected.push(rocketID);
+            selectedFilters.push(filterKey);
+            document.getElementById("label_" + filterKey).classList.add("checked");
+        } else {
+            document.getElementById("label_" + filterKey).classList.remove("checked");
         }
     }
 
-    if (selected.length > 0) {
+    if (selectedFilters.length > 0) {
         for(var id of sortedLaunchIds) {
-            if (is_selected(launches[id], filter_combination_all)) {
+            if (isSelected(launches[id], filter_combination_all)) {
                 noLaunchSelected = false;
             }
         }
     }
     
-    if (noLaunchSelected && selected.length) {
+    if (noLaunchSelected && selectedFilters.length) {
         noLaunchSelected = false;
     }
 
@@ -231,48 +283,47 @@ function gray_out_rows() {
     date_from.setHours(0, 0, 0, 0);
     var date_to = new Date(2099, 1, 1);
     
-    if ($("input[name='launch_date_filter']:checked").val() == 'date_range') {
-        date_from = $("input[name='launch_from']").datepicker('getDate');
-        date_to = $("input[name='launch_to']").datepicker('getDate');
+    if ((<HTMLInputElement>document.getElementById("filter-date-custom")).checked) {
+        date_from = pikadayFrom.getDate();
+        date_to = pikadayTo.getDate();
     }
     
     var timestamp_from = date_from.getTime() / 1000;
     var timestamp_to = date_to.getTime() / 1000;
 
-    var unchecked_visibility = $('input[name=unchecked_visibility]:checked').val()
-    if (!unchecked_visibility) {
-        unchecked_visibility = "gray_out";
+    var unchecked_visibility = "gray_out"
+    if ((<HTMLInputElement>document.getElementById("filter-unchecked-show")).checked) {
+        unchecked_visibility = "show";
+    }
+    if ((<HTMLInputElement>document.getElementById("filter-unchecked-hidden")).checked) {
+        unchecked_visibility = "hidden";
     }
 
-    var visible_count = 0;
     var counter = 0;
 
     for(var id of sortedLaunchIds) {
         var launch = launches[id];
         
-        var e = document.getElementById(id.toString());
+        var e = launch.trElement;
 
         var show = true;
         
         if ((launch["time"] < timestamp_from) || (launch["time"] > timestamp_to)) {
             show = false;
-        } else if (!noLaunchSelected && !is_selected(launch, filter_combination_all)) {
+        } else if (!noLaunchSelected && !isSelected(launch, filter_combination_all)) {
             e.classList.add("unselected");
             if (unchecked_visibility == "hidden") {
                 show = false;
             }
         } else {
-            increate_selection_counts(launch);
+            for(var filterKey of launch.matches) {
+                selectionCounts[filterKey]++;
+            }
             e.classList.remove("unselected");
-            
-            visible_count++;
         }
         
-        if (is_embedded && visible_count > embedded_max_visible) {
-            e.classList.add("unselected");
-        }
-
         if (show) {
+
             e.style.display = "";
 
             if (counter % 2 == 0) {
@@ -300,76 +351,61 @@ function gray_out_rows() {
 
     }
     
-    $("#launch_table").removeClass("hide_unselected");
-    $("#launch_table").removeClass("gray_out_unselected");
+    if (unchecked_visibility == "gray_out") {
+        document.getElementById("launch_table").classList.add("gray_out_unselected");
+    } else {
+        document.getElementById("launch_table").classList.remove("gray_out_unselected");
+    }
 
     if (noLaunchSelected) {
-        $("#filter").removeClass("gray_out_selections");
-        
-        $("#launch_table").addClass("gray_out_unselected");
+        document.getElementById("filter").classList.remove("gray_out_selections");
     } else {
-        $("#filter").addClass("gray_out_selections");
-        
-        if (unchecked_visibility == "hidden") {
-            $("#launch_table").addClass("hide_unselected");
-        } else if (unchecked_visibility == "gray_out") {
-            $("#launch_table").addClass("gray_out_unselected");
-        }
+        document.getElementById("filter").classList.add("gray_out_selections");
     }
     
-    for(var rocketID in all) {
-        var count = select_counts[rocketID];
+    for(var filterKey in all) {
+        var count = selectionCounts[filterKey];
         var count_string = count.toString();
 
         if (count < 10) count_string = "&nbsp;" + count_string;
-        if (select_counts[rocketID] == 0) count_string = "&nbsp;&nbsp;";
+        if (selectionCounts[filterKey] == 0) count_string = "&nbsp;&nbsp;";
 
-        $("#count_" + rocketID).html(count_string);
+        document.getElementById("count_" + filterKey).innerHTML = count_string;
     }
 
-    $("label").removeClass("checked");
-    $("label:has(input:checked)").addClass("checked");
-
-    if (debug) console.timeEnd("gray_out_rows");
+    if (debug) console.timeEnd("updateLaunchRows");
 }
 
 function update_countdown_timeout() {
-    update_countdowns();
+    updateLaunchCountdowns();
 
     window.setTimeout(function() {
         update_countdown_timeout();
     },1000);
 }
 
-function update_countdowns() {
-
-    var countdownElements = document.getElementsByClassName('countdown');
-    for (var i = 0; i < countdownElements.length; ++i) {
-        var element = countdownElements[i];
-        
-        const id = parseInt(element.getAttribute("data-id"));
+function updateLaunchCountdowns() {
+    for(var id in launches) {
         const launch = launches[id];
+        const element = launch.countdownElement;
         
-        var newHTML = seconds_to_dhms(launch.time, launch.tbdtime, launch.tbddate, launch.status);
+        var newHTML = formatCountdown(launch.time, launch.tbdtime, launch.tbddate, launch.status);
         if (newHTML && element.innerHTML != newHTML) {
             element.innerHTML = newHTML;
         }
     }
-
 }
 
-function update_dates() {
+function updateLaunchDates() {
 
     var days = ['sun','mon','tue','wed','thu','fri','sat'];
 
-    var dateElements = document.getElementsByClassName('date');
-    for (var i = 0; i < dateElements.length; ++i) {
-        const element = dateElements[i];
-
-        const id = parseInt(element.getAttribute("data-id"));
+    //var dateElements = document.getElementsByClassName('date');
+    for(var id in launches) {
         const launch = launches[id];
+        const element = launch.dateElement;
 
-        var d = new Date(launch.time * 1000);
+        const d = new Date(launch.time * 1000);
 
         if (launch.tbdtime == "0")  {
             element.innerHTML = days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
@@ -396,15 +432,7 @@ function update_dates() {
 }
 
 
-function initLaunchIds() {
-    sortedLaunchIds = [];
-    
-    var launchElements = document.getElementsByClassName("launch");
-    for(var index = 0; index < launchElements.length; index++) {
-        sortedLaunchIds.push(parseInt(launchElements[index].id));
-    }
-}
-
+/*
 function init_embedded() {
     is_embedded = true;
     
@@ -430,5 +458,5 @@ function init_embedded() {
             });
         });
     });
-
 }
+*/

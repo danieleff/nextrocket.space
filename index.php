@@ -29,7 +29,7 @@ function get_table_header() {
 
     foreach($available_selections as $rocketId => $selection) {
         $check = "";
-        $check .= "<label class=\"filter\">";
+        $check .= "<label id=\"label_" . $rocketId . "\" class=\"filter\">";
         $check .= "<span class='selection_count' id='count_" . $rocketId . "'></span> ";
         $check .= " <input style=\"display: none;\" id=\"" . $rocketId . "\" onchange=\"app.onFiltersChanged()\" style=\"vertical-align: -1px;\" type=\"checkbox\" >";
         if (count($selection) > 1 && $selection[1]) {
@@ -78,21 +78,21 @@ function get_table_header() {
     $ret .= "<div id=\"filters_left\" style=\"margin: 0.5em;\" class=\"filter_row\">";
     
     $ret .= " Filter by date:<br>";
-    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"launch_date_filter\" value=\"upcoming\" checked>Upcoming</label><br>";
-    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"launch_date_filter\" value=\"date_range\">";
-    $ret .= " <input onchange=\"app.onFiltersChanged()\" type=\"text\" class=\"datepicker\" name=\"launch_from\"> - <input onchange=\"on_change()\" type=\"text\" class=\"datepicker\" name=\"launch_to\">";
+    $ret .= " <label><input id=\"filter-date-upcoming\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"launch_date_filter\" value=\"upcoming\" checked>Upcoming</label><br>";
+    $ret .= " <label><input id=\"filter-date-custom\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"launch_date_filter\" value=\"date_range\">";
+    $ret .= " <input id=\"filter-launch-from\" onchange=\"app.onFiltersChanged()\" type=\"text\" class=\"datepicker\" name=\"launch_from\"> - <input onchange=\"app.onFiltersChanged()\" type=\"text\" class=\"datepicker\" name=\"launch_to\" id=\"filter-launch-to\">";
     $ret .= " </label><br>";
     
     $ret .= " <br>";
     $ret .= "Unselected launches:<br>";
-    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
-    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
-    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
+    $ret .= " <label><input id=\"filter-unchecked-show\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"show\">show</label><br>";
+    $ret .= " <label><input id=\"filter-unchecked-gray_out\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"gray_out\" checked>gray out</label><br>";
+    $ret .= " <label><input id=\"filter-unchecked-hidden\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"unchecked_visibility\" value=\"hidden\">hide </label><br>";
     
     $ret .= "<br>";
     $ret .= "Filter combination:<br>";
     $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"any\" checked>Any</label><br>";
-    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
+    $ret .= " <label><input id=\"filter-all\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
     
     $ret .= "</div>";
     $ret .= "<div style=\"margin: 1em;\" id=\"embedded_message\"></div>";
@@ -137,9 +137,9 @@ function get_table_content() {
         $launch_status .= " " . $launch["failreason"];
         $launch_status = trim($launch_status);
         
-        $ret .= "<td class=\"countdown\" data-id=\"" . $launch["id"] . "\" >".$launch_status."</td>";
+        $ret .= "<td class=\"countdown\">".$launch_status."</td>";
         
-        $ret .= "<td class=\"date\" data-id=\"" . $launch["id"] . "\" ></td>";
+        $ret .= "<td class=\"date\"></td>";
 
 
         $ret .= "<td class=\"agency\">";
@@ -354,7 +354,7 @@ if ($_REQUEST["old_header"]) {
     
     var url = '<?=$url?>';
 
-    app.init(launches, available_selections, url);
+    app.init(launches, available_selections, url, url.indexOf("localhost") !== -1);
 
 </script>
 
