@@ -208,13 +208,13 @@ function formatCountdown(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", 
         var months = (t.getFullYear() - now.getFullYear()) * 12 + t.getMonth() - now.getMonth();
 
         if (months == 1) {
-            return "next month " + launch_status;
+            return "next month ";
         } else if (months > 1 && months < 10){
-            return "&nbsp;&nbsp;&nbsp;" + months + " months " + launch_status;
+            return "&nbsp;&nbsp;&nbsp;" + months + " months ";
         } else if (months >= 10){
-            return "&nbsp;&nbsp;" + months + " months " + launch_status;
+            return "&nbsp;&nbsp;" + months + " months ";
         } else if (months == 0) {
-            return "this month " + launch_status;
+            return "this month ";
         }
 
     }
