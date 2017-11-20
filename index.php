@@ -4,7 +4,7 @@ require_once("functions.php");
 
 $launches = get_launches();
 
-$url = "http://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpos($_SERVER["REQUEST_URI"], "/") + 1);
+$url = $_SERVER["REQUEST_SCHEME"]."://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpos($_SERVER["REQUEST_URI"], "/") + 1);
 
 $is_admin = $_REQUEST["admin_pwd"] == $admin_pwd;
 
