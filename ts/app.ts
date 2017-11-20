@@ -1,8 +1,9 @@
-import * as $ from "jquery";
 import * as Pikaday from "pikaday";
 
-import * as Settings from  "./usersettings";
+import * as LocalSettings from  "./localsettings";
 import * as adminModule from "./admin"
+
+import axios from "axios";
 
 export var admin = adminModule;
 
@@ -26,16 +27,28 @@ type SelectionList = {
     [key: string]: string[];
 };
 
+
+export type Settings = {
+    filterOpen: boolean;
+    selected: string[];
+    upcoming: boolean;
+    fromDate: string;
+    toDate: string;
+    unselected: "show" | "gray_out" | "hidden";
+    filterCombination: "any" | "all";
+}
+
 var launches: LaunchList;
 var available_selections: SelectionList;
 var url: string;
 
 var sortedLaunchIds: number[];
 
-var debug = true;
+export var debug = true;
 
 
-var selectedFilters: string[] = [];
+var settings: Settings;
+//var selectedFilters: string[] = [];
 
 var past_launches_loaded = false;
 
@@ -44,24 +57,20 @@ var initialized = false;
 var pikadayFrom: Pikaday;
 var pikadayTo: Pikaday;
 
-declare global {
-    namespace Pikaday {
-    interface PikadayOptions {
-        toString: any;
-    }
-}
-}
-
 export function init(_launches: {[key: number]: Launch}, _available_selections: {[key: string]: string[]}, _url: string, _debug: boolean) {
     debug = _debug;
-    
+
     if(debug) console.time("init");
 
     launches = _launches;
     available_selections = _available_selections;
     url = _url;
 
-    selectedFilters = Settings.loadSettings();
+    settings = LocalSettings.loadSettings();
+
+    settingsToUI();
+
+    
 
     initLaunchElements();
     
@@ -69,13 +78,9 @@ export function init(_launches: {[key: number]: Launch}, _available_selections: 
     
     update_countdown_timeout();
 
-    var toDate = new Date();
-    var fromDate = new Date();
-    fromDate.setDate(fromDate.getDate() - 30);
-
     const fromOptions = {
         field: document.getElementById('filter-launch-from'),
-        defaultDate: fromDate,
+        defaultDate: new Date(settings.fromDate),
         setDefaultDate: true,
         toString: (date: Date, format: string) => date.toLocaleDateString()
     };
@@ -83,7 +88,7 @@ export function init(_launches: {[key: number]: Launch}, _available_selections: 
 
     const toOptions = {
         field: document.getElementById('filter-launch-to'),
-        defaultDate: toDate,
+        defaultDate: new Date(settings.toDate),
         setDefaultDate: true,
         toString: (date: Date, format: string) => date.toLocaleDateString()
     };
@@ -94,6 +99,83 @@ export function init(_launches: {[key: number]: Launch}, _available_selections: 
     updateLaunches();
     
     if(debug) console.timeEnd("init");
+}
+
+function settingsToUI() {
+    for(var index in settings.selected) {
+        (<HTMLInputElement>document.getElementById(settings.selected[index])).checked = true;
+    }
+
+    for(var filterKey in available_selections) {        
+        var checkElement = <HTMLInputElement>document.getElementById(filterKey);
+        if (settings.selected.indexOf(filterKey) !== -1) {
+            checkElement.checked = true;
+            document.getElementById("label_" + filterKey).classList.add("checked");
+        } else {
+            document.getElementById("label_" + filterKey).classList.remove("checked");
+        }
+    }
+    
+    if (settings.unselected == "show") {
+        (<HTMLInputElement>document.getElementById("filter-unchecked-show")).checked = true;
+    } else if (settings.unselected == "hidden") {
+        (<HTMLInputElement>document.getElementById("filter-unchecked-hidden")).checked = true;
+    } else {
+        (<HTMLInputElement>document.getElementById("filter-unchecked-gray_out")).checked = true;
+    }
+    
+    if (settings.filterCombination == "all") {
+        (<HTMLInputElement>document.getElementById("filter-all")).checked = true;
+    } else {
+        (<HTMLInputElement>document.getElementById("filter-any")).checked = true;
+    }
+
+    var headerElement = <HTMLElement>document.getElementById("filter");
+    var openIcon = <HTMLElement>document.getElementById("filter-icon-open");
+    var closedIcon = <HTMLElement>document.getElementById("filter-icon-closed");
+
+    if (settings.filterOpen) {
+        headerElement.style.display = '';
+        openIcon.style.display = '';
+        closedIcon.style.display = 'none';
+    } else {
+        headerElement.style.display = 'none';
+        openIcon.style.display = 'none';
+        closedIcon.style.display = '';
+    }
+}
+
+function settingsFromUI() {
+    for(var filterKey in available_selections) {        
+        var checkElement = <HTMLInputElement>document.getElementById(filterKey);
+        if (checkElement && checkElement.checked) {
+            settings.selected.push(filterKey);
+            document.getElementById("label_" + filterKey).classList.add("checked");
+        } else {
+            document.getElementById("label_" + filterKey).classList.remove("checked");
+        }
+    }
+
+    settings.unselected = "gray_out"
+    if ((<HTMLInputElement>document.getElementById("filter-unchecked-show")).checked) {
+        settings.unselected = "show";
+    }
+    if ((<HTMLInputElement>document.getElementById("filter-unchecked-hidden")).checked) {
+        settings.unselected = "hidden";
+    }
+    
+    settings.filterCombination = "any";
+    if ((<HTMLInputElement>document.getElementById("filter-all")).checked) {
+        settings.filterCombination = "all";
+    }
+
+
+    var headerElement = <HTMLElement>document.getElementById("filter");
+    if (headerElement.style.display == 'none') {
+        settings.filterOpen = false;
+    } else {
+        settings.filterOpen = true;
+    }
 }
 
 function initLaunchElements() {
@@ -178,34 +260,49 @@ function formatCountdown(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", 
 }
 
 export function onToggleFilters() {
-    $('.filter_row').toggle();
-    $('.filter_icon').toggle();
+    var headerElement = <HTMLElement>document.getElementById("filter");
+
+    if (headerElement.style.display == 'none') {
+        headerElement.style.display = '';
+    } else {
+        headerElement.style.display = 'none';
+    }
+
     onFiltersChanged();
 }
 
-export function onFiltersChanged() {
-    if (!past_launches_loaded && $("input[name='launch_date_filter']:checked").val() == 'date_range') {
-        $("#filter").nextAll('tr').remove();
-        $("#filter").after("<tr><td colspan='6' style='text-align: center;'><img src='images/ajax_loading.gif'><br>Loading</td></tr>");
-        
-        $.getJSON(url + "index.php?get_json=true&past_launches=true", function(data) {
-            launches = data['launches'];
-            $.get(url + "index.php?get_table_content=true&past_launches=true", function(data) {
-                $("#filter").nextAll('tr').remove();
-                $("#filter").after(data);
+export async function onFiltersChanged() {
+    if (!initialized) return;
+    
+    settings.selected = [];
 
-                initLaunchElements();
-                updateLaunchDates();
-                
-                past_launches_loaded = true;
-                Settings.saveSettings(available_selections);
-                updateLaunches();
-            });
-        });
-    } else {
-        Settings.saveSettings(available_selections);
-        updateLaunches();
+    settingsFromUI();
+
+    settingsToUI();
+    
+    if (!past_launches_loaded && (<HTMLInputElement>document.getElementById("filter-date-custom")).checked) {
+        var launchElements = document.getElementsByClassName("launch");
+        while(launchElements.length > 0){
+            launchElements[0].parentNode.removeChild(launchElements[0]);
+        }
+
+        // "<tr><td colspan='6' style='text-align: center;'><img src='images/ajax_loading.gif'><br>Loading</td></tr>";
+        
+        var launchResponse = await axios.get(url + "index.php?get_json=true&past_launches=true", {responseType: "json"});
+        var htmlResponse = await axios.get(url + "index.php?get_table_content=true&past_launches=true");
+        
+        launches = launchResponse.data["launches"];
+
+        document.getElementById("launch_table").insertAdjacentHTML("beforeend", htmlResponse.data);
+
+        initLaunchElements();
+        updateLaunchDates();
+        
+        past_launches_loaded = true;
     }
+
+    LocalSettings.saveSettings(settings);
+    updateLaunches();
 }
 
 function isSelected(launch: Launch, filter_combination_all: boolean) {
@@ -213,12 +310,12 @@ function isSelected(launch: Launch, filter_combination_all: boolean) {
     var found = [false, false, false, false];
     var needed = [false, false, false, false];
     
-    for (var index = 0; index < selectedFilters.length; index++) {
-        var filterKey = selectedFilters[index];
+    for (var index = 0; index < settings.selected.length; index++) {
+        var filterKey = settings.selected[index];
         
         var filterCategory = parseInt(filterKey.charAt(0));
         
-        if ($.inArray(filterKey, launch["matches"]) != -1) {
+        if (launch["matches"].indexOf(filterKey) !== -1) {
             if (!filter_combination_all) {
                 return true;
             }
@@ -248,23 +345,13 @@ function updateLaunches() {
     
     var filter_combination_all = (<HTMLInputElement>document.getElementById("filter-all")).checked;
 
-    selectedFilters = [];
-
     var selectionCounts: {[key: string]: number} = {};
     
     for(var filterKey in all) {
         selectionCounts[filterKey] = 0;
-        
-        var checkElement = <HTMLInputElement>document.getElementById(filterKey);
-        if (checkElement && checkElement.checked) {
-            selectedFilters.push(filterKey);
-            document.getElementById("label_" + filterKey).classList.add("checked");
-        } else {
-            document.getElementById("label_" + filterKey).classList.remove("checked");
-        }
     }
 
-    if (selectedFilters.length > 0) {
+    if (settings.selected.length > 0) {
         for(var id of sortedLaunchIds) {
             if (isSelected(launches[id], filter_combination_all)) {
                 noLaunchSelected = false;
@@ -272,7 +359,7 @@ function updateLaunches() {
         }
     }
     
-    if (noLaunchSelected && selectedFilters.length) {
+    if (noLaunchSelected && settings.selected.length) {
         noLaunchSelected = false;
     }
 
@@ -388,7 +475,7 @@ function updateLaunchCountdowns() {
     for(var id in launches) {
         const launch = launches[id];
         const element = launch.countdownElement;
-        
+
         var newHTML = formatCountdown(launch.time, launch.tbdtime, launch.tbddate, launch.status);
         if (newHTML && element.innerHTML != newHTML) {
             element.innerHTML = newHTML;

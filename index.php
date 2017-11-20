@@ -55,10 +55,10 @@ function get_table_header() {
     if ($is_admin) $ret .= "<col style=\"width:60px\">";
     $ret .= "</colgroup>";
 
-    $ret .= "<tr style=\"cursor:pointer;\" onclick=\"app.onToggleFilters(this);\">";
+    $ret .= "<tr id=\"filter-header\" style=\"cursor:pointer;\" onclick=\"app.onToggleFilters(this);\">";
     $ret .= "<th>";
-    $ret .= "<span style=\"float:left; padding:0 0 2px 2px; display:none; \" class=\"filter_icon\">&#x25B2;</span>";
-    $ret .= "<span style=\"float:left; padding:0 0 2px 2px; text-align: left; \"class=\"filter_icon\">&#x25BC;</span>";
+    $ret .= "<span id=\"filter-icon-closed\" style=\"float:left; padding:0 0 2px 2px; display:none; \" class=\"filter_icon\">&#x25B2;</span>";
+    $ret .= "<span id=\"filter-icon-open\" style=\"float:left; padding:0 0 2px 2px; text-align: left; \"class=\"filter_icon\">&#x25BC;</span>";
     $ret .= " Countdown";
     $ret .= "</th>";
     $ret .= "<th id=\"date_header\">Date GMT</th>";
@@ -91,7 +91,7 @@ function get_table_header() {
     
     $ret .= "<br>";
     $ret .= "Filter combination:<br>";
-    $ret .= " <label><input onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"any\" checked>Any</label><br>";
+    $ret .= " <label><input id=\"filter-any\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"any\" checked>Any</label><br>";
     $ret .= " <label><input id=\"filter-all\" onchange=\"app.onFiltersChanged()\" type=\"radio\" name=\"filters_join\" value=\"all\">All</label><br>";
     
     $ret .= "</div>";
