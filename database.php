@@ -22,8 +22,8 @@ function update_launch() {
         );
 }
 
-function get_launches() {
-    global $available_selections, $conn_string;
+function get_launches($available_selections = false) {
+    global $conn_string;
     
     $dbconn = pg_connect($conn_string) or die("Could not connect to database");
     
@@ -37,6 +37,8 @@ function get_launches() {
     
     foreach($rows as $row) {
         $launch = json_decode($row["launchlibrary_json"], true);
+
+        if (!$launch["lsp"]) continue;
         
         $launch["launchlibrary_id"] = $launch["id"];
         $launch["id"] = $row["id"];
@@ -80,14 +82,16 @@ function get_launches() {
         $launch["payload_type"] = $row["payload_type"];
         $launch["payload_icon"] = $row["payload_type_icon"];
         
-        $matches = array();
-            
-        foreach($available_selections as $rocketID => $selection_name) {
-            if (is_match($launch, $rocketID)) {
-                $matches[] = $rocketID;
+        if ($available_selections) {
+            $matches = array();
+            foreach($available_selections as $rocketID => $selection_name) {
+                if (is_match($launch, $rocketID)) {
+                    $matches[] = $rocketID;
+                }
             }
+            $launch["matches"] = $matches;
         }
-        $launch["matches"] = $matches;
+
         
         $launches[] = $launch;
     }

@@ -103,7 +103,10 @@ export function init(_launches: {[key: number]: Launch}, _available_selections: 
 
 function settingsToUI() {
     for(var index in settings.selected) {
-        (<HTMLInputElement>document.getElementById(settings.selected[index])).checked = true;
+        var x = document.getElementById(settings.selected[index]);
+        if (x) {
+            (<HTMLInputElement>x).checked = true;
+        }
     }
 
     for(var filterKey in available_selections) {        
@@ -252,7 +255,7 @@ function formatCountdown(time: number, tbdtime: "0" | "1", tbddate:  "0" | "1", 
         result += ":" + (minutes < 10 ? "0" + minutes : minutes);
         result += ":" + (seconds  < 10 ? "0" + seconds : seconds);
     } else {
-        result += " " + launch_status;
+        result += " ";
     }
 
 

@@ -53,6 +53,10 @@ function launchlibrary_merge_launches($launchlists) {
 }
 
 function launchlibrary_get($cache_filename, $cache_timeout_seconds, $query_string) {
+    return launchlibrary_get_cached($cache_filename, $cache_timeout_seconds, "https://launchlibrary.net/1.3/launch?" . $query_string, true);
+}
+
+function launchlibrary_get_cached($cache_filename, $cache_timeout_seconds, $url, $update_database = false) {
     
     $cache_filename = "cache/".$cache_filename;
     
@@ -68,11 +72,13 @@ function launchlibrary_get($cache_filename, $cache_timeout_seconds, $query_strin
     );
 
     $context = stream_context_create($opts);
-    $json = file_get_contents("https://launchlibrary.net/1.3/launch?".$query_string, false, $context);
+    $json = file_get_contents($url, false, $context);
 
     file_put_contents($cache_filename, $json);
 
-    update_launches(json_decode($json, true));
+    if ($update_database) {
+        update_launches(json_decode($json, true));
+    }
     
     return json_decode($json, true);
 }

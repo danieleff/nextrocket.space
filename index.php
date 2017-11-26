@@ -2,7 +2,22 @@
 
 require_once("functions.php");
 
-$launches = get_launches();
+$launches = get_launches($available_selections);
+
+$response = json_decode(file_get_contents("cache/agency.json"), true);
+$agencies = $response["agencies"];
+$activeAgencies = array();
+
+foreach($launches as $launch) {
+    foreach($launch["agency"] as $launch_agency) {
+        foreach($agencies as $agency) {
+            if ($agency["islsp"] && $agency["abbrev"] == $launch_agency) {
+                $activeAgencies[$agency["abbrev"]] = $agency;
+                break;
+            }
+        }
+    }
+}
 
 $url = $_SERVER["REQUEST_SCHEME"]."://".$_SERVER["HTTP_HOST"].substr($_SERVER["REQUEST_URI"], 0, strrpos($_SERVER["REQUEST_URI"], "/") + 1);
 
@@ -62,7 +77,7 @@ function get_table_header() {
     $ret .= " Countdown";
     $ret .= "</th>";
     $ret .= "<th id=\"date_header\">Date GMT</th>";
-    $ret .= "<th>Agency</th>";
+    $ret .= "<th style=\"overflow: hidden; text-overflow: ellipsis;\">Launch&nbsp;Service&nbsp;Provider</th>";
     $ret .= "<th>Launch vehicle</th>";
     $ret .= "<th>Payload</th>";
     $ret .= "<th>Destination</th>";
@@ -112,7 +127,7 @@ function get_table_header() {
 
 function get_table_content() {
     global $launches, $agency, $url;
-    global $selection_destinations, $selection_payloads, $is_admin;
+    global $selection_destinations, $selection_payloads, $is_admin, $available_selections;
     
     foreach($launches as $key => $launch) {
         $style_color = "";
@@ -144,6 +159,7 @@ function get_table_content() {
 
         $ret .= "<td class=\"agency\">";
 
+        /*
         $agency_string = "";
         for($j = 0; $j < count($launch["agency"]); $j++) {
             if ($agency_string) {
@@ -151,7 +167,7 @@ function get_table_content() {
             }
             $a = $launch["agency"][$j];
 
-            foreach($agency as $agencyId => $agen) {
+            foreach($available_selections as $agencyId => $agen) {
                 if ($a == $agencyId && count($agen) > 1) {
                     $a = "<img title=\"" . $agen[0] . "\" src=\"" . $url . "images/" . $agen[1] . "\">";
                     break;
@@ -161,12 +177,42 @@ function get_table_content() {
 
         }
         $ret .= $agency_string;
+        */
+
+        if ($launch["lsp"]["infoURL"]) {
+            $ret .= '<a target="_blank" rel="noopener noreferrer" href="' . $launch["lsp"]["infoURL"] . '"><i class="fa fa-fw fa-external-link" aria-hidden="true"></i></a> ';
+        } else {
+            $ret .= '<a target="_blank" rel="noopener noreferrer"><i class="fa fa-fw" aria-hidden="true"></i></a> ';
+        }
+        if ($launch["lsp"]["wikiURL"]) {
+            $ret .= '<a target="_blank" rel="noopener noreferrer" href="' . $launch["lsp"]["wikiURL"] . '"><i class="fa fa-fw fa-wikipedia-w" aria-hidden="true"></i></a> ';
+        } else {
+            $ret .= '<a target="_blank" rel="noopener noreferrer"><i class="fa fa-fw" aria-hidden="true"></i></a> ';
+        }
+
+        $image = $available_selections["0" . $launch["lsp"]["abbrev"]][1];
+        if ($image) {
+            $ret .= "<img title=\"" . $launch["lsp"]["name"] . "\" src=\"" . $url . "images/" . $image . "\"> <small>" . $launch["lsp"]["name"] . "</small>";
+        } else {
+            $ret .= "<small>" . $launch["lsp"]["name"] . "</small>";
+        }
 
 
         $ret .= "</td>";
 
 
         $ret .= "<td title=\"" . $launch["launch_vehicle"] . "\" class=\"rocket\">";
+        
+        if ($launch["rocket"]["infoURL"]) {
+            $ret .= '<a target="_blank" rel="noopener noreferrer" href="' . $launch["rocket"]["infoURL"] . '"><i class="fa fa-fw fa-external-link" aria-hidden="true"></i></a> ';
+        } else {
+            $ret .= '<a target="_blank" rel="noopener noreferrer"><i class="fa fa-fw" aria-hidden="true"></i></a> ';
+        }
+        if ($launch["rocket"]["wikiURL"]) {
+            $ret .= '<a target="_blank" rel="noopener noreferrer" href="' . $launch["rocket"]["wikiURL"] . '"><i class="fa fa-fw fa-wikipedia-w" aria-hidden="true"></i></a> ';
+        } else {
+            $ret .= '<a target="_blank" rel="noopener noreferrer"><i class="fa fa-fw" aria-hidden="true"></i></a> ';
+        }
         
         $country_codes = array();
         if ($launch["rocket"]["agencies"]) {
@@ -198,6 +244,8 @@ function get_table_content() {
         }
         
         $ret .= $launch["launch_vehicle"];
+
+
         if ($launch["probability"] && $launch["probability"]!="-1" && $launch["time"] > time()) {
             $ret .= " (" . $launch["probability"] . "%)";
         }

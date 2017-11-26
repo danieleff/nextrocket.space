@@ -14,6 +14,7 @@
     <title>nextrocket.space -  List of upcoming rocket launches to space.</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/pikaday.css">
+    <link rel="stylesheet" href="lib/fontawesome-4.7.0/css/font-awesome.min.css">
 
 </head>
 

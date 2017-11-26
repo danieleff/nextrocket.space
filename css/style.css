@@ -67,7 +67,15 @@ td.agency, td.rocket, td.payload, td.destination {
 }
 
 td.agency {
-    text-align: center;
+    /*text-align: center;*/
+}
+
+.agency a, .rocket a {
+    font-size: small;
+    color: #b40000;
+}
+.agency a:hover, .rocket a:hover {
+    color: blue;
 }
 
 td.agency img {
