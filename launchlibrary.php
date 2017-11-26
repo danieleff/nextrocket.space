@@ -68,7 +68,7 @@ function launchlibrary_get($cache_filename, $cache_timeout_seconds, $query_strin
     );
 
     $context = stream_context_create($opts);
-    $json = file_get_contents("https://launchlibrary.net/1.2/launch?".$query_string, false, $context);
+    $json = file_get_contents("https://launchlibrary.net/1.3/launch?".$query_string, false, $context);
 
     file_put_contents($cache_filename, $json);
 
