@@ -80,7 +80,8 @@ td.agency {
 
 td.agency img {
     vertical-align:baseline; 
-    height:16px;
+    height: 1em;
+    font-size: small;
 }
 
 .launch_table td.date, .launch_table td.countdown, .selection_count {
