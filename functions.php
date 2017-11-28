@@ -39,7 +39,7 @@ function is_match($launch, $rocketID) {
 function getAgencies() {
     $ret = array();
 
-    $response = launchlibrary_get_cached("agency.json", 60 * 60, "https://launchlibrary.net/1.3/agency?limit=1000");
+    $response = launchlibrary_get_agencies();
 
     $agencies = $response["agencies"];
     $activeAgencies = array();

@@ -56,6 +56,10 @@ function launchlibrary_get($cache_filename, $cache_timeout_seconds, $query_strin
     return launchlibrary_get_cached($cache_filename, $cache_timeout_seconds, "https://launchlibrary.net/1.3/launch?" . $query_string, true);
 }
 
+function launchlibrary_get_agencies() {
+    return launchlibrary_get_cached("agency.json", 60 * 60, "https://launchlibrary.net/1.3/agency?limit=1000");
+}
+
 function launchlibrary_get_cached($cache_filename, $cache_timeout_seconds, $url, $update_database = false) {
     
     $cache_filename = "cache/".$cache_filename;
