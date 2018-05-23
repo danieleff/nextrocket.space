@@ -30,7 +30,7 @@ function get_launches($available_selections = false) {
     $launches = array();
     
     if ($_REQUEST["past_launches"]) {
-        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE is_active AND ORDER BY id'));
+        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE is_active ORDER BY id'));
     } else {
         $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE is_active AND date(launchlibrary_time) >= date(now()) ORDER BY id'));
     }
