@@ -30,9 +30,9 @@ function get_launches($available_selections = false) {
     $launches = array();
     
     if ($_REQUEST["past_launches"]) {
-        $rows = pg_fetch_all(pg_query('SELECT * FROM launch ORDER BY id'));
+        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE is_active AND ORDER BY id'));
     } else {
-        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE date(launchlibrary_time) >= date(now()) ORDER BY id'));
+        $rows = pg_fetch_all(pg_query('SELECT * FROM launch WHERE is_active AND date(launchlibrary_time) >= date(now()) ORDER BY id'));
     }
     
     foreach($rows as $row) {
@@ -148,3 +148,13 @@ function update_launches($launchlibrary_data) {
     
 }
 
+function set_launches_inactive($active_launchlibrary_ids) {
+    global $conn_string;
+
+    $where = join(", ", $active_launchlibrary_ids);
+    
+    $dbconn = pg_connect($conn_string) or die("Could not connect to database");
+
+    pg_query($dbconn, "UPDATE launch SET is_active = false WHERE launchlibrary_id IS NOT NULL AND launchlibrary_id NOT IN ($where)");
+    pg_query($dbconn, "UPDATE launch SET is_active = true WHERE launchlibrary_id IS NOT NULL AND launchlibrary_id IN ($where)");
+}

@@ -13,7 +13,7 @@ define("PAST_LONGTERM_CACHE_SECONDS", 60 * 60 * 24);
 function launchlibrary_get_upcoming_launches() {
     $today_date = date("Y-m-d");
     $shortterm_end_date = date("Y-m-d", strtotime("+7 days"));
-    $longterm_end_date = date("Y-m-d", strtotime("+20 years"));
+    $longterm_end_date = date("Y-m-d", PHP_INT_MAX);
     
     $shortterm_launches = launchlibrary_get("launchlibrary_upcoming_shortterm.json", 
         UPCOMING_SHORTTERM_CACHE_SECONDS, 
@@ -85,4 +85,38 @@ function launchlibrary_get_cached($cache_filename, $cache_timeout_seconds, $url,
     }
     
     return json_decode($json, true);
+}
+
+
+function launchlibrary_cleanup() {
+    $offset = 0;
+
+    $ids = array();
+
+    do {
+        $opts = array(
+            'http'=>array(
+                'method'=>"GET",
+                'header'=>"User-Agent: nextrocket.space danieleff@gmail.com\r\n"
+            )
+        );
+
+        $context = stream_context_create($opts);
+        $json = json_decode(file_get_contents("https://launchlibrary.net/1.3/launch?startdate=1950-01-01&limit=100&offset=" . $offset, false, $context), true);
+
+        $total = $json["total"];
+        $count = $json["count"];
+
+        if (!$total) return;
+        
+        foreach($json["launches"] as $launch) {
+            $ids[] = $launch["id"];
+        }
+
+        $offset += $count;
+
+    } while($offset < $total);
+
+    set_launches_inactive($ids);
+
 }
