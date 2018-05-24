@@ -3,7 +3,7 @@ import axios from "axios";
 var launch_id_to_save: number = null;
 
 export async function open_admin_popup(launch_id: number) {
-    var result = await axios.post("ajax.php", {action: 'get', launch_id: launch_id}, {responseType: "json"});
+    var result = await axios.post("ajax.php", "action=get&launch_id=" + launch_id, {responseType: "json"});
 
     launch_id_to_save = launch_id;
     
@@ -15,13 +15,13 @@ export async function open_admin_popup(launch_id: number) {
 }
 
 export async function save_launch() {
-    var data: any = {};
-    data['action'] = 'update';
-    data['id'] = launch_id_to_save;
+    var data: any = new FormData();
+    data.set('action', 'update');
+    data.set('id', launch_id_to_save);
     
-    data['payload_type'] = $('[name=admin_payload_type]').val();
-    data['destination_type'] = $('[name=admin_destination_type]').val();
-    data['destination'] = $('[name=admin_destination]').val();
+    data.set('payload_type', $('[name=admin_payload_type]').val());
+    data.set('destination_type', $('[name=admin_destination_type]').val());
+    data.set('destination', $('[name=admin_destination]').val());
     
     await axios.post("ajax.php", data);
     
