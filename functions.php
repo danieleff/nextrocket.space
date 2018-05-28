@@ -20,8 +20,8 @@ function is_match($launch, $rocketID) {
     }
 
     if ($rocketID[0] == '2'
-        && $launch["payload_type"]
-        && strpos(strtolower($launch["payload_type"]), $sel) !== false
+        && $launch["payload_icon"]
+        && $launch["payload_icon"] == $rocketID
         ) {
         return $rocketID;
     }
