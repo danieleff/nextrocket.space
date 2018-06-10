@@ -145,12 +145,12 @@ label.filter:hover {
 
 td.payload img {
     vertical-align:top; 
-    height:1em;
+    height:1.25em;
 }
 
 td.destination img {
     vertical-align:top; 
-    height:1em;
+    height:1.25em;
 }
 
 td.map {
@@ -159,7 +159,7 @@ td.map {
 
 td.map img {
     vertical-align:top; 
-    height:1em;
+    height:1.25em;
 }
 
 td.video {
@@ -168,7 +168,7 @@ td.video {
 
 td.video img {
     vertical-align: top; 
-    height: 1em;
+    height: 1.25em;
 }
 
 .flag {
