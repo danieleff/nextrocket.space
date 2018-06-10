@@ -1,4 +1,4 @@
-import {debug, Settings} from "./app";
+import {debug, Settings, Launch} from "./app";
 
 export const a = 6;
 
@@ -34,4 +34,23 @@ export function loadSettings(): Settings {
         selected: [],
         unselected: "gray_out"
     }
+}
+
+
+export function loadLaunchesFromPreviousVisit() {
+    var item = localStorage.getItem("last_launches");
+    
+    if (item) {
+        try {
+            return JSON.parse(item);
+        } catch(e) {
+            console.log(e);
+        }
+    }
+    
+    return {};
+}
+
+export function saveLaunchesFromPreviousVisit(launches: {[key: number]: Launch}) {
+    localStorage.setItem("last_launches", JSON.stringify(launches));
 }

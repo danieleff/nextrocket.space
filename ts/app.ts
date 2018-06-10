@@ -8,7 +8,7 @@ import axios from "axios";
 export var admin = adminModule;
 
 
-type Launch = {
+export type Launch = {
     time: number; 
     tbdtime: "0" | "1";
     tbddate: "0" | "1";
@@ -57,6 +57,8 @@ var initialized = false;
 var pikadayFrom: Pikaday;
 var pikadayTo: Pikaday;
 
+var launchesFromPreviousVisit: {[key: number]: Launch};
+
 export function init(_launches: {[key: number]: Launch}, _available_selections: {[key: string]: string[]}, _url: string, _debug: boolean) {
     debug = _debug;
 
@@ -67,6 +69,10 @@ export function init(_launches: {[key: number]: Launch}, _available_selections: 
     url = _url;
 
     settings = LocalSettings.loadSettings();
+
+    launchesFromPreviousVisit = LocalSettings.loadLaunchesFromPreviousVisit();
+
+    LocalSettings.saveLaunchesFromPreviousVisit(launches);
 
     settingsToUI();
 
@@ -497,13 +503,24 @@ function updateLaunchDates() {
 
         const d = new Date(launch.time * 1000);
 
+        var launchChangeIndicator = '<i class="fa fa-fw" style="color: red;"></i>';
+
+        const launchFromPastVisit = launchesFromPreviousVisit[id];
+        if (launchesFromPreviousVisit) {
+            if (!launchFromPastVisit) {
+                launchChangeIndicator = '<i class="fa fa-fw fa-plus-circle" title="Launch added since prevous visit" style="color: red;"></i>';
+            } else if (launchFromPastVisit.time != launch.time) {
+                launchChangeIndicator = '<i class="fa fa-fw fa-info-circle" title="Launch date changed since prevous visit" style="color: red;"></i>';
+            }
+        }
+
         if (launch.tbdtime == "0")  {
-            element.innerHTML = days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
+            element.innerHTML = launchChangeIndicator + days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
                 +  " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
         } else if (launch.tbddate == "0")  {
-            element.innerHTML = days[d.getDay()] +  " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+            element.innerHTML = launchChangeIndicator + days[d.getDay()] +  " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
         } else {
-            element.innerHTML = "&nbsp;&nbsp;&nbsp; " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2);
+            element.innerHTML = launchChangeIndicator + "&nbsp;&nbsp;&nbsp; " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2);
         }
     }
 

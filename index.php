@@ -60,7 +60,7 @@ function get_table_header() {
     }
     $ret .= "<colgroup>";
     $ret .= "<col style=\"width:10em\">";
-    $ret .= "<col style=\"width:11em\">";
+    $ret .= "<col style=\"width:12em\">";
     $ret .= "<col style=\"width:20%\">";
     $ret .= "<col style=\"width:25%\">";
     $ret .= "<col style=\"width:30%\">";
