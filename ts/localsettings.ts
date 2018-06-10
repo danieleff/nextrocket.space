@@ -5,7 +5,11 @@ export const a = 6;
 export function saveSettings(filter: Settings) {
     if (debug) console.log("saveSettings", filter);
 
-    localStorage.setItem("filter", JSON.stringify(filter));
+    try {
+        localStorage.setItem("filter", JSON.stringify(filter));
+    } catch(e) {
+        console.log(e);
+    }
 }
 
 export function loadSettings(): Settings {
@@ -52,5 +56,9 @@ export function loadLaunchesFromPreviousVisit() {
 }
 
 export function saveLaunchesFromPreviousVisit(launches: {[key: number]: Launch}) {
-    localStorage.setItem("last_launches", JSON.stringify(launches));
+    try {
+        localStorage.setItem("last_launches", JSON.stringify(launches));
+    } catch(e) {
+        console.log(e);
+    }
 }
