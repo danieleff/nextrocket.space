@@ -506,7 +506,7 @@ function updateLaunchDates() {
         var launchChangeIndicator = '<i class="fa fa-fw" style="color: red;"></i>';
 
         const launchFromPastVisit = launchesFromPreviousVisit[id];
-        if (launchesFromPreviousVisit) {
+        if (launchesFromPreviousVisit && Object.keys(launchesFromPreviousVisit).length > 0) {
             if (!launchFromPastVisit) {
                 launchChangeIndicator = '<i class="fa fa-fw fa-plus-circle" title="Launch added since prevous visit" style="color: red;"></i>';
             } else if (launchFromPastVisit.time != launch.time) {
