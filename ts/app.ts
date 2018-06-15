@@ -492,16 +492,26 @@ function updateLaunchCountdowns() {
     }
 }
 
-function updateLaunchDates() {
-
+function launchTimeToString(launch: Launch) {
+    
     var days = ['sun','mon','tue','wed','thu','fri','sat'];
 
-    //var dateElements = document.getElementsByClassName('date');
+    const d = new Date(launch.time * 1000);
+
+    if (launch.tbdtime == "0")  {
+        return days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
+            +  " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+    } else if (launch.tbddate == "0")  {
+        return days[d.getDay()] +  " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+    } else {
+        return "&nbsp;&nbsp;&nbsp; " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2);
+    }
+}
+
+function updateLaunchDates() {
     for(var id in launches) {
         const launch = launches[id];
         const element = launch.dateElement;
-
-        const d = new Date(launch.time * 1000);
 
         var launchChangeIndicator = '<i class="fa fa-fw" style="color: red;"></i>';
 
@@ -510,18 +520,12 @@ function updateLaunchDates() {
             if (!launchFromPastVisit) {
                 launchChangeIndicator = '<i class="fa fa-fw fa-plus-circle" title="Launch added since previous visit" style="color: red;"></i>';
             } else if (launchFromPastVisit.time != launch.time) {
-                launchChangeIndicator = '<i class="fa fa-fw fa-info-circle" title="Launch date changed since previous visit" style="color: red;"></i>';
+                launchChangeIndicator = '<i class="fa fa-fw fa-info-circle" title="Launch date changed from \'' + launchTimeToString(launchFromPastVisit) + '\' since previous visit" style="color: red;"></i>';
             }
         }
 
-        if (launch.tbdtime == "0")  {
-            element.innerHTML = launchChangeIndicator + days[d.getDay()] + " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
-                +  " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
-        } else if (launch.tbddate == "0")  {
-            element.innerHTML = launchChangeIndicator + days[d.getDay()] +  " " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-        } else {
-            element.innerHTML = launchChangeIndicator + "&nbsp;&nbsp;&nbsp; " + d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2);
-        }
+        element.innerHTML = launchChangeIndicator + launchTimeToString(launch);
+
     }
 
     var header = document.getElementById('date_header');
