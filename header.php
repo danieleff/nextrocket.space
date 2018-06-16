@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="lib/fontawesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
+    <link rel="shortcut icon" href="images/favicon-5.ico">
+
 </head>
 
 <body>
