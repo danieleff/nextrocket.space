@@ -11,6 +11,9 @@
 <html lang="en-US">
 <head>
     <meta charset="utf-8">
+    <meta name="author" content="Daniel Fekete">
+    <meta name="description" content="Overview of all upcoming rocket launches to space, including launch time, payload and destination.">
+
     <title>nextrocket.space -  List of upcoming rocket launches to space.</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/pikaday.css">
