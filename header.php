@@ -8,7 +8,7 @@
   }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
     <meta charset="utf-8">
     <title>nextrocket.space -  List of upcoming rocket launches to space.</title>
