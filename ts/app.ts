@@ -518,7 +518,7 @@ function updateLaunchDates() {
         const launchFromPastVisit = launchesFromPreviousVisit[id];
         if (launchesFromPreviousVisit && Object.keys(launchesFromPreviousVisit).length > 0) {
             if (!launchFromPastVisit) {
-                launchChangeIndicator = '<i class="fa fa-fw fa-plus-circle" title="Launch added since previous visit" style="color: red;"></i>';
+                launchChangeIndicator = '<i class="fa fa-fw fa-plus-circle" title="Launch added since previous visit" style="color: MediumBlue;"></i>';
             } else if (launchFromPastVisit.time != launch.time) {
                 launchChangeIndicator = '<i class="fa fa-fw fa-info-circle" title="Launch date changed from \'' + launchTimeToString(launchFromPastVisit) + '\' since previous visit" style="color: red;"></i>';
             }
