@@ -24,6 +24,11 @@ export type LaunchLibraryLaunch = {
             countryCode: string
         }[]
     };
+    location: {
+        pads: {
+            mapURL: string
+        }[]
+    }
     missions: {
         name: string;
     }[],

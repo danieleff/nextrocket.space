@@ -504,16 +504,28 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
                         { launch.destinationName }
                     </td>
 
-                    <td className="map" title="Space Launch Complex 6, Vandenberg AFB, CA">
-                        <a target="_blank" href="http://maps.google.com/maps?q=34.5815+N,+120.6262+W">
-                            <img src="images/map_pin.png"/>
-                        </a>
+                    <td className="map">
+                        {
+                            launch.mapURL
+                            ?
+                            <a target="_blank" href={launch.mapURL}>
+                                <img src="images/map_pin.png"/>
+                            </a>
+                            :
+                            null
+                        }
                     </td>
                     
                     <td className="video">
-                        <a target="_blank" href="http://ulalaunch.com/webcast.aspx">
-                            <img src="images/video.png"/>
-                        </a>
+                        {
+                            launch.videoURL
+                            ?
+                            <a target="_blank" href={launch.videoURL}>
+                                <img src="images/video.png"/>
+                            </a>
+                            :
+                            null
+                        }
                     </td>
                 </tr>;
         });

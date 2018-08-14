@@ -56,6 +56,11 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
                 break;
             }
         }
+
+        var mapURL = undefined;
+        if (launchlibrary.location && launchlibrary.location.pads && launchlibrary.location.pads.length > 0) {
+            mapURL = launchlibrary.location.pads[0].mapURL;
+        }
         
         return {
             id: dbLaunch.id,
@@ -85,6 +90,7 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
             destinationFilterKey: dbLaunch.destination_icon,
 
             videoURL: (launchlibrary.vidURLs && launchlibrary.vidURLs.length >= 1) ? launchlibrary.vidURLs[0] : undefined,
+            mapURL:  mapURL,
         }
     }).filter(x => x);
 }
