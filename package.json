@@ -7,7 +7,7 @@
     "start": "concurrently \"npm:_start-server\" \"npm:_start-webpack\"",
     "_start-server": "ts-node-dev --respawn --no-notify server/server.tsx",
     "_start-webpack": "webpack --watch",
-    "build": "webpack"
+    "build": "forever stopall && webpack && tsc && forever start js/server/server.js"
   },
   "repository": {
     "type": "git",
