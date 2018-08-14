@@ -1,0 +1,11 @@
+// Copy this file to config.ts
+
+export const config = {
+    pg: {
+        host: 'localhost',
+        database: ...,
+        user: ...,
+        password: ...,
+        port: 5432,
+    }
+}

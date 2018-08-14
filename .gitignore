@@ -2,3 +2,5 @@ cache/*.json
 local.php
 node_modules
 js/
+public/index.html
+config.ts

@@ -1,0 +1,553 @@
+import * as React from 'react';
+import { AvailableFilters, FrontendLaunch, TimestampResolution } from './types';
+
+import {launchTimeToString, formatCountdown} from './timeutils';
+import Axios from 'axios';
+
+const FILTERS_KEY = "selectedFilters";
+const PREVIOUS_LAUNCHES = "previousLaunches";
+
+type LaunchTableProps = {
+    filters: AvailableFilters;
+    launches: FrontendLaunch[];
+}
+
+type LaunchTableState = {
+    loadingAllLaunches: boolean,
+    launches: FrontendLaunch[],
+    previousLaunches: {[key: number]: string},
+    selectedFilters: {
+        filtersOpen: boolean;
+        lsps: string[],
+        rockets: string[],
+        payloads: string[],
+        destinations: string[],
+        uncheckedVisibility: "show" | "gray_out" | "hidden",
+        filterJoin: "any" | "all",
+        upcoming: boolean,
+        fromDate: string,
+        toDate: string
+    };
+}
+
+export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableState> {
+
+    constructor(props: LaunchTableProps) {
+        super(props);
+
+        const previousMonth = new Date();
+        previousMonth.setMonth(previousMonth.getMonth() - 1);
+
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+        this.state = {
+            loadingAllLaunches: false,
+            launches: this.props.launches,
+            previousLaunches: [],
+            selectedFilters: {
+                filtersOpen: true,
+                lsps: [],
+                rockets: [],
+                payloads: [],
+                destinations: [],
+                uncheckedVisibility: "gray_out",
+                filterJoin: "any",
+                upcoming: true,
+                fromDate: previousMonth.toISOString().substring(0,10),
+                toDate: nextMonth.toISOString().substring(0,10)
+
+            }
+        }
+    }
+
+    async componentDidMount() {
+        const selectedFiltersString = localStorage.getItem(FILTERS_KEY);
+
+        if (selectedFiltersString) {
+
+            const selectedFilters = JSON.parse(selectedFiltersString);
+
+            const previousMonth = new Date();
+            previousMonth.setMonth(previousMonth.getMonth() - 1);
+
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+            if (selectedFilters.upcoming || !selectedFilters.fromDate) {
+                selectedFilters.fromDate = previousMonth.toISOString().substring(0,10);
+            }
+            
+            if (selectedFilters.upcoming || !selectedFilters.toDate) {
+                selectedFilters.toDate = nextMonth.toISOString().substring(0,10);
+            }
+            
+            this.setState({
+                selectedFilters 
+            });
+        }
+
+        const launches = (await Axios.get<FrontendLaunch[]>("/api/launches_upcoming")).data;
+        
+        var previousLaunches = {};
+        if (typeof localStorage !== 'undefined') {
+            try {
+                const previousLaunchesString = localStorage.getItem(PREVIOUS_LAUNCHES);
+                
+                const prev: {[launchId: number]: string} = {};
+                for(const l of launches) {
+                    prev[l.id] = launchTimeToString(l);
+                }
+                localStorage.setItem(PREVIOUS_LAUNCHES, JSON.stringify(prev));
+
+                if (previousLaunchesString) {
+                    previousLaunches = JSON.parse(previousLaunchesString);
+                }
+            } catch(e){console.error(e)}
+        }
+
+        this.setState({
+            launches,
+            previousLaunches
+        });
+    }
+
+    async componentDidUpdate() {
+        localStorage.setItem(FILTERS_KEY, JSON.stringify(this.state.selectedFilters));
+
+        if (!this.state.selectedFilters.upcoming && !this.state.loadingAllLaunches) {
+            this.setState({loadingAllLaunches: true});
+
+            const launches = (await Axios.get<FrontendLaunch[]>("/api/launches_all")).data;
+
+            this.setState({launches});
+        }
+    }
+
+    private getLaunches() {
+        if (this.state.selectedFilters.upcoming) {
+            const fromMillis = new Date().getTime();
+            
+            return this.state.launches.filter(l => l.timestamp >= fromMillis);
+
+        } else {
+            const fromMillis = new Date(this.state.selectedFilters.fromDate).getTime();
+            const toMillis = new Date(this.state.selectedFilters.toDate).getTime();
+
+            return this.state.launches.filter(l => l.timestamp >= fromMillis && l.timestamp <= toMillis);
+
+        }
+    }
+
+    render() {
+        var filterCounts: {[filterKey: string]: number} = {};
+
+        const filteredLaunches = this.getLaunches().filter(this.isLaunchSelected.bind(this));
+        for(const launch of filteredLaunches) {
+            if (this.isLaunchSelected(launch)) {
+                filterCounts[launch.agencyFilterKey] = filterCounts[launch.agencyFilterKey] ? filterCounts[launch.agencyFilterKey] + 1 : 1;
+                filterCounts[launch.rocketFilterKey] = filterCounts[launch.rocketFilterKey] ? filterCounts[launch.rocketFilterKey] + 1 : 1;
+                filterCounts[launch.payloadFilterKey] = filterCounts[launch.payloadFilterKey] ? filterCounts[launch.payloadFilterKey] + 1 : 1;
+                filterCounts[launch.destinationFilterKey] = filterCounts[launch.destinationFilterKey] ? filterCounts[launch.destinationFilterKey] + 1 : 1;
+            }
+        }
+
+        var offset = new Date().getTimezoneOffset();
+        var tz = "-";
+        if (offset < 0) {
+            offset = -offset;
+            tz = "+";
+        }
+        tz += ("0" + (offset / 60)).slice(-2);
+        tz += ("0" + (offset % 60)).slice(-2);
+
+        return <table id="launch_table" className={"launch_table " + (this.state.selectedFilters.uncheckedVisibility == "gray_out" ? "gray_out_unselected" : "")}>
+            <colgroup>
+                <col style={{ width: "12em", fontFamily: "monospace", fontWeight: "bold" }} />
+                <col style={{ width: "15em", fontFamily: "monospace", fontWeight: "bold"  }} />
+                <col style={{ width: "20%" }} />
+                <col style={{ width: "25%" }} />
+                <col style={{ width: "30%" }} />
+                <col style={{ width: "15%" }} />
+                <col style={{ width: "22px" }} />
+                <col style={{ width: "22px" }} />
+            </colgroup>
+            <thead>
+                <tr id="filter-header" style={{cursor: "pointer"}} onClick={() => this.setState({selectedFilters: {...this.state.selectedFilters, filtersOpen: !this.state.selectedFilters.filtersOpen}})}>
+                    <th>
+                        <span style={{float:"left", padding:"0 0 2px 2px"}} className="filter_icon">
+                            {
+                                this.state.selectedFilters.filtersOpen ? "▼" : "▲"
+                            }
+                        </span>
+                        Countdown
+                    </th>
+                    <th id="date_header">
+                        {typeof window !== 'undefined' ? "Local time (" + tz + ")" : "Time"}
+                    </th>
+                    <th style={{overflow: "hidden", textOverflow: "ellipsis"}}>Launch&nbsp;Service&nbsp;Provider</th>
+                    <th>Launch vehicle</th>
+                    <th>Payload</th>
+                    <th>Destination</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+                <tr id="filter" 
+                    className={this.isFiltering() ? "gray_out_selections" : undefined}
+                        style={{display: this.state.selectedFilters.filtersOpen ? undefined : "none", padding: "0px", whiteSpace: "nowrap", textAlign: "left", overflow: "hidden", textOverflow: "ellipsis"}}>
+                    <th style={{textAlign: "left", padding: "0px", verticalAlign: "top"}} colSpan={2}>
+                        <div id="filters_left" style={{margin: "0.5em"}} className="filter_row"> 
+                            Filter by date:<br/> 
+                            <label>
+                                <input onChange={() => this.setState({selectedFilters: {...this.state.selectedFilters, upcoming:true}})} 
+                                    checked={this.state.selectedFilters.upcoming} 
+                                    value="yes" 
+                                    type="radio"/>Upcoming
+                            </label>
+                            <br/> 
+                            <label>
+                                <input onChange={() => this.setState({selectedFilters: {...this.state.selectedFilters, upcoming:false}})} 
+                                    checked={!this.state.selectedFilters.upcoming} 
+                                    value="no" 
+                                    type="radio"/>Date range:
+                                <br />
+                                <input onChange={(e) => this.setState({selectedFilters: {...this.state.selectedFilters, fromDate: e.target.value}})} 
+                                    type="date"
+                                    disabled={this.state.selectedFilters.upcoming}
+                                    value={this.state.selectedFilters.fromDate} />
+                                &nbsp;-&nbsp;
+                                <input onChange={(e) => this.setState({selectedFilters: {...this.state.selectedFilters, toDate: e.target.value}})} 
+                                    type="date" 
+                                    disabled={this.state.selectedFilters.upcoming}
+                                    value={this.state.selectedFilters.toDate} />
+                            </label>
+                            <br/> 
+                            <br/>
+                            Unselected launches:
+                            <br/> 
+                            <label>
+                                <input type="radio"
+                                    value="show"
+                                    checked={this.state.selectedFilters.uncheckedVisibility == "show"}
+                                    onChange={() => this.setState({selectedFilters: {...this.state.selectedFilters, uncheckedVisibility: "show"}})} />
+                                show
+                            </label>
+                            <br/> 
+                            <label>
+                                <input type="radio"
+                                    value="gray_out"
+                                    checked={this.state.selectedFilters.uncheckedVisibility == "gray_out"}
+                                    onChange={() => this.setState({selectedFilters: {...this.state.selectedFilters, uncheckedVisibility: "gray_out"}})} />
+                                gray out
+                            </label>
+                            <br/> 
+                            <label>
+                                <input type="radio"
+                                    value="hidden"
+                                    checked={this.state.selectedFilters.uncheckedVisibility == "hidden"}
+                                    onChange={() => this.setState({selectedFilters: {...this.state.selectedFilters, uncheckedVisibility: "hidden"}})} />
+                                hide 
+                            </label>
+                            <br/>
+                            <br/>
+                            Filter combination:
+                            <br/> 
+                            <label>
+                                <input type="radio"
+                                    value="any"
+                                    checked={this.state.selectedFilters.filterJoin == "any"}
+                                    onChange={() => this.setState({selectedFilters: {...this.state.selectedFilters, filterJoin: "any"}})} />
+                                Any
+                            </label>
+                            <br/> 
+                            <label>
+                                <input type="radio"
+                                    value="all"
+                                    checked={this.state.selectedFilters.filterJoin == "all"}
+                                    onChange={() => this.setState({selectedFilters: {...this.state.selectedFilters, filterJoin: "all"}})} />
+                                All
+                            </label>
+                            <br/>
+                            </div>
+                    </th>
+                    <td style={{verticalAlign: "top"}}>
+                        <div className="filter_row">
+                            {this.getFilterRows(this.props.filters.lsps, this.state.selectedFilters.lsps, filterCounts)}
+                        </div>
+                    </td>
+                    <td style={{verticalAlign: "top"}}>
+                        <div className="filter_row">
+                            {this.getFilterRows(this.props.filters.rockets, this.state.selectedFilters.rockets, filterCounts)}
+                        </div>
+                    </td>
+                    <td style={{verticalAlign: "top"}}>
+                        <div className="filter_row">
+                            {this.getFilterRows(this.props.filters.payloads, this.state.selectedFilters.payloads, filterCounts)}
+                        </div>
+                    </td>
+                    <td style={{verticalAlign: "top"}}>
+                        <div className="filter_row">
+                            {this.getFilterRows(this.props.filters.destinations, this.state.selectedFilters.destinations, filterCounts)}
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    this.getLaunchRows()
+                }
+            </tbody>
+        </table>;
+    }
+
+    private getFilterRows(filters: {[key: string]: {name: string, icon: string}}, selectedFilters: string[], filterCounts: {[filterKey: string]: number}) {
+        
+        return Object.keys(filters).map(filterKey => {
+            const value = filters[filterKey];
+            const checked = selectedFilters.includes(filterKey);
+
+            var matchCount: string | number = filterCounts[filterKey];
+            if (!matchCount) {
+                matchCount = '\u00A0\u00A0';
+            } else {
+                if (matchCount < 10) matchCount = '\u00A0' + matchCount;
+            }
+
+            return <label className={"filter " + (checked ? "checked" : "")} key={filterKey} onClick={this.onFilterClicked.bind(this, selectedFilters, filterKey)}>
+                <span className="selection_count">
+                    {matchCount}
+                </span>
+                { 
+                    value.icon
+                    ?
+                    <img className="icon" src={"images/" + value.icon}/>
+                    :
+                    null
+                }
+                <span title={value.name}>{value.name}</span>
+            </label>
+        })
+    }
+
+    private onFilterClicked(selectedFilters: string[], key: string) {
+        if (selectedFilters.includes(key)) {
+            selectedFilters.splice(selectedFilters.indexOf(key), 1);
+        } else {
+            selectedFilters.push(key);
+        }
+
+        this.setState({selectedFilters: this.state.selectedFilters});
+    }
+
+    private isFiltering() {
+        return this.state.selectedFilters.lsps.length > 0
+            || this.state.selectedFilters.rockets.length > 0
+            || this.state.selectedFilters.destinations.length > 0
+            || this.state.selectedFilters.payloads.length > 0
+    }
+
+    private matches(launch: FrontendLaunch, filterKey: string) {
+        if (filterKey[0] == '0') {
+            return filterKey == launch.agencyFilterKey;
+        }
+        if (filterKey[0] == '1') {
+            return filterKey == launch.rocketFilterKey;
+        }
+        if (filterKey[0] == '2') {
+            return filterKey == launch.payloadFilterKey;
+        }
+        if (filterKey[0] == '3') {
+            return filterKey == launch.destinationFilterKey;
+        }
+    }
+
+    private isLaunchSelected(launch: FrontendLaunch) {
+        if (this.state.selectedFilters.lsps.length == 0
+            && this.state.selectedFilters.rockets.length == 0
+            && this.state.selectedFilters.payloads.length == 0
+            && this.state.selectedFilters.destinations.length == 0
+            ) {
+            return true;
+        }
+
+        if (this.state.selectedFilters.filterJoin == "all") {
+
+            const lsp = this.state.selectedFilters.lsps.length == 0
+                || this.state.selectedFilters.lsps.some(filterKey => this.matches(launch, filterKey));
+
+            const rocket = this.state.selectedFilters.rockets.length == 0
+                || this.state.selectedFilters.rockets.some(filterKey => this.matches(launch, filterKey));
+
+            const payload = this.state.selectedFilters.payloads.length == 0
+                || this.state.selectedFilters.payloads.some(filterKey => this.matches(launch, filterKey));
+
+            const destination = this.state.selectedFilters.destinations.length == 0
+                || this.state.selectedFilters.destinations.some(filterKey => this.matches(launch, filterKey));
+
+            return lsp && rocket && payload && destination;
+        } else {
+            const lsp = this.state.selectedFilters.lsps.some(filterKey => this.matches(launch, filterKey));
+
+            const rocket = this.state.selectedFilters.rockets.some(filterKey => this.matches(launch, filterKey));
+
+            const payload = this.state.selectedFilters.payloads.some(filterKey => this.matches(launch, filterKey));
+
+            const destination = this.state.selectedFilters.destinations.some(filterKey => this.matches(launch, filterKey));
+
+            return lsp || rocket || payload || destination;
+        }
+        
+    }
+
+    private getLaunchRows() {
+        var filteredLaunches = this.getLaunches().sort((a, b) => {
+            if (a.timestampResolution != b.timestampResolution && a.yearMonth == b.yearMonth) {
+                return a.timestampResolution - b.timestampResolution;
+            }
+            if (a.timestamp - b.timestamp != 0) return a.timestamp - b.timestamp;
+            return a.id - b.id;
+        });
+
+        if (this.state.selectedFilters.uncheckedVisibility == "hidden") {
+            filteredLaunches = filteredLaunches.filter(this.isLaunchSelected.bind(this));
+        }
+
+        var counter = 0;
+        var prevDate:Date;
+
+        const nowMillis = new Date().getTime();
+
+        return filteredLaunches.map(launch => {
+            counter++;
+            var style: any = {};
+
+            const date = new Date(launch.timestamp);
+
+            if (!prevDate || prevDate.getFullYear() != date.getFullYear()) {
+                style.borderTop = "2px solid brown";
+            } else if (prevDate && (prevDate.getMonth() != date.getMonth() || prevDate.getFullYear() != date.getFullYear())) {
+                style.borderTop = "1px solid black";
+            }
+
+            prevDate = date;
+
+            var className="launch ";
+            if (counter % 2 == 0) className += "odd ";
+            if (!this.isLaunchSelected(launch)) className += "unselected ";
+            
+            const launchTimeString = launchTimeToString(launch);
+            
+            var previousIcon = <i className="fa fa-fw"></i>;
+
+            if (Object.keys(this.state.previousLaunches).length > 0) {
+                if (launch.timestamp >= nowMillis) {
+                    if (!this.state.previousLaunches[launch.id]) {
+                        previousIcon = <i className="fa fa-fw fa-plus-circle" title="Launch added since previous visit" style={{color: "MediumBlue"}}></i>
+                    } else {
+                        const previousLaunchString = this.state.previousLaunches[launch.id];
+                        if (launchTimeString != previousLaunchString) {
+                            previousIcon = <i className="fa fa-fw fa-arrow-circle-down" title={"Launch date changed from '" + previousLaunchString.trim() + "' since previous visit"} style={{color: "red"}}></i>
+                        }
+                    }
+                }
+            }
+
+            return <tr className={className} key={launch.id} style={style}>
+                    <td className="countdown">
+                        <CountDown launch={launch} />
+                    </td>
+
+                    <td className="date">
+                        { previousIcon }
+                        { launchTimeString }
+                    </td>
+
+                    <td className="agency">
+                        <a target="_blank" rel="noopener noreferrer" href={launch.agencyInfoUrl}>
+                            <i className={"fa fa-fw " + (launch.agencyInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
+                        </a>
+                        <a target="_blank" rel="noopener noreferrer" href={launch.agencyWikiUrl}>
+                            <i className={"fab fa-fw " + (launch.agencyWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
+                        </a>
+                        {
+                            launch.agencyIcon
+                            ?
+                            <img title={launch.agencyName} src={"images/" + launch.agencyIcon}/> 
+                            : 
+                            null
+                        }
+                        <small>{launch.agencyName}</small>
+                    </td>
+
+                    <td title={launch.rocketName} className="rocket">
+                        <a target="_blank" rel="noopener noreferrer" href={launch.rocketInfoUrl}>
+                            <i className={"fa fa-fw " + (launch.rocketInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
+                        </a> 
+                        <a target="_blank" rel="noopener noreferrer" href={launch.rocketWikiUrl}>
+                            <i className={"fab fa-fw " + (launch.rocketWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
+                        </a> 
+                        <div className="flag">
+                            { launch.rocketFlagIcon ? <img className="flag" src={"images/" + launch.rocketFlagIcon}/> : null }
+                        </div>
+                        {launch.rocketName}
+                    </td>
+
+                    <td className="payload">
+                            
+                        { launch.payloadIcon ? <img className="flag" src={"images/" + launch.payloadIcon}/> : null }
+                        <span title={launch.payloadName}>{launch.payloadName}</span>
+                    </td>
+
+                    <td className="destination" title={launch.destinationName} >
+                        { launch.destinationIcon ? <img className="flag" src={"images/" + launch.destinationIcon}/> : null }
+                        { launch.destinationName }
+                    </td>
+
+                    <td className="map" title="Space Launch Complex 6, Vandenberg AFB, CA">
+                        <a target="_blank" href="http://maps.google.com/maps?q=34.5815+N,+120.6262+W">
+                            <img src="images/map_pin.png"/>
+                        </a>
+                    </td>
+                    
+                    <td className="video">
+                        <a target="_blank" href="http://ulalaunch.com/webcast.aspx">
+                            <img src="images/video.png"/>
+                        </a>
+                    </td>
+                </tr>;
+        });
+    }
+
+}
+
+class CountDown extends React.Component<{launch: FrontendLaunch}, {now?: Date}> {
+
+    private interval: any;
+
+    constructor(props: any) {
+        super(props);
+        this.state = {
+           
+        };
+    }
+
+    componentDidMount() {
+        this.setState({now: new Date()})
+        
+        if (this.props.launch.timestampResolution == TimestampResolution.SECOND) {
+            this.interval = setInterval(() => this.setState({now: new Date()}), 100);
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+    }
+
+    render() {
+        return formatCountdown(this.props.launch, this.state && this.state.now) || null;
+    }
+
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="Daniel Fekete">
+    <meta name="description" content="Overview of all upcoming rocket launches to space, including launch time, payload and destination.">
+
+    <title>nextrocket.space -  List of upcoming rocket launches to space.</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+    <link rel="shortcut icon" href="images/favicon-5.ico">
+
+</head>
+
+<body>
+<style>
+    h1 {
+        color:black;
+
+
+        margin:0;
+        padding:0 6px;
+    }
+    h2 {
+        padding:0 6px;
+
+
+        margin-top:0;
+        font-family: 'Open Sans', sans-serif;
+
+        text-transform: uppercase;
+    }
+    h2 a {
+        color:#b40000;
+        padding: 6px;
+
+    }
+    h2 a:hover, h2 a.selected:hover {
+        background-color:black;
+        color:white;
+    }
+    h2 a.selected {
+        color:black;
+    }
+    
+</style>
+<h2 class="menu" style="float:right; padding-top:0.5em;">
+  <!--<a href="about.php">About</a>-->
+  <a href="http://launchlibrary.net">Launchlibrary</a>
+</h2>
+
+<h1 style="line-height:1em;">
+
+    <!--
+    <img src="images/logo.png" style="height:1em; vertical-align: middle;" alt="LaunchTime">
+    -->
+    <div class="title">
+        <a href="http://nextrocket.space"><span style="color:#b40000;">nextrocket</span>.space</a>
+    </div>
+    <span style="width:100%; vertical-align: middle; font-size:small;margin:0; padding:0;">
+        List of upcoming rocket launches to space
+    </span>
+
+
+</h1>
+<div id="app">
+{{app}}}
+</div>
+
+<script>
+    var fewUpcoming = {{fewUpcoming}};
+    var filters = {{filters}};
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-84608228-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-84608228-1');
+</script>
+
+
+</body>
+</html>
