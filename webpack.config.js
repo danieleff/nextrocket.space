@@ -1,4 +1,4 @@
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
@@ -29,7 +29,7 @@ module.exports = {
         minimize: true
     },
     plugins: [
-        new BundleAnalyzerPlugin(),
+        //new BundleAnalyzerPlugin(),
         new CleanWebpackPlugin(['public/js']),
         new HtmlWebpackPlugin({
             template: "public/index-before-bundle.html",
