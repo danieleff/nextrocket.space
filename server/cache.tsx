@@ -74,7 +74,6 @@ export async function startBackgroundAutoUpdates() {
 
     setInterval(updateUpcomingLaunches, LAUNCHLIBRARY_UPDATE_UPCOMING_SECONDS * 1000);
     setInterval(updateAllLaunches, LAUNCHLIBRARY_UPDATE_ALL_SECONDS * 1000);
-    updateUpcomingLaunches();
 }
 
 function updateCaches() {
