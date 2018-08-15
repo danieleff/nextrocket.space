@@ -56,7 +56,7 @@ app.get('/api/launches_all',
 app.get('/api/update', 
     async (req, res) => {
         try {
-            if (req.param("admin") != config.password) {
+            if (req.param("admin_pwd") != config.password) {
                 res.sendStatus(401); // unauthorized
                 return;
             }

@@ -177,7 +177,7 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
                 <col style={{ width: "22px" }} />
                 <col style={{ width: "22px" }} />
                 {
-                    typeof location !== 'undefined' && location.search.includes("admin")
+                    typeof location !== 'undefined' && location.search.includes("admin_pwd")
                     ?
                     <col style={{ width: "8em" }} />
                     :

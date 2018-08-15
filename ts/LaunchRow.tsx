@@ -40,7 +40,7 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
         const params = queryString.parse(location.search);
 
         var url = "/api/update?" + queryString.stringify({
-            admin: params.admin,
+            admin_pwd: params.admin_pwd,
             id: this.props.launch.id,
             payload_type_icon: this.state.payloadIcon || null,
             destination: this.state.destination || null,
@@ -114,7 +114,7 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
                 this.state.editing
                 ?
                 <select value={this.state.payloadIcon} onChange={(e) => this.setState({payloadIcon: e.target.value})} >
-                    <option value="">[ Ismeretlen ]</option>
+                    <option value="">[ Unknown ]</option>
                     {
                         Object.entries(this.props.payloads).map(e => {
                             return <option key={e[0]} value={e[0]}>{e[1].name}</option>;
@@ -133,7 +133,7 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
                 ?
                 <span>
                     <select value={this.state.destinationIcon} onChange={(e) => this.setState({destinationIcon: e.target.value})} >
-                        <option value="">[ Ismeretlen ]</option>
+                        <option value="">[ Unknown ]</option>
                         {
                             Object.entries(this.props.destinations).map(e => {
                                 return <option key={e[0]} value={e[0]}>{e[1].name}</option>;
@@ -175,7 +175,7 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
             }
         </td>
         {
-            typeof location !== 'undefined' && location.search.includes("admin")
+            typeof location !== 'undefined' && location.search.includes("admin_pwd")
             ?
             <td>
             <button onClick={() => {
