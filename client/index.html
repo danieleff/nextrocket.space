@@ -14,59 +14,28 @@
 </head>
 
 <body>
-<style>
-    h1 {
-        color:black;
 
-
-        margin:0;
-        padding:0 6px;
-    }
-    h2 {
-        padding:0 6px;
-
-
-        margin-top:0;
-        font-family: 'Open Sans', sans-serif;
-
-        text-transform: uppercase;
-    }
-    h2 a {
-        color:#b40000;
-        padding: 6px;
-
-    }
-    h2 a:hover, h2 a.selected:hover {
-        background-color:black;
-        color:white;
-    }
-    h2 a.selected {
-        color:black;
-    }
-    
-</style>
-<h2 class="menu" style="float:right; padding-top:0.5em;">
-  <!--<a href="about.php">About</a>-->
-  <a href="http://launchlibrary.net">Launchlibrary</a>
-</h2>
-
-<h1 style="line-height:1em;">
-
-    <!--
-    <img src="images/logo.png" style="height:1em; vertical-align: middle;" alt="LaunchTime">
-    -->
-    <div class="title">
-        <a href="http://nextrocket.space"><span style="color:#b40000;">nextrocket</span>.space</a>
+<header class="header">
+    <div class="header__title">
+        <a href="http://nextrocket.space">
+            <span style="color:#b40000;">nextrocket</span>.space
+        </a>
     </div>
-    <span style="width:100%; vertical-align: middle; font-size:small;margin:0; padding:0;">
+    <span class="header__subtitle">
         List of upcoming rocket launches to space
     </span>
+</header>
 
-
-</h1>
 <div id="app">
 {{app}}}
 </div>
+
+<footer class="footer">
+    <hr>
+    <p>Created by Daniel Fekete (<a href="mailto:danieleff@gmail.com">danieleff@gmail.com</a>)</p>
+    <p>Code available on <a href="https://github.com/danieleff/nextrocket.space">github</a></p>
+    <p>Launch data from <a href="https://launchlibrary.net">launchlibrary.net</a></p>
+</footer>
 
 <script>
     var fewUpcoming = {{fewUpcoming}};

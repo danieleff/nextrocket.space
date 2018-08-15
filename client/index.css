@@ -1,21 +1,33 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:500");
 
-.title {
-    letter-spacing: 0.2em;
-    padding: 7px 0 0 7px;
-    margin: 0;
+body {
+	font-family: 'Roboto', sans-serif;
+	margin:0;
 }
 
 a {
     text-decoration: none;
 }
 
-body {
-	font-family: sans-serif;
-	margin:0;
+.header {
+    margin: 0.5rem;
 }
+
+.header__title {
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+}
+
+.header__subtitle {
+    font-size: 0.8rem;
+}
+
+.footer {
+    text-align: center;
+    font-size: 0.8rem;
+}
+
 .launch_table {
-	font-family: 'Roboto', sans-serif;
 	width:100%;
     border-collapse: collapse;
     table-layout:fixed;
@@ -24,11 +36,6 @@ body {
 .launch_table th {
 	color:#b40000;
 	font-weight:normal;
-}
-.launch_table .title {
-    color: #5353f9;
-    font-size:large;
-    letter-spacing: 2px;
 }
 
 .launch_table tr {
