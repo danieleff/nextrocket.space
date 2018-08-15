@@ -70,9 +70,8 @@ app.get('/api/update',
     }
 );
 
-app.use("/css", express.static('public/css',       { maxAge:                60 * 1000 }));
 app.use("/images", express.static('public/images', { maxAge:      24 * 60 * 60 * 1000 }));
-app.use("/js", express.static('public/js',         { maxAge: 31 * 24 * 60 * 60 * 1000 }));
+app.use("/static", express.static('public/static',         { maxAge: 31 * 24 * 60 * 60 * 1000 }));
 
 
 const port = 3001;

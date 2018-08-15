@@ -1,12 +1,13 @@
 //const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
     entry: "./client/index.tsx",
     output: {
         path: __dirname + "/public",
-        filename: "js/bundle.[name].[chunkhash:8].min.js",
+        filename: "static/bundle.[name].[chunkhash:8].min.js",
         libraryTarget: 'var',
         library: 'app'
     },
@@ -24,10 +25,10 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: [
-                    'style-loader',
-                    { loader: 'css-loader', options: { importLoaders: 1 } }
-                ]
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader"
+                })
             }
         ]
     },
@@ -37,7 +38,8 @@ module.exports = {
     },
     plugins: [
         //new BundleAnalyzerPlugin(),
-        new CleanWebpackPlugin(['public/js']),
+        new ExtractTextPlugin("static/styles.[hash:8].css"),
+        new CleanWebpackPlugin(['public/static']),
         new HtmlWebpackPlugin({
             template: "client/index.html",
             output: "public/index.html"
