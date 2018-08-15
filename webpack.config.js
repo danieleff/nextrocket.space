@@ -32,7 +32,7 @@ module.exports = {
         //new BundleAnalyzerPlugin(),
         new CleanWebpackPlugin(['public/js']),
         new HtmlWebpackPlugin({
-            template: "public/index-before-bundle.html",
+            template: "client/index.html",
             output: "public/index.html"
         })
     ]
