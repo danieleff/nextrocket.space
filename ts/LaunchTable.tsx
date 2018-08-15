@@ -3,6 +3,7 @@ import { AvailableFilters, FrontendLaunch, TimestampResolution } from './types';
 
 import {launchTimeToString, formatCountdown} from './timeutils';
 import Axios from 'axios';
+import { LaunchRow } from './LaunchRow';
 
 const FILTERS_KEY = "selectedFilters";
 const PREVIOUS_LAUNCHES = "previousLaunches";
@@ -416,150 +417,32 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
         var counter = 0;
         var prevDate:Date;
 
-        const nowMillis = new Date().getTime();
-
         return filteredLaunches.map(launch => {
             counter++;
-            var style: any = {};
 
             const date = new Date(launch.timestamp);
 
-            if (!prevDate || prevDate.getFullYear() != date.getFullYear()) {
-                style.borderTop = "2px solid brown";
-            } else if (prevDate && (prevDate.getMonth() != date.getMonth() || prevDate.getFullYear() != date.getFullYear())) {
-                style.borderTop = "1px solid black";
-            }
-
-            prevDate = date;
 
             var className="launch ";
-            if (counter % 2 == 0) className += "odd ";
-            if (!this.isLaunchSelected(launch)) className += "unselected ";
-            
-            const launchTimeString = launchTimeToString(launch);
-            
-            var previousIcon = <i className="fa fa-fw"></i>;
 
-            if (Object.keys(this.state.previousLaunches).length > 0) {
-                if (launch.timestamp >= nowMillis) {
-                    if (!this.state.previousLaunches[launch.id]) {
-                        previousIcon = <i className="fa fa-fw fa-plus-circle" title="Launch added since previous visit" style={{color: "MediumBlue"}}></i>
-                    } else {
-                        const previousLaunchString = this.state.previousLaunches[launch.id];
-                        if (launchTimeString != previousLaunchString) {
-                            previousIcon = <i className="fa fa-fw fa-arrow-circle-down" title={"Launch date changed from '" + previousLaunchString.trim() + "' since previous visit"} style={{color: "red"}}></i>
-                        }
-                    }
-                }
+            if (counter % 2 == 0) className += " odd ";
+
+            if (!this.isLaunchSelected(launch)) className += " unselected ";
+
+            if (!prevDate || prevDate.getFullYear() != date.getFullYear()) {
+                className += " launch_table__row--new_year ";
+            } else if (prevDate && (prevDate.getMonth() != date.getMonth() || prevDate.getFullYear() != date.getFullYear())) {
+                className += " launch_table__row--new_month ";
             }
+            
+            prevDate = date;
 
-            return <tr className={className} key={launch.id} style={style}>
-                    <td className="countdown">
-                        <CountDown launch={launch} />
-                    </td>
-
-                    <td className="date">
-                        { previousIcon }
-                        { launchTimeString }
-                    </td>
-
-                    <td className="agency">
-                        <a target="_blank" rel="noopener noreferrer" href={launch.agencyInfoUrl}>
-                            <i className={"fa fa-fw " + (launch.agencyInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
-                        </a>
-                        <a target="_blank" rel="noopener noreferrer" href={launch.agencyWikiUrl}>
-                            <i className={"fab fa-fw " + (launch.agencyWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
-                        </a>
-                        {
-                            launch.agencyIcon
-                            ?
-                            <img title={launch.agencyName} src={"images/" + launch.agencyIcon}/> 
-                            : 
-                            null
-                        }
-                        <small>{launch.agencyName}</small>
-                    </td>
-
-                    <td title={launch.rocketName} className="rocket">
-                        <a target="_blank" rel="noopener noreferrer" href={launch.rocketInfoUrl}>
-                            <i className={"fa fa-fw " + (launch.rocketInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
-                        </a> 
-                        <a target="_blank" rel="noopener noreferrer" href={launch.rocketWikiUrl}>
-                            <i className={"fab fa-fw " + (launch.rocketWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
-                        </a> 
-                        <div className="flag">
-                            { launch.rocketFlagIcon ? <img className="flag" src={"images/" + launch.rocketFlagIcon}/> : null }
-                        </div>
-                        {launch.rocketName}
-                    </td>
-
-                    <td className="payload">
-                            
-                        { launch.payloadIcon ? <img className="flag" src={"images/" + launch.payloadIcon}/> : null }
-                        <span title={launch.payloadName}>{launch.payloadName}</span>
-                    </td>
-
-                    <td className="destination" title={launch.destinationName} >
-                        { launch.destinationIcon ? <img className="flag" src={"images/" + launch.destinationIcon}/> : null }
-                        { launch.destinationName }
-                    </td>
-
-                    <td className="map">
-                        {
-                            launch.mapURL
-                            ?
-                            <a target="_blank" href={launch.mapURL}>
-                                <img src="images/map_pin.png"/>
-                            </a>
-                            :
-                            null
-                        }
-                    </td>
-                    
-                    <td className="video">
-                        {
-                            launch.videoURL
-                            ?
-                            <a target="_blank" href={launch.videoURL}>
-                                <img src="images/video.png"/>
-                            </a>
-                            :
-                            null
-                        }
-                    </td>
-                </tr>;
+            return <LaunchRow 
+                launch={launch}
+                className={className}
+                previousLaunchTimeString={ Object.keys(this.state.previousLaunches).length > 0 ? this.state.previousLaunches[launch.id] : undefined }
+            />;
         });
-    }
-
-}
-
-class CountDown extends React.Component<{launch: FrontendLaunch}, {now?: Date}> {
-
-    private interval: any;
-
-    constructor(props: any) {
-        super(props);
-        this.state = {
-           
-        };
-    }
-
-    componentDidMount() {
-        this.setState({now: new Date()})
-        
-        if (this.props.launch.timestampResolution == TimestampResolution.SECOND) {
-            this.interval = setInterval(() => this.setState({now: new Date()}), 100);
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.interval) {
-            clearInterval(this.interval);
-        }
-    }
-
-    render() {
-        return formatCountdown(this.props.launch, this.state && this.state.now) || null;
     }
 
 }

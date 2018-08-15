@@ -45,6 +45,13 @@ body {
 	border-right:1px solid #ddd;
 }
 
+.launch_table .launch_table__row--new_year {
+    border-top: 2px solid brown;
+}
+.launch_table .launch_table__row--new_month {
+    border-top: 1px solid black;
+}
+
 td.agency, td.rocket, td.payload, td.destination {
 	white-space: nowrap;
 	overflow: hidden;
