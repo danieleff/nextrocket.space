@@ -2,14 +2,15 @@ import * as express from 'express';
 
 import * as compression from 'compression';
 
-import { getDBLaunches, DBLaunchParsed } from './database';
+import { getDBLaunches, DBLaunchParsed, updateLaunch } from './database';
 
 import { LaunchTable } from '../ts/LaunchTable';
 /*
 import { FrontendLaunch, TimestampResolution } from '../client/types';
 */
-import { getCachedIndexHTML, getCachedUpcomingLaunches, startBackgroundAutoUpdates } from './cache';
+import { getCachedIndexHTML, getCachedUpcomingLaunches, startBackgroundAutoUpdates, createIndexHTMLAndCache, createUpcomingLaunchesAndCache } from './cache';
 import { convertToFrontendData } from './html';
+import { config } from './config';
 
 const app = express();
 app.use(compression());
@@ -52,7 +53,26 @@ app.get('/api/launches_all',
         }
     }
 );
+app.get('/api/update', 
+    async (req, res) => {
+        try {
+            if (req.param("admin") != config.password) {
+                res.sendStatus(401); // unauthorized
+                return;
+            }
+            
+            await updateLaunch(req.query);
+            
+            createIndexHTMLAndCache();
+            createUpcomingLaunchesAndCache();
 
+            res.send({success: true});
+        } catch(e) {
+            console.error(e);
+            res.sendStatus(500);
+        }
+    }
+);
 
 app.use("/css", express.static('public/css',       { maxAge:                60 * 1000 }));
 app.use("/images", express.static('public/images', { maxAge:      24 * 60 * 60 * 1000 }));

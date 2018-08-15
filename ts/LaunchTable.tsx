@@ -117,12 +117,16 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
         localStorage.setItem(FILTERS_KEY, JSON.stringify(this.state.selectedFilters));
 
         if (!this.state.selectedFilters.upcoming && !this.state.loadingAllLaunches) {
-            this.setState({loadingAllLaunches: true});
-
-            const launches = (await Axios.get<FrontendLaunch[]>("/api/launches_all")).data;
-
-            this.setState({launches});
+            this.reloadAllLaunches();
         }
+    }
+    
+    private async reloadAllLaunches() {
+        this.setState({loadingAllLaunches: true});
+
+        const launches = (await Axios.get<FrontendLaunch[]>("/api/launches_all")).data;
+
+        this.setState({launches});
     }
 
     private getLaunches() {
@@ -172,6 +176,13 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
                 <col style={{ width: "15%" }} />
                 <col style={{ width: "22px" }} />
                 <col style={{ width: "22px" }} />
+                {
+                    typeof location !== 'undefined' && location.search.includes("admin")
+                    ?
+                    <col style={{ width: "8em" }} />
+                    :
+                    null
+                }
             </colgroup>
             <thead>
                 <tr id="filter-header" style={{cursor: "pointer"}} onClick={() => this.setState({selectedFilters: {...this.state.selectedFilters, filtersOpen: !this.state.selectedFilters.filtersOpen}})}>
@@ -292,6 +303,8 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
                             {this.getFilterRows(this.props.filters.destinations, this.state.selectedFilters.destinations, filterCounts)}
                         </div>
                     </td>
+                    <td></td>
+                    <td></td>
                 </tr>
             </thead>
             <tbody>
@@ -438,9 +451,13 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
             prevDate = date;
 
             return <LaunchRow 
+                key={launch.id}
                 launch={launch}
                 className={className}
                 previousLaunchTimeString={ Object.keys(this.state.previousLaunches).length > 0 ? this.state.previousLaunches[launch.id] : undefined }
+                destinations={this.props.filters.destinations}
+                payloads={this.props.filters.payloads}
+                onReload={this.reloadAllLaunches.bind(this)}
             />;
         });
     }

@@ -92,3 +92,24 @@ export async function updateDBLaunches(launches: LaunchLibraryLaunch[]) {
         conn.release();
     }
 }
+
+export async function updateLaunch(launch: {id: number, payload_type_icon: string | null, destination: string | null, destination_icon: string | null}) {
+    const conn = await pool.connect();
+    try {
+        
+        await conn.query("begin");
+
+        await conn.query(`UPDATE launch SET
+            payload_type_icon = $1,  
+            destination = $2,  
+            destination_icon = $3
+            WHERE id = $4`, [launch.payload_type_icon, launch.destination, launch.destination_icon, launch.id]);
+
+        await conn.query("commit");
+
+    } catch(e) {
+        console.error(e);
+    } finally {
+        conn.release();
+    }
+}
