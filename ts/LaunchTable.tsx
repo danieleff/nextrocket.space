@@ -42,6 +42,8 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
         const nextMonth = new Date();
         nextMonth.setMonth(nextMonth.getMonth() + 1);
 
+        this.setYearMonths(this.props.launches);
+
         this.state = {
             loadingAllLaunches: false,
             launches: this.props.launches,
