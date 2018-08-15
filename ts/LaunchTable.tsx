@@ -89,6 +89,7 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
         }
 
         const launches = (await Axios.get<FrontendLaunch[]>("/api/launches_upcoming")).data;
+        this.setYearMonths(launches);
         
         var previousLaunches = {};
         if (typeof localStorage !== 'undefined') {
@@ -125,8 +126,17 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
         this.setState({loadingAllLaunches: true});
 
         const launches = (await Axios.get<FrontendLaunch[]>("/api/launches_all")).data;
+        
+        this.setYearMonths(launches);
 
         this.setState({launches});
+    }
+
+    private setYearMonths(launches: FrontendLaunch[]) {
+        for(const launch of launches) {
+            const timestamp = launch.timestamp;
+            launch.yearMonth = new Date(timestamp).getFullYear() + "-" + new Date(timestamp).getMonth()
+        }
     }
 
     private getLaunches() {
