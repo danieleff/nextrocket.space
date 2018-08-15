@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-    entry: "./ts/index.tsx",
+    entry: "./client/index.tsx",
     output: {
         path: __dirname + "/public",
         filename: "js/bundle.[name].[chunkhash:8].min.js",

@@ -5,8 +5,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { AvailableFilters, FrontendLaunch } from './types';
-import Axios from 'axios';
-
 
 declare global {
     interface Window {

@@ -2,12 +2,8 @@ import * as express from 'express';
 
 import * as compression from 'compression';
 
-import { getDBLaunches, DBLaunchParsed, updateLaunch } from './database';
+import { getDBLaunches, updateLaunch } from './database';
 
-import { LaunchTable } from '../ts/LaunchTable';
-/*
-import { FrontendLaunch, TimestampResolution } from '../client/types';
-*/
 import { getCachedIndexHTML, getCachedUpcomingLaunches, startBackgroundAutoUpdates, createIndexHTMLAndCache, createUpcomingLaunchesAndCache } from './cache';
 import { convertToFrontendData } from './html';
 import { config } from './config';

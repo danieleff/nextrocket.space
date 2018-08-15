@@ -1,6 +1,6 @@
 import Axios from "axios";
 
-import { AvailableFilters } from "../ts/types";
+import { AvailableFilters } from "../client/types";
 
 export type LaunchLibraryLaunch = {
     id: number;

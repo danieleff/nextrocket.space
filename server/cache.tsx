@@ -1,7 +1,7 @@
 import * as NodeCache from "node-cache";
 import { createIndexHTML, convertToFrontendData } from "./html";
 import { getDBLaunches, updateDBLaunches } from "./database";
-import { FrontendLaunch } from "../ts/types";
+import { FrontendLaunch } from "../client/types";
 import { getLauncLibraryLaunches } from "./launchlibrary";
 
 /**

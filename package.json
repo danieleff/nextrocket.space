@@ -2,12 +2,10 @@
   "name": "nextrocket.space",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
+  "main": "dist/script.js",
   "scripts": {
-    "start": "concurrently \"npm:_start-server\" \"npm:_start-webpack\"",
-    "_start-server": "ts-node-dev --respawn --no-notify server/server.tsx",
-    "_start-webpack": "webpack --watch",
-    "build": "forever stopall && webpack && tsc && forever start js/server/server.js"
+    "start": "concurrently \"tsc --watch\" \"nodemon dist/server/server.js\" \"webpack --watch\"",
+    "build": "tsc && webpack && forever stopall && forever start dist/server/server.js"
   },
   "repository": {
     "type": "git",
@@ -36,6 +34,7 @@
     "forever": "^0.15.3",
     "html-webpack-plugin": "^3.2.0",
     "node-cache": "^4.2.0",
+    "nodemon": "^1.18.3",
     "pg": "^7.4.3",
     "pg-pool": "^2.0.3",
     "ts-loader": "^4.4.2",

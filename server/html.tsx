@@ -4,8 +4,8 @@ import { getAvailableFilters } from './launchlibrary';
 import * as React from 'react';
 import { renderToString } from "react-dom/server";
 
-import { FrontendLaunch, TimestampResolution } from '../ts/types';
-import { LaunchTable } from '../ts/LaunchTable';
+import { FrontendLaunch, TimestampResolution } from '../client/types';
+import { LaunchTable } from '../client/LaunchTable';
 import { getDBLaunches, DBLaunchParsed } from './database';
 
 
