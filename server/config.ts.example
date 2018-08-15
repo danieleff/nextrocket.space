@@ -7,5 +7,6 @@ export const config = {
         user: ...,
         password: ...,
         port: 5432,
-    }
+    },
+    password: ...
 }
