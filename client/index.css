@@ -52,14 +52,10 @@ body {
     border-top: 1px solid black;
 }
 
-td.agency, td.rocket, td.payload, td.destination {
+.overflow_nowrap, td.payload, td.destination {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-
-td.agency {
-    /*text-align: center;*/
 }
 
 .agency a, .rocket a {
@@ -68,12 +64,6 @@ td.agency {
 }
 .agency a:hover, .rocket a:hover {
     color: blue;
-}
-
-td.agency img {
-    vertical-align:baseline; 
-    height: 1em;
-    font-size: small;
 }
 
 .launch_table td.date, .launch_table td.countdown, .selection_count {

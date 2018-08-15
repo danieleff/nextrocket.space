@@ -7,6 +7,8 @@ import * as ReactDOM from 'react-dom';
 import { AvailableFilters, FrontendLaunch } from './types';
 
 import './index.css';
+import './WikipediaPanel.css';
+
 
 declare global {
     interface Window {

@@ -3,6 +3,7 @@ import { FrontendLaunch, TimestampResolution } from './types';
 import { formatCountdown, launchTimeToString } from './timeutils';
 import * as queryString from 'query-string';
 import Axios from 'axios';
+import { WikipediaPanel } from './WikipediaPanel';
 
 type LaunchRowProps = {
     launch: FrontendLaunch;
@@ -21,6 +22,9 @@ type LaunchRowState = {
     destination: string;
     payloadIcon: string;
     destinationIcon: string;
+    
+    showLspWipedia: boolean;
+    showRocketWipedia: boolean;
 }
 
 export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
@@ -32,7 +36,9 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
             editing: false,
             destination: this.props.launch.destinationName || "",
             payloadIcon: this.props.launch.payloadFilterKey || "",
-            destinationIcon: this.props.launch.destinationFilterKey || ""
+            destinationIcon: this.props.launch.destinationFilterKey || "",
+            showLspWipedia: false,
+            showRocketWipedia: false
         }
     }
 
@@ -79,34 +85,70 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
             { launchTimeString }
         </td>
 
-        <td className="agency">
-            <a target="_blank" rel="noopener noreferrer" href={launch.agencyInfoUrl}>
-                <i className={"fa fa-fw " + (launch.agencyInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
-            </a>
-            <a target="_blank" rel="noopener noreferrer" href={launch.agencyWikiUrl}>
-                <i className={"fab fa-fw " + (launch.agencyWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
-            </a>
+        <td className="agency" onMouseLeave={() => this.setState({showLspWipedia: false})} style={{position: "relative"}}>
+            <div className="overflow_nowrap">
+                <a target="_blank" rel="noopener noreferrer" href={launch.agencyInfoUrl}>
+                    <i className={"fa fa-fw " + (launch.agencyInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
+                </a>
+
+                <a  target="_blank" 
+                    rel="noopener noreferrer" 
+                    href={launch.agencyWikiUrl} 
+                    onMouseOver={() => this.setState({showLspWipedia: true})}
+                    >
+                    <i className={"fab fa-fw " + (launch.agencyWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
+                </a>
+
+                {
+                    launch.agencyIcon
+                    ?
+                    <img className="icon" title={launch.agencyName} src={"images/" + launch.agencyIcon}/> 
+                    : 
+                    null
+                }
+                <small>{launch.agencyName}</small>
+            </div>
+            
             {
-                launch.agencyIcon
+                launch.agencyWikiUrl && this.state.showLspWipedia
                 ?
-                <img title={launch.agencyName} src={"images/" + launch.agencyIcon}/> 
-                : 
+                <WikipediaPanel
+                    url={launch.agencyWikiUrl}
+                />
+                :
                 null
             }
-            <small>{launch.agencyName}</small>
         </td>
 
-        <td title={launch.rocketName} className="rocket">
-            <a target="_blank" rel="noopener noreferrer" href={launch.rocketInfoUrl}>
-                <i className={"fa fa-fw " + (launch.rocketInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
-            </a> 
-            <a target="_blank" rel="noopener noreferrer" href={launch.rocketWikiUrl}>
-                <i className={"fab fa-fw " + (launch.rocketWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
-            </a> 
-            <div className="flag">
-                { launch.rocketFlagIcon ? <img className="flag" src={"images/" + launch.rocketFlagIcon}/> : null }
+        <td className="rocket" onMouseLeave={() => this.setState({showRocketWipedia: false})} style={{position: "relative"}}>
+            <div className="overflow_nowrap">
+                <a target="_blank" rel="noopener noreferrer" href={launch.rocketInfoUrl}>
+                    <i className={"fa fa-fw " + (launch.rocketInfoUrl ? "fa-external-link-alt" : "")} aria-hidden="true"></i>
+                </a> 
+                
+                <a  target="_blank" 
+                    rel="noopener noreferrer" 
+                    href={launch.rocketWikiUrl} 
+                    onMouseOver={() => this.setState({showRocketWipedia: true})}
+                    >
+                    <i className={"fab fa-fw " + (launch.rocketWikiUrl ? "fa-wikipedia-w" : "")} aria-hidden="true"></i>
+                </a>
+
+                <div className="flag">
+                    { launch.rocketFlagIcon ? <img className="flag" src={"images/" + launch.rocketFlagIcon}/> : null }
+                </div>
+                <small title={launch.rocketName}>{launch.rocketName}</small>
             </div>
-            {launch.rocketName}
+            
+            {
+                launch.rocketWikiUrl && this.state.showRocketWipedia
+                ?
+                <WikipediaPanel
+                    url={launch.rocketWikiUrl}
+                />
+                :
+                null
+            }
         </td>
 
         <td className="payload">

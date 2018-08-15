@@ -1,0 +1,35 @@
+.wikipedia_wrapper {
+    position: relative;
+}
+
+.wikipedia_summary {
+    position: absolute;
+    left: 0;
+    width: 30em;
+    background: white;
+    border: 1px solid gray;
+    z-index: 1;
+    display: flex;
+    padding: 0.5em;
+    box-shadow: 0 0 2px gray;
+    
+}
+
+.wikipedia_summary__text {
+    flex: 1;
+    overflow: hidden;
+}
+.wikipedia_summary__text p {
+    margin: 0;
+}
+
+.wikipedia_summary__thumbnail_wrapper {
+    flex: 1;
+    margin-left: 0.5em;
+}
+
+.wikipedia_summary__thumbnail {
+    width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
