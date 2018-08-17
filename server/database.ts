@@ -1,3 +1,26 @@
+/**
+ * Database table: 
+   CREATE TABLE launch (
+	id serial NOT NULL,
+	launchlibrary_modified_time timestamptz NULL,
+	launchlibrary_id int4 NULL,
+	launchlibrary_name text NULL,
+	launchlibrary_time timestamptz NULL,
+	launchlibrary_json text NULL,
+	data_modified_time timestamptz NULL,
+	launch_time timestamptz NULL,
+	launch_date_exact bool NULL,
+	launch_time_exact bool NULL,
+	agency text NULL,
+	launch_vehicle text NULL,
+	payload_type text NULL,
+	payload_type_icon text NULL,
+	destination text NULL,
+	destination_icon text NULL,
+	is_active bool NOT NULL DEFAULT true,
+	PRIMARY KEY (id)
+)
+ */
 
 import {Pool} from 'pg';
 import { config } from './config';
