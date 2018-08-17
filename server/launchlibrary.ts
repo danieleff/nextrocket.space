@@ -13,6 +13,7 @@ export type LaunchLibraryLaunch = {
         name: string;
         infoURL: string | null;
         wikiURL: string | null;
+        countryCode: string | null;
     };
     rocket: {
         name: string;
