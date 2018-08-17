@@ -62,6 +62,11 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
             mapURL = launchlibrary.location.pads[0].mapURL;
         }
         
+        var rocketFlagIcon = launchlibrary.rocket.agencies && launchlibrary.rocket.agencies.length >= 1 ? "flag_" + launchlibrary.rocket.agencies[0].countryCode + ".png" : undefined;
+        if (!rocketFlagIcon) {
+            rocketFlagIcon = launchlibrary.lsp ? "flag_" + launchlibrary.lsp.countryCode + ".png" : undefined
+        }
+
         return {
             id: dbLaunch.id,
             timestamp: timestamp,
@@ -78,7 +83,7 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
             rocketName: launchlibrary.rocket && launchlibrary.rocket.name || "",
             rocketInfoUrl: launchlibrary.rocket.infoURLs && launchlibrary.rocket.infoURLs.length > 0 ? launchlibrary.rocket.infoURLs[0] : undefined,
             rocketWikiUrl: launchlibrary.rocket.wikiURL || undefined,
-            rocketFlagIcon: launchlibrary.rocket.agencies && launchlibrary.rocket.agencies.length >= 1 ? "flag_" + launchlibrary.rocket.agencies[0].countryCode + ".png" : undefined,
+            rocketFlagIcon: rocketFlagIcon,
             rocketFilterKey: rocketFilterKey,
 
             payloadName: launchlibrary.name.split("|")[1],
