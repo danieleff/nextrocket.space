@@ -48,8 +48,17 @@ a {
 
 .launch_table td {
 	padding:2px;
-	border-left:1px solid #ddd;
-	border-right:1px solid #ddd;
+}
+
+/** Weird bug in chrome if there is border in 7th child, vertical scrollbar shows with 1px scroll */
+.launch_table td:nth-child(1),
+.launch_table td:nth-child(2),
+.launch_table td:nth-child(3),
+.launch_table td:nth-child(4),
+.launch_table td:nth-child(5),
+.launch_table td:nth-child(6)
+{
+    border-right:1px solid #ddd;
 }
 
 .launch_table .launch_table__row--new_year {
