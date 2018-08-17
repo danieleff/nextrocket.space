@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:500");
+@import url("https://fonts.googleapis.com/css?family=Roboto:500|Roboto+Mono:500");
 
 body {
 	font-family: 'Roboto', sans-serif;
@@ -74,8 +74,9 @@ a {
 }
 
 .launch_table td.date, .launch_table td.countdown, .selection_count {
-    font-family: monospace;
-    font-weight: bold;
+    font-family: 'Roboto Mono', monospace;
+    font-size: small;
+    white-space: nowrap;
 }
 
 .icon {

@@ -180,8 +180,8 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
 
         return <table id="launch_table" className={"launch_table " + (this.state.selectedFilters.uncheckedVisibility == "gray_out" ? "gray_out_unselected" : "")}>
             <colgroup>
-                <col style={{ width: "12em", fontFamily: "monospace", fontWeight: "bold" }} />
-                <col style={{ width: "15em", fontFamily: "monospace", fontWeight: "bold"  }} />
+                <col style={{ width: "13em", fontFamily: "monospace", fontSize: "small" }} />
+                <col style={{ width: "15em", fontFamily: "monospace", fontSize: "small"  }} />
                 <col style={{ width: "20%" }} />
                 <col style={{ width: "25%" }} />
                 <col style={{ width: "30%" }} />
