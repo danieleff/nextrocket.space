@@ -137,7 +137,7 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
                 <div className="flag">
                     { launch.rocketFlagIcon ? <img className="flag" src={"images/" + launch.rocketFlagIcon}/> : null }
                 </div>
-                <small title={launch.rocketName}>{launch.rocketName}</small>
+                <span title={launch.rocketName}>{launch.rocketName}</span>
             </div>
             
             {
