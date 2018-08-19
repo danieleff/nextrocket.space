@@ -13,7 +13,12 @@ type LaunchRowProps = {
     destinations: {[key: string]: {name: string, icon: string}};
     payloads: {[key: string]: {name: string, icon: string}};
 
-    onReload: () => void
+    onReload: () => void,
+    onMouseOver: (launchId: number) => void,
+    onMouseOut: () => void,
+    onSelect: (launchId: number) => void,
+
+    isStickied: boolean
 }
 
 type LaunchRowState = {
@@ -77,6 +82,13 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
 
         return <tr className={this.props.className} key={launch.id}>
         <td className="countdown">
+            <i className="fa fa-thumbtack" style={{color: this.props.isStickied ? "black" : "lightgray", cursor: "pointer"}}
+                onMouseOver={() => this.props.onMouseOver(launch.id)} 
+                onMouseOut={() => this.props.onMouseOut()} 
+                onClick={() => this.props.onSelect(launch.id)}
+                title="Stick to top of the page"
+            />
+            &nbsp;
             <CountDown launch={launch} />
         </td>
 
@@ -242,7 +254,7 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
     }
 }
 
-class CountDown extends React.Component<{launch: FrontendLaunch}, {now?: Date}> {
+export class CountDown extends React.Component<{launch: FrontendLaunch}, {now?: Date}> {
 
     private interval: any;
 
@@ -257,6 +269,11 @@ class CountDown extends React.Component<{launch: FrontendLaunch}, {now?: Date}> 
         this.setState({now: new Date()})
         
         if (this.props.launch.timestampResolution == TimestampResolution.SECOND) {
+            this.interval = setInterval(() => this.setState({now: new Date()}), 100);
+        }
+    }
+    componentDidUpdate() {
+        if (!this.interval && this.props.launch.timestampResolution == TimestampResolution.SECOND) {
             this.interval = setInterval(() => this.setState({now: new Date()}), 100);
         }
     }

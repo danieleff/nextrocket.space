@@ -3,7 +3,7 @@ import { AvailableFilters, FrontendLaunch, TimestampResolution } from './types';
 
 import {launchTimeToString, formatCountdown} from './timeutils';
 import Axios from 'axios';
-import { LaunchRow } from './LaunchRow';
+import { LaunchRow, CountDown } from './LaunchRow';
 
 const FILTERS_KEY = "selectedFilters";
 const PREVIOUS_LAUNCHES = "previousLaunches";
@@ -17,6 +17,7 @@ type LaunchTableState = {
     loadingAllLaunches: boolean,
     launches: FrontendLaunch[],
     previousLaunches: {[key: number]: string},
+    hoverLaunchId?: number,
     selectedFilters: {
         filtersOpen: boolean;
         lsps: string[],
@@ -27,7 +28,9 @@ type LaunchTableState = {
         filterJoin: "any" | "all",
         upcoming: boolean,
         fromDate: string,
-        toDate: string
+        toDate: string,
+
+        stickiedLaunchId?: number,
     };
 }
 
@@ -178,9 +181,51 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
         tz += ("0" + (offset / 60)).slice(-2);
         tz += ("0" + (offset % 60)).slice(-2);
 
-        return <table id="launch_table" className={"launch_table " + (this.state.selectedFilters.uncheckedVisibility == "gray_out" ? "gray_out_unselected" : "")}>
+        var hoverLaunch = this.state.launches.find(l => l.id == this.state.hoverLaunchId);
+        var stickiedLaunch = this.state.launches.find(l => l.id == this.state.selectedFilters.stickiedLaunchId);
+
+        var launchInHeader = hoverLaunch || stickiedLaunch;
+
+        return <div>
+        <header className="header">
+            <div className="header__title_wrapper">
+                <div className="header__title">
+                    <a href="http://nextrocket.space">
+                        <span style={{color: "#b40000"}}>nextrocket</span>.space
+                    </a>
+                </div>
+                <span className="header__subtitle">
+                    List of upcoming rocket launches to space
+                </span>
+            </div>
+            <div className="header__countdown">
+                {
+                    launchInHeader
+                    ?
+                    <span>
+                        <CountDown launch={launchInHeader} />
+                    </span>
+                    :
+                    null
+                }
+            </div>
+            <div className="header__details">
+                {
+                    launchInHeader
+                    ?
+                    <span>
+                        {launchInHeader.agencyName} - {launchInHeader.rocketName}<br/>
+                        {launchInHeader.payloadName} - {launchInHeader.destinationName}
+                    </span>
+                    :
+                    null
+                }
+            </div>
+        </header>
+
+        <table id="launch_table" className={"launch_table " + (this.state.selectedFilters.uncheckedVisibility == "gray_out" ? "gray_out_unselected" : "")}>
             <colgroup>
-                <col style={{ width: "13em", fontFamily: "monospace", fontSize: "small" }} />
+                <col style={{ width: "14em", fontFamily: "monospace", fontSize: "small" }} />
                 <col style={{ width: "15em", fontFamily: "monospace", fontSize: "small"  }} />
                 <col style={{ width: "20%" }} />
                 <col style={{ width: "25%" }} />
@@ -324,7 +369,8 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
                     this.getLaunchRows()
                 }
             </tbody>
-        </table>;
+        </table>
+        </div>;
     }
 
     private getFilterRows(filters: {[key: string]: {name: string, icon: string}}, selectedFilters: string[], filterCounts: {[filterKey: string]: number}) {
@@ -470,8 +516,35 @@ export class LaunchTable extends React.Component<LaunchTableProps, LaunchTableSt
                 destinations={this.props.filters.destinations}
                 payloads={this.props.filters.payloads}
                 onReload={this.reloadAllLaunches.bind(this)}
+
+                onMouseOver={this.onMouseOverLaunch.bind(this)}
+                onMouseOut={this.onMouseOutLaunch.bind(this)}
+                onSelect={this.onStickyLaunch.bind(this)}
+
+                isStickied={launch.id == this.state.selectedFilters.stickiedLaunchId || launch.id == this.state.hoverLaunchId}
+
             />;
         });
+    }
+
+    private onMouseOverLaunch(launcId: number) {
+        this.setState({hoverLaunchId: launcId});
+    }
+
+    private onMouseOutLaunch() {
+        this.setState({hoverLaunchId: undefined});
+    }
+
+    private onStickyLaunch(launchId: number) {
+        if (this.state.selectedFilters.stickiedLaunchId == launchId) {
+            this.setState({
+                selectedFilters: {...this.state.selectedFilters, stickiedLaunchId: undefined}
+            });
+        } else {
+            this.setState({
+                selectedFilters: {...this.state.selectedFilters, stickiedLaunchId: launchId}
+            });
+        }
     }
 
 }

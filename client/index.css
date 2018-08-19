@@ -11,6 +11,12 @@ a {
 
 .header {
     margin: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.header__title_wrapper {
+    width: 20rem;
 }
 
 .header__title {
@@ -21,6 +27,26 @@ a {
 .header__subtitle {
     font-size: 0.8rem;
 }
+
+.header__countdown {
+    flex: 1;
+    font-size: 2rem;
+    font-family: 'Roboto Mono', monospace;
+    text-align: center;
+}
+.header__details {
+    text-align: right;
+    width: 20rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.header__details_image {
+    float: right;
+    height: 100%;
+    object-fit: contain;
+}
+
 
 .footer {
     text-align: center;
