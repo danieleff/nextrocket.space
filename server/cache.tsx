@@ -88,7 +88,7 @@ async function updateUpcomingLaunches() {
     console.timeEnd("updateUpcomingLaunches download");
 
     console.time("updateUpcomingLaunches update");
-    await updateDBLaunches(launchLibraryResponse.launches);
+    await updateDBLaunches(launchLibraryResponse.launches, false);
     console.timeEnd("updateUpcomingLaunches update");
 
     updateCaches();
@@ -102,7 +102,7 @@ async function updateAllLaunches() {
     console.timeEnd("updateAllLaunches download");
 
     console.time("updateAllLaunches update");
-    await updateDBLaunches(launchLibraryResponse.launches);
+    await updateDBLaunches(launchLibraryResponse.launches, true);
     console.timeEnd("updateAllLaunches update");
 
     updateCaches();

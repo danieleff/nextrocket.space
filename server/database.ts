@@ -69,7 +69,7 @@ export async function getDBLaunches(upcoming: boolean) {
     }
 }
 
-export async function updateDBLaunches(launches: LaunchLibraryLaunch[]) {
+export async function updateDBLaunches(launches: LaunchLibraryLaunch[], setInactiveNotFound: boolean) {
     const conn = await pool.connect();
     try {
         
@@ -105,6 +105,12 @@ export async function updateDBLaunches(launches: LaunchLibraryLaunch[]) {
                     VALUES ($1, $2, $3, now(), $4)`, [launch.id, launch.net, launch.name, launchJSON]);
 
             }
+        }
+
+        const launchlibraryIds = launches.map(l => l.id);
+
+        if (setInactiveNotFound) {
+            await conn.query(`UPDATE launch SET is_active=false WHERE launchlibrary_id IS NOT NULL AND launchlibrary_id NOT IN (${launchlibraryIds})`);
         }
 
         await conn.query("commit");
