@@ -80,6 +80,15 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
             }
         }
 
+        var rocketImage = null;
+
+        if (launch.rocketName == "Ariane 5 ECA") rocketImage = "Ariane_5_ECA (2).png";
+        if (launch.rocketName == "Atlas V 551") rocketImage = "Atlas_V_551 (2).png";
+        if (launch.rocketName == "GSLV Mk III") rocketImage = "GSLV_Mk_III (2).png";
+        if (launch.rocketName == "H-IIA 202") rocketImage = "H-IIA_202 (2).png";
+        if (launch.rocketName == "Long March 3B") rocketImage = "Long_March_3B (2).png";
+        if (launch.rocketName == "Soyuz FG Crew") rocketImage = "Soyuz_FG_Crew (2).png";
+
         return <tr className={this.props.className} key={launch.id}>
         <td className="countdown">
             <i className="fa fa-thumbtack" style={{color: this.props.isStickied ? "black" : "lightgray", cursor: "pointer"}}
@@ -149,7 +158,17 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
                 <div className="flag">
                     { launch.rocketFlagIcon ? <img className="flag" src={"images/" + launch.rocketFlagIcon}/> : null }
                 </div>
+                
                 <span title={launch.rocketName}>{launch.rocketName}</span>
+
+                {
+                    rocketImage
+                    ? 
+                    <img style={{height: "1em", marginLeft: "1em"}} src={`/images/rockets/${rocketImage}`} />
+                    : 
+                    null
+                }
+                
             </div>
             
             {
