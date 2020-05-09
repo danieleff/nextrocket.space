@@ -50,13 +50,12 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
         }
 
         try {
-            console.log(dbLaunch.data_modified_time);
 
             if (dbLaunch.data_modified_time && 
                 dbLaunch.launchlibrary_modified_time &&
                 Date.parse(dbLaunch.data_modified_time) > Date.parse(dbLaunch.launchlibrary_modified_time)) {
-                
-                if (dbLaunch.launch_time) timestamp = Date.parse(dbLaunch.launch_time + "UTC");
+                    
+                if (dbLaunch.launch_time) timestamp = Date.parse(dbLaunch.launch_time);
                 if (dbLaunch.launch_date_exact) timestampResolution = TimestampResolution.DAY;
                 if (dbLaunch.launch_time_exact) timestampResolution = TimestampResolution.SECOND;
             }
