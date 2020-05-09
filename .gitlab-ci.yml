@@ -1,0 +1,12 @@
+build_app:
+    stage: build
+    script:
+      - docker-compose build
+      - docker-compose push
+
+  deploy_app:
+    stage: deploy
+    script:
+      - "scp -o StrictHostKeyChecking=no docker-compose.yml nextrocket@danieleff.com:~/"
+      - "ssh -o StrictHostKeyChecking=no nextrocket@danieleff.com docker-compose pull"
+      - "ssh -o StrictHostKeyChecking=no nextrocket@danieleff.com docker-compose up -d --no-build --force-recreate"

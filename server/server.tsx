@@ -6,7 +6,6 @@ import { getDBLaunches, updateLaunch } from './database';
 
 import { getCachedIndexHTML, getCachedUpcomingLaunches, startBackgroundAutoUpdates, createIndexHTMLAndCache, createUpcomingLaunchesAndCache } from './cache';
 import { convertToFrontendData } from './html';
-import { config } from './config';
 
 const app = express();
 app.use(compression());
@@ -52,7 +51,7 @@ app.get('/api/launches_all',
 app.get('/api/update', 
     async (req, res) => {
         try {
-            if (req.param("admin_pwd") != config.password) {
+            if (req.param("admin_pwd") != process.env.NEXTROCKET_ADMIN_PASSWORD) {
                 res.sendStatus(401); // unauthorized
                 return;
             }
@@ -74,7 +73,7 @@ app.use("/images", express.static('public/images', { maxAge:      24 * 60 * 60 *
 app.use("/static", express.static('public/static',         { maxAge: 31 * 24 * 60 * 60 * 1000 }));
 
 
-const port = 3001;
+const port = 3000;
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 

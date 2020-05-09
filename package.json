@@ -5,7 +5,8 @@
   "main": "dist/script.js",
   "scripts": {
     "start": "concurrently \"tsc --watch\" \"nodemon dist/server/server.js\" \"webpack --watch\"",
-    "build": "tsc && webpack && forever stopall && forever start dist/server/server.js"
+    "build": "tsc && webpack && forever stopall && forever start dist/server/server.js",
+    "docker-build": "tsc && webpack"
   },
   "repository": {
     "type": "git",

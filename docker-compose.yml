@@ -1,0 +1,19 @@
+version: '3.8'
+
+services: 
+    webserver:
+        image: nextrocket-test:latest
+        restart: always
+        ports: 
+            - "4000:3000"
+        deploy:
+            replicas: 1
+            update_config:
+                order: start-first
+        environment: 
+            NEXTROCKET_DB_HOST: $NEXTROCKET_DB_HOST
+            NEXTROCKET_DB_PORT: $NEXTROCKET_DB_PORT
+            NEXTROCKET_DB_DATABASE: $NEXTROCKET_DB_DATABASE
+            NEXTROCKET_DB_USER: $NEXTROCKET_DB_USER
+            NEXTROCKET_DB_PASSWORD: $NEXTROCKET_DB_PASSWORD
+            NEXTROCKET_ADMIN_PASSWORD: $NEXTROCKET_ADMIN_PASSWORD

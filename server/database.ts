@@ -23,10 +23,15 @@
  */
 
 import {Pool} from 'pg';
-import { config } from './config';
 import { LaunchLibraryLaunch } from './launchlibrary';
 
-const pool = new Pool(config.pg);
+const pool = new Pool({
+    host: process.env.NEXTROCKET_DB_HOST,
+    port: process.env.NEXTROCKET_DB_PORT ? Number(process.env.NEXTROCKET_DB_PORT) : undefined,
+    database: process.env.NEXTROCKET_DB_DATABASE,
+    user: process.env.NEXTROCKET_DB_USER,
+    password: process.env.NEXTROCKET_DB_PASSWORD,
+});
 
 type DBLaunch = {
     id: number;
