@@ -9,4 +9,4 @@ deploy_app:
   script:
     - "scp -o StrictHostKeyChecking=no docker-compose.yml nextrocket@danieleff.com:~/"
     - "ssh -o StrictHostKeyChecking=no nextrocket@danieleff.com docker-compose pull"
-    - "ssh -o StrictHostKeyChecking=no nextrocket@danieleff.com docker-compose up -d --no-build --force-recreate"
+    - "ssh -o StrictHostKeyChecking=no nextrocket@danieleff.com source .env; docker-compose up -d --no-build --force-recreate"
