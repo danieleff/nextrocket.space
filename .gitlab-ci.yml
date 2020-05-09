@@ -1,8 +1,8 @@
 build_app:
   stage: build
   script:
-    - docker-compose build
-    - docker-compose push
+    - docker build -t danieleff/nextrocket.space .
+    - docker push danieleff/nextrocket.space
 
 deploy_app:
   stage: deploy
