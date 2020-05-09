@@ -112,7 +112,7 @@ export async function getAvailableFilters(): Promise<AvailableFilters> {
         "2e": {name: "Scientific probe", icon: "probe.png"},
         "2f": {name: "Manned spacecraft", icon: "manned.png"},
         "2g": {name: "Automated cargo spacecraft", icon: "cargo.png"},
-        "2h": {name: "Cubesat rideshare", icon: "rideshare.png"},
+        "2h": {name: "Cubesat rideshare", icon: "cubesat.png"},
     },
     destinations: {
         "3a": {name: "LEO", icon: "leo.png"},
