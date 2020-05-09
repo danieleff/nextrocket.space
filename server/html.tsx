@@ -39,7 +39,7 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
             return null;
         }
 
-        const timestamp = Date.parse(launchlibrary.net);
+        let timestamp = Date.parse(launchlibrary.net);
         var timestampResolution = TimestampResolution.SECOND;
 
         if (launchlibrary.tbdtime == 1) {
@@ -48,6 +48,19 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
         if (launchlibrary.tbddate == 1) {
             timestampResolution = TimestampResolution.MONTH;
         }
+
+        try {
+            console.log(dbLaunch.data_modified_time);
+
+            if (dbLaunch.data_modified_time && 
+                dbLaunch.launchlibrary_modified_time &&
+                Date.parse(dbLaunch.data_modified_time) > Date.parse(dbLaunch.launchlibrary_modified_time)) {
+                
+                if (dbLaunch.launch_time) timestamp = Date.parse(dbLaunch.launch_time + "UTC");
+                if (dbLaunch.launch_date_exact) timestampResolution = TimestampResolution.DAY;
+                if (dbLaunch.launch_time_exact) timestampResolution = TimestampResolution.SECOND;
+            }
+        } catch(e) {}
 
         var rocketFilterKey = "";
         for(const key of Object.keys(filters.rockets)) {

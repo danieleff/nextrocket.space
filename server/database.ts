@@ -41,6 +41,11 @@ type DBLaunch = {
     launchlibrary_json: string;
 
     data_modified_time: string;
+    
+    launch_time: string;
+    launch_time_exact: boolean;
+    launch_date_exact: boolean;
+
     payload_type: string | null;
     payload_type_icon: string | null;
     destination: string | null;
