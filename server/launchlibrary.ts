@@ -121,7 +121,7 @@ export async function getAvailableFilters(): Promise<AvailableFilters> {
         "3b": {name: "MEO", icon: "meo.png"},
         "3c": {name: "GEO", icon: "geo.png"},
         "3d": {name: "ISS", icon: "iss.png"},
-        "3e": {name: "Tiangong-2", icon: "tiangong-2.png"},
+        "3e": {name: "Tianhe", icon: "tiangong-2.png"},
         "3f": {name: "Moon", icon: "moon.png"},
         "3g": {name: "Mars", icon: "mars.png"},
         "3i": {name: "Mercury", icon: "mercury.png"},
