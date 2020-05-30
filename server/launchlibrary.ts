@@ -8,6 +8,7 @@ export type LaunchLibraryLaunch = {
     net: string;
     tbdtime: 0 | 1;
     tbddate: 0 | 1;
+    isostart: string,
     lsp?: {
         abbrev: string;
         name: string;
