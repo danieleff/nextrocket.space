@@ -195,7 +195,11 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
                     }
                 </select>
                 :
-                launch.payloadIcon ? <img className="flag" src={"images/" + launch.payloadIcon}/> : null
+                launch.payloadIcon 
+                    ? 
+                    <img className="flag" src={"images/" + launch.payloadIcon}/> 
+                    : 
+                    <span className="icon-spacer" />
             }
             <span title={launch.payloadName}>{launch.payloadName}</span>
         </td>

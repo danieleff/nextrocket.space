@@ -199,7 +199,7 @@ td.video img {
 
 .flag {
     display: inline-block; 
-    width: 24px;
+    width: 21px;
 }
 
 .datepicker {
@@ -209,6 +209,10 @@ td.video img {
 img.flag {
     width: 21px;
     vertical-align: baseline; 
+}
+.icon-spacer {
+    width: 21px;
+    display: inline-block; 
 }
 
 .multiple_flags {
