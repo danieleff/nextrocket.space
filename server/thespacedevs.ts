@@ -9,7 +9,7 @@ const AGENCY_URL = "https://ll.thespacedevs.com/2.0.0/agencies/?format=json&mode
 
 const LAUNCHER_URL = "https://ll.thespacedevs.com/2.0.0/config/launcher/?format=json&mode=detailed&limit=100";
 
-const TIMEOUT_BETWEEN_CALLS_MS = 60 * 1000;
+const TIMEOUT_BETWEEN_CALLS_MS = 7 * 60 * 1000;
 
 export type LaunchLibraryV2Launch = {
     id: string;
@@ -158,4 +158,4 @@ async function load() {
     //console.log(upcoming.length);
 }
 
-//load();
+load();
