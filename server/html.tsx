@@ -185,7 +185,7 @@ export async function convertV2ToFrontendData(launches: DBLaunchLibraryV2Launch[
             destinationIcon: (dbLaunch.destination_icon && filters.destinations[dbLaunch.destination_icon]) ? filters.destinations[dbLaunch.destination_icon].icon : undefined,
             destinationFilterKey: dbLaunch.destination_icon,
 
-            videoURL: (json.vidURLs && json.vidURLs.length >= 1) ? json.vidURLs[0] : undefined,
+            videoURL: (json.vidURLs && json.vidURLs.length >= 1) ? json.vidURLs[0].url : undefined,
             mapURL: json.pad!.map_url,
 
             

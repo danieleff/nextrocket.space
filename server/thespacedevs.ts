@@ -1,9 +1,9 @@
 import Axios from "axios";
 import { updateLaunchLibraryv2DBAgencies, updateLaunchLibraryv2DBLaunches, updateLaunchLibraryv2DBLaunchers } from "./database";
 
-const LAUNCH_ALL_URL = "https://ll.thespacedevs.com/2.0.0/launch/?format=json&limit=100";
+const LAUNCH_ALL_URL = "https://ll.thespacedevs.com/2.0.0/launch/?format=json&mode=detailed&limit=100";
 
-const LAUNCH_UPCOMING_URL = "https://ll.thespacedevs.com/2.0.0/launch/upcoming/?format=json&limit=100";
+const LAUNCH_UPCOMING_URL = "https://ll.thespacedevs.com/2.0.0/launch/upcoming/?format=json&mode=detailed&limit=100";
 
 const AGENCY_URL = "https://ll.thespacedevs.com/2.0.0/agencies/?format=json&mode=detailed&limit=100";
 
@@ -69,7 +69,9 @@ export type LaunchLibraryV2Launch = {
     }[],
     */
 
-    vidURLs: string[];
+    vidURLs: {
+        url: string
+    }[];
 }
 
 export type LaunchLibraryV2Agency = {
