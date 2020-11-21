@@ -140,7 +140,7 @@ export async function convertV2ToFrontendData(launches: DBLaunchLibraryV2Launch[
             timestampResolution = TimestampResolution.MONTH;
         }
 
-        const agency = agencies.find(a => a.launch_library_id === json.launch_service_provider.id);
+        const agency = agencies.find(a => json.launch_service_provider && a.launch_library_id === json.launch_service_provider.id);
 
         const launcher = launchers.find(a => a.launch_library_id === json.rocket.configuration.id);
 
@@ -164,7 +164,7 @@ export async function convertV2ToFrontendData(launches: DBLaunchLibraryV2Launch[
             yearMonth: new Date(timestamp).getFullYear() + "-" + new Date(timestamp).getMonth(),
             timestampResolution: timestampResolution,
 
-            agencyName: json.launch_service_provider!.name || "",
+            agencyName: json.launch_service_provider ? json.launch_service_provider.name : "",
             agencyAbbrev: agency ? agency.launch_library_json!.abbrev : "",
             agencyInfoUrl: agency ? agency.launch_library_json!.info_url : undefined,
             agencyWikiUrl: agency ? agency.launch_library_json!.wiki_url : undefined,
