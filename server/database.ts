@@ -62,7 +62,7 @@ export async function getDbLaunchLibraryV2Launches(upcoming: boolean) {
           FROM launch_library_v2_launch 
           WHERE is_active 
           ${upcoming ? " AND (launch_library_json->>'net')::date >= date(now()) " : " "}
-          /*ORDER BY launchlibrary_time*/`);
+          ORDER BY ((launch_library_json->>'net')::date)`);
 
         const rows = response.rows as DBLaunchLibraryV2Launch[];
         return rows;
