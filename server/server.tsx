@@ -2,10 +2,10 @@ import * as express from 'express';
 
 import * as compression from 'compression';
 
-import { getDBLaunches, updateLaunch } from './database';
+import { getDBLaunches, getDbLaunchLibraryV2Agencies, getDbLaunchLibraryV2Launchers, getDbLaunchLibraryV2Launches, updateLaunch, updateLaunchV2 } from './database';
 
 import { getCachedIndexHTML, getCachedUpcomingLaunches, startBackgroundAutoUpdates, createIndexHTMLAndCache, createUpcomingLaunchesAndCache } from './cache';
-import { convertToFrontendData } from './html';
+import { convertToFrontendData, convertV2ToFrontendData } from './html';
 
 const app = express();
 app.use(compression());
@@ -37,9 +37,11 @@ app.get('/api/launches_upcoming',
 app.get('/api/launches_all', 
     async (req, res) => {
         try {
-            const dbLaunches = await getDBLaunches(false);
+            const dbLaunches = await getDbLaunchLibraryV2Launches(false);
+            const dbAgencies = await getDbLaunchLibraryV2Agencies();
+            const dbLaunchers = await getDbLaunchLibraryV2Launchers();
 
-            const frontendLaunches = await convertToFrontendData(dbLaunches);
+            const frontendLaunches = await convertV2ToFrontendData(dbLaunches, dbAgencies, dbLaunchers);
 
             res.send(frontendLaunches);
         } catch(e) {
@@ -56,7 +58,7 @@ app.get('/api/update',
                 return;
             }
             
-            await updateLaunch(req.query);
+            await updateLaunchV2(req.query);
             
             createIndexHTMLAndCache();
             createUpcomingLaunchesAndCache();

@@ -1,8 +1,9 @@
 import * as NodeCache from "node-cache";
-import { createIndexHTML, convertToFrontendData } from "./html";
-import { getDBLaunches, updateDBLaunches } from "./database";
+import { createIndexHTML, convertToFrontendData, convertV2ToFrontendData } from "./html";
+import { getDbLaunchLibraryV2Agencies, getDbLaunchLibraryV2Launchers, getDbLaunchLibraryV2Launches, updateDBLaunches, updateLaunchLibraryv2DBLaunches } from "./database";
 import { FrontendLaunch } from "../client/types";
 import { getLauncLibraryLaunches } from "./launchlibrary";
+import { getLauncLibraryv2Launches } from "./thespacedevs";
 
 /**
  * Cache the html page for faster access
@@ -27,7 +28,7 @@ const CACHE_AUTOUPDATE_SECONDS = Math.max(CACHE_TTL_SECONDS - 60, 60);
 /**
  * Update frequency of upcoming launches in our database from launchlibrary
  */
-const LAUNCHLIBRARY_UPDATE_UPCOMING_SECONDS = 60 * 5;
+const LAUNCHLIBRARY_UPDATE_UPCOMING_SECONDS = 60 * 60;
 
 /**
  * Update frequency of all launches in our database from launchlibrary
@@ -63,7 +64,14 @@ export async function createIndexHTMLAndCache() {
 }
 
 export async function createUpcomingLaunchesAndCache() {
-    const launches = await convertToFrontendData(await getDBLaunches(true));
+    //const launches = await convertToFrontendData(await getDBLaunches(true));
+
+    const dbLaunches = await getDbLaunchLibraryV2Launches(true);
+    const dbAgencies = await getDbLaunchLibraryV2Agencies();
+    const dbLaunchers = await getDbLaunchLibraryV2Launchers();
+    
+    const launches = await convertV2ToFrontendData(dbLaunches, dbAgencies, dbLaunchers);
+    
     cache.set<FrontendLaunch[]>(CACHE_UPCOMING_LAUNCHES_KEY, launches);
     return launches;
 }
@@ -84,11 +92,11 @@ function updateCaches() {
 async function updateUpcomingLaunches() {
 
     console.time("updateUpcomingLaunches download");
-    const launchLibraryResponse = await getLauncLibraryLaunches(true);
+    const launchLibraryResponse = await getLauncLibraryv2Launches(true);
     console.timeEnd("updateUpcomingLaunches download");
 
     console.time("updateUpcomingLaunches update");
-    await updateDBLaunches(launchLibraryResponse.launches, false);
+    await updateLaunchLibraryv2DBLaunches(launchLibraryResponse, false);
     console.timeEnd("updateUpcomingLaunches update");
 
     updateCaches();
@@ -98,11 +106,11 @@ async function updateUpcomingLaunches() {
 async function updateAllLaunches() {
 
     console.time("updateAllLaunches download");
-    const launchLibraryResponse = await getLauncLibraryLaunches(false);
+    const launchLibraryResponse = await getLauncLibraryv2Launches(false);
     console.timeEnd("updateAllLaunches download");
 
     console.time("updateAllLaunches update");
-    await updateDBLaunches(launchLibraryResponse.launches, true);
+    await updateLaunchLibraryv2DBLaunches(launchLibraryResponse, true);
     console.timeEnd("updateAllLaunches update");
 
     updateCaches();
