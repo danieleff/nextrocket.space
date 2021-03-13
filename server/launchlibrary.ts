@@ -73,6 +73,7 @@ export async function getAvailableFilters(): Promise<AvailableFilters> {
         "0ASA": {name: "Arianespace",icon: "arianespace.png"},
         "0CASIC": {name: "China Aerospace Science and Industry Corporation",icon: ""},
         "0CASC": {name: "China Aerospace Science and Technology Corporation",icon: "china_academy.png"},
+        "0GK": {name: "GK Launch Services JV",icon: ""},
         "0ISRO": {name: "Indian Space Research Organization",icon: "isro.png"},
         "0ILS": {name: "International Launch Services",icon: "arianespace.png"},
         "0JAXA": {name: "Japan Aerospace Exploration Agency",icon: "jaxa.png"},
