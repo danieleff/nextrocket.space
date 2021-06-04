@@ -58,6 +58,10 @@ export async function convertToFrontendData(launches: DBLaunchParsed[]) {
             timestampResolution = TimestampResolution.MONTH;
         }
 
+        if (launchlibrary.net && !launchlibrary.net.endsWith("00:00Z")) {
+            timestampResolution = TimestampResolution.SECOND;
+        }
+
         try {
 
             if (dbLaunch.data_modified_time && 
