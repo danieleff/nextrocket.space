@@ -131,7 +131,8 @@ async function getLauncLibraryV2Rows<T>(url: string): Promise<T[]> {
             rows = rows.concat(response.data.results);
             url = response.data.next;
         } catch(e) {
-            console.log(e.response!.data);
+            // e.response is undefined on network errors / timeouts
+            console.error(`Failed to load ${url}:`, e.response ? `HTTP ${e.response.status}` : e.message, e.response?.data ?? "");
             throw e;
         }
     }

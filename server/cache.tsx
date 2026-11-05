@@ -1,8 +1,7 @@
 import * as NodeCache from "node-cache";
-import { createIndexHTML, convertToFrontendData, convertV2ToFrontendData } from "./html";
-import { getDbLaunchLibraryV2Agencies, getDbLaunchLibraryV2Launchers, getDbLaunchLibraryV2Launches, updateDBLaunches, updateLaunchLibraryv2DBLaunches } from "./database";
+import { createIndexHTML, convertV2ToFrontendData } from "./html";
+import { getDbLaunchLibraryV2Agencies, getDbLaunchLibraryV2Launchers, getDbLaunchLibraryV2Launches, updateLaunchLibraryv2DBLaunches } from "./database";
 import { FrontendLaunch } from "../client/types";
-import { getLauncLibraryLaunches } from "./launchlibrary";
 import { getLauncLibraryv2Launches } from "./thespacedevs";
 
 /**
@@ -64,8 +63,6 @@ export async function createIndexHTMLAndCache() {
 }
 
 export async function createUpcomingLaunchesAndCache() {
-    //const launches = await convertToFrontendData(await getDBLaunches(true));
-
     const dbLaunches = await getDbLaunchLibraryV2Launches(true);
     const dbAgencies = await getDbLaunchLibraryV2Agencies();
     const dbLaunchers = await getDbLaunchLibraryV2Launchers();

@@ -2,10 +2,10 @@ import * as express from 'express';
 
 import * as compression from 'compression';
 
-import { getDBLaunches, getDbLaunchLibraryV2Agencies, getDbLaunchLibraryV2Launchers, getDbLaunchLibraryV2Launches, updateLaunch, updateLaunchV2 } from './database';
+import { getDbLaunchLibraryV2Agencies, getDbLaunchLibraryV2Launchers, getDbLaunchLibraryV2Launches, updateLaunchV2 } from './database';
 
 import { getCachedIndexHTML, getCachedUpcomingLaunches, startBackgroundAutoUpdates, createIndexHTMLAndCache, createUpcomingLaunchesAndCache } from './cache';
-import { convertToFrontendData, convertV2ToFrontendData } from './html';
+import { convertV2ToFrontendData } from './html';
 
 // Node 15+ exits on an unhandled promise rejection; Node 12 (which this app
 // ran on for years) only logged it. Keep the server up and log instead.

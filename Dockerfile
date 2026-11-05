@@ -6,7 +6,7 @@ COPY package.json package-lock.json /app/
 RUN npm ci
 
 COPY . /app/
-RUN npm run docker-build
+RUN npm run build
 
 
 # Runtime image: only production dependencies and the built output.

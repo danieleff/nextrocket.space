@@ -2,11 +2,12 @@
   "name": "nextrocket.space",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/script.js",
   "scripts": {
     "start": "concurrently \"tsc --watch\" \"node --watch dist/server/server.js\" \"webpack --watch\"",
-    "build": "tsc && webpack",
-    "docker-build": "tsc && webpack"
+    "build": "tsc && webpack"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "repository": {
     "type": "git",
@@ -21,11 +22,8 @@
   "devDependencies": {
     "@types/compression": "^1.8.1",
     "@types/express": "^4.17.25",
-    "@types/jquery": "^3.5.34",
-    "@types/jquery.ui.layout": "0.0.29",
     "@types/node": "^24.19.2",
     "@types/pg": "^8.23.1",
-    "@types/pikaday": "^1.7.10",
     "@types/react": "^16.14.70",
     "@types/react-dom": "^16.9.25",
     "concurrently": "^9.2.5",
@@ -42,8 +40,6 @@
     "axios": "^1.21.0",
     "compression": "^1.7.3",
     "express": "^4.16.3",
-    "jquery": "^3.3.1",
-    "jqueryui": "^1.11.1",
     "node-cache": "^4.2.0",
     "pg": "^8.23.1",
     "react": "^16.4.2",
