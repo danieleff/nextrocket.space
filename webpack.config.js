@@ -1,4 +1,3 @@
-//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
@@ -37,7 +36,6 @@ module.exports = {
         minimize: true
     },
     plugins: [
-        //new BundleAnalyzerPlugin(),
         new ExtractTextPlugin("static/styles.[hash:8].css"),
         new CleanWebpackPlugin(['public/static']),
         new HtmlWebpackPlugin({
