@@ -21,7 +21,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Builds everything the Dockerfile does: npm ci, tsc, webpack and the
       # production-only install, so a failing build fails the PR check.
