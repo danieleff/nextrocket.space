@@ -3,11 +3,16 @@ name: Build and deploy
 on:
   push:
     branches: [master]
+  # Pull requests (including Dependabot's) only build the image as a check;
+  # nothing is pushed or deployed.
+  pull_request:
   workflow_dispatch:
 
+# master runs queue one after another so deploys never overlap;
+# a new push to a PR cancels that PR's previous, now outdated check.
 concurrency:
-  group: deploy
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -18,21 +23,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Builds everything the Dockerfile does: npm ci, tsc, webpack and the
+      # production-only install, so a failing build fails the PR check.
+      - name: Build image
+        run: |
+          docker build \
+            --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            -t ghcr.io/danieleff/nextrocket.space:latest .
+
       - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
-        run: |
-          docker build \
-            --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
-            -t ghcr.io/danieleff/nextrocket.space:latest .
-          docker push ghcr.io/danieleff/nextrocket.space:latest
+      - name: Push image
+        if: github.event_name != 'pull_request'
+        run: docker push ghcr.io/danieleff/nextrocket.space:latest
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       # The server pins this key to a forced command in root's authorized_keys:
