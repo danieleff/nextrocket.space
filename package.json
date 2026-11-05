@@ -44,7 +44,7 @@
     "style-loader": "^0.22.1",
     "ts-loader": "^4.4.2",
     "ts-node-dev": "^1.0.0-pre.26",
-    "typescript": "^3.0.1",
+    "typescript": "^3.9.10",
     "webpack": "^4.16.5",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^3.1.0"
