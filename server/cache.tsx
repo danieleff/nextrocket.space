@@ -78,15 +78,27 @@ export async function createUpcomingLaunchesAndCache() {
 
 
 export async function startBackgroundAutoUpdates() {
-    setInterval(updateCaches, CACHE_AUTOUPDATE_SECONDS * 1000);
+    setInterval(logErrors("updateCaches", updateCaches), CACHE_AUTOUPDATE_SECONDS * 1000);
 
-    setInterval(updateUpcomingLaunches, LAUNCHLIBRARY_UPDATE_UPCOMING_SECONDS * 1000);
-    setInterval(updateAllLaunches, LAUNCHLIBRARY_UPDATE_ALL_SECONDS * 1000);
+    setInterval(logErrors("updateUpcomingLaunches", updateUpcomingLaunches), LAUNCHLIBRARY_UPDATE_UPCOMING_SECONDS * 1000);
+    setInterval(logErrors("updateAllLaunches", updateAllLaunches), LAUNCHLIBRARY_UPDATE_ALL_SECONDS * 1000);
 }
 
-function updateCaches() {
-    createIndexHTMLAndCache();
-    createUpcomingLaunchesAndCache();
+/**
+ * Since Node 15 an unhandled promise rejection exits the process,
+ * so a failed background update must not escape.
+ */
+function logErrors(name: string, task: () => Promise<unknown>) {
+    return () => {
+        task().catch(e => console.error(`${name} failed:`, e));
+    };
+}
+
+async function updateCaches() {
+    await Promise.all([
+        createIndexHTMLAndCache(),
+        createUpcomingLaunchesAndCache(),
+    ]);
 }
 
 async function updateUpcomingLaunches() {
@@ -99,7 +111,7 @@ async function updateUpcomingLaunches() {
     await updateLaunchLibraryv2DBLaunches(launchLibraryResponse, false);
     console.timeEnd("updateUpcomingLaunches update");
 
-    updateCaches();
+    await updateCaches();
 
 }
 
@@ -113,5 +125,5 @@ async function updateAllLaunches() {
     await updateLaunchLibraryv2DBLaunches(launchLibraryResponse, true);
     console.timeEnd("updateAllLaunches update");
 
-    updateCaches();
+    await updateCaches();
 }

@@ -7,6 +7,12 @@ import { getDBLaunches, getDbLaunchLibraryV2Agencies, getDbLaunchLibraryV2Launch
 import { getCachedIndexHTML, getCachedUpcomingLaunches, startBackgroundAutoUpdates, createIndexHTMLAndCache, createUpcomingLaunchesAndCache } from './cache';
 import { convertToFrontendData, convertV2ToFrontendData } from './html';
 
+// Node 15+ exits on an unhandled promise rejection; Node 12 (which this app
+// ran on for years) only logged it. Keep the server up and log instead.
+process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled promise rejection:', reason);
+});
+
 const app = express();
 app.use(compression());
 
@@ -53,15 +59,15 @@ app.get('/api/launches_all',
 app.get('/api/update', 
     async (req, res) => {
         try {
-            if (req.param("admin_pwd") != process.env.NEXTROCKET_ADMIN_PASSWORD) {
+            if (req.query.admin_pwd != process.env.NEXTROCKET_ADMIN_PASSWORD) {
                 res.sendStatus(401); // unauthorized
                 return;
             }
             
-            await updateLaunchV2(req.query);
+            await updateLaunchV2(req.query as any);
             
-            createIndexHTMLAndCache();
-            createUpcomingLaunchesAndCache();
+            await createIndexHTMLAndCache();
+            await createUpcomingLaunchesAndCache();
 
             res.send({success: true});
         } catch(e) {

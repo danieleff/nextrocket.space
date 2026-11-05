@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FrontendLaunch, TimestampResolution } from './types';
 import { formatCountdown, launchTimeToString } from './timeutils';
-import * as queryString from 'query-string';
 import Axios from 'axios';
 import { WikipediaPanel } from './WikipediaPanel';
 
@@ -48,15 +47,15 @@ export class LaunchRow extends React.Component<LaunchRowProps, LaunchRowState> {
     }
 
     async onSave() {
-        const params = queryString.parse(location.search);
+        const params = new URLSearchParams(location.search);
 
-        var url = "/api/update?" + queryString.stringify({
-            admin_pwd: params.admin_pwd,
-            id: this.props.launch.id,
-            payload_type_icon: this.state.payloadIcon || null,
-            destination: this.state.destination || null,
-            destination_icon: this.state.destinationIcon || null,
-        });
+        var url = "/api/update?" + new URLSearchParams({
+            admin_pwd: params.get("admin_pwd") || "",
+            id: String(this.props.launch.id),
+            payload_type_icon: this.state.payloadIcon || "",
+            destination: this.state.destination || "",
+            destination_icon: this.state.destinationIcon || "",
+        }).toString();
 
         await Axios.get(url);
 

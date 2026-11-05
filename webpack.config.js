@@ -1,46 +1,46 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     entry: "./client/index.tsx",
     output: {
         path: __dirname + "/public",
         filename: "static/bundle.[name].[chunkhash:8].min.js",
-        libraryTarget: 'var',
-        library: 'app'
+        library: { name: 'app', type: 'var' },
+        // Only wipe generated files; public/images is checked in.
+        clean: { keep: /^images[\\/]/ },
     },
     devtool: 'source-map',
     resolve: {
-        // Add '.ts' and '.tsx' as a resolvable extension.
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: [".ts", ".tsx", ".js"]
     },
     module: {
         rules: [
-            // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
-            { 
-                test: /\.tsx?$/, 
+            {
+                test: /\.tsx?$/,
                 loader: "ts-loader"
             },
             {
                 test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: "css-loader"
-                })
+                use: [MiniCssExtractPlugin.loader, "css-loader"]
             }
         ]
     },
     mode: "production",
     optimization: {
-        minimize: true
+        minimize: true,
+        // index.html has {{placeholders}} inside <script> that the server fills in,
+        // so it must not be minified as JS/HTML.
+        minimizeOptions: { html: false },
     },
     plugins: [
-        new ExtractTextPlugin("static/styles.[hash:8].css"),
-        new CleanWebpackPlugin(['public/static']),
+        new MiniCssExtractPlugin({ filename: "static/styles.[contenthash:8].css" }),
         new HtmlWebpackPlugin({
             template: "client/index.html",
-            output: "public/index.html"
+            filename: "index.html",
+            inject: "body",
+            scriptLoading: "blocking",
+            minify: false,
         })
     ]
 };
