@@ -1,4 +1,4 @@
-FROM node:24-slim AS build
+FROM node:26-slim AS build
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN npm run build
 
 
 # Runtime image: only production dependencies and the built output.
-FROM node:24-slim
+FROM node:26-slim
 
 WORKDIR /app
 ENV NODE_ENV=production
